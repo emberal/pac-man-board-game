@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.debug {
+    @apply border border-red-500;
+    @apply after:content-['debug'] after:absolute;
+}
+
+h1 {
+    @apply text-4xl;
+}

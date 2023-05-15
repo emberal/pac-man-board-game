@@ -3,8 +3,8 @@ import React from "react";
 export const Home = () =>
   (
     <div>
-      <h1>Hello, world!</h1>
-      <p>Welcome to your new single-page application, built with:</p>
+      <h1 className={"debug w-fit"}>Hello, world!</h1>
+      <p className={"text-cyan-900"}>Welcome to your new single-page application, built with:</p>
       <ul>
         <li><a href="https://get.asp.net/">ASP.NET Core</a> and <a
           href="https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx">C#</a> for cross-platform server-side
