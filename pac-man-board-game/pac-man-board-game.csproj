@@ -8,8 +8,8 @@
         <IsPackable>false</IsPackable>
         <SpaRoot>ClientApp\</SpaRoot>
         <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
-        <SpaProxyServerUrl>https://localhost:44435</SpaProxyServerUrl>
-        <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
+        <SpaProxyServerUrl>https://localhost:3000</SpaProxyServerUrl>
+        <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
         <RootNamespace>pac_man_board_game</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>

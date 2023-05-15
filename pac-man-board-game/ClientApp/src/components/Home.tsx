@@ -11,7 +11,6 @@ export const Home = () =>
           code
         </li>
         <li><a href="https://facebook.github.io/react/">React</a> for client-side code</li>
-        <li><a href="http://getbootstrap.com/">Bootstrap</a> for layout and styling</li>
       </ul>
       <p>To help you get started, we have also set up:</p>
       <ul>
