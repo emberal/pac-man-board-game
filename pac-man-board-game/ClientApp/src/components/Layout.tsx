@@ -1,12 +1,11 @@
-import React, {Component, JSX} from "react";
-import {Container} from "reactstrap";
+import React, {JSX} from "react";
 import {NavMenu} from "./NavMenu";
 
 export const Layout = ({children}: { children: JSX.Element }) => (
     <div>
         <NavMenu/>
-        <Container tag="main">
+        <main>
             {children}
-        </Container>
+        </main>
     </div>
 );

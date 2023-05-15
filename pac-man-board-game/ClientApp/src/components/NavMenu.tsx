@@ -1,5 +1,4 @@
 import React from "react";
-import {Collapse, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink} from "reactstrap";
 import {Link} from "react-router-dom";
 import "./NavMenu.css";
 
@@ -13,25 +12,17 @@ export const NavMenu = () => {
 
     return (
         <header>
-            <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3"
-                    container light>
-                <NavbarBrand tag={Link} to="/">pac_man_board_game</NavbarBrand>
-                <NavbarToggler onClick={toggleNavbar} className="mr-2"/>
-                <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!collapsed}
-                          navbar>
+            <nav className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3">
+                <Link to="/">pac_man_board_game</Link>
+                <div onClick={toggleNavbar} className="mr-2"/>
+                <div className="d-sm-inline-flex flex-sm-row-reverse">
                     <ul className="navbar-nav flex-grow">
-                        <NavItem>
-                            <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink tag={Link} className="text-dark" to="/counter">Counter</NavLink>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink tag={Link} className="text-dark" to="/fetch-data">Fetch data</NavLink>
-                        </NavItem>
+                            <Link className="text-dark" to="/">Home</Link>
+                            <Link className="text-dark" to="/counter">Counter</Link>
+                            <Link className="text-dark" to="/fetch-data">Fetch data</Link>
                     </ul>
-                </Collapse>
-            </Navbar>
+                </div>
+            </nav>
         </header>
     );
 };
