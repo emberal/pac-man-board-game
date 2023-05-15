@@ -1,6 +1,6 @@
 import React from "react";
 
-export const FetchData = () => {
+export const FetchData: Component = () => {
 
   const [forecasts, setForecasts] = React.useState<any>([]);
   const [loading, setLoading] = React.useState(true);

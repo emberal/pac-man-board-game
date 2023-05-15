@@ -4,7 +4,7 @@ import {Layout} from "./components/Layout";
 import AppRoutes from "./AppRoutes";
 import "./index.css";
 
-export const App = () => (
+export const App: Component = () => (
   <Layout>
     <Routes>
       {AppRoutes.map((route, index) => {

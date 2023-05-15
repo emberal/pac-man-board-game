@@ -1,6 +1,6 @@
 import React from "react";
 
-export const Counter = () => {
+export const Counter: Component = () => {
 
   const [currentCount, setCurrentCount] = React.useState(0);
 

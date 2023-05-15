@@ -12,7 +12,7 @@ export const NavMenu = () => {
     return (
         <header>
             <nav className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3">
-                <Link to="/">pac_man_board_game</Link>
+                <Link to="/">Pac-Man Board Game</Link>
                 <div onClick={toggleNavbar} className="mr-2"/>
                 <div className="d-sm-inline-flex flex-sm-row-reverse">
                     <ul className="navbar-nav flex-grow">
