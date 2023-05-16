@@ -1,40 +1,23 @@
 import React from "react";
+import WebSocketService from "../hooks/useWebSocket";
 
-const ws = new WebSocket("wss://localhost:3000/api/");
+const ws = new WebSocketService({});
 
-let isWsOpen = false;
+export const Counter: Component = () => { // TODO update values from different clients at the same time
 
-ws.onopen = () => {
-  isWsOpen = true;
-  console.log("WebSocket Client Connected");
-};
-
-ws.onmessage = (data) => {
-  console.log(`Received message: ${data}`);
-};
-
-ws.onerror = (err) => {
-  console.error(err);
-};
-
-ws.onclose = () => {
-  console.log("WebSocket Client Disconnected");
-};
-
-export const Counter: Component = () => {
-
+  ws.onReceive = receiveMessage;
   const [currentCount, setCurrentCount] = React.useState(0);
 
-  function incrementCounter() {
+  function incrementCounterAndSend() {
     setCurrentCount(currentCount + 1);
-  }
-
-  React.useEffect(() => {
-
-    if (isWsOpen) {
+    if (ws.isOpen()) {
       ws.send(`Current count: ${currentCount}`);
     }
-  }, [currentCount]);
+  }
+
+  function receiveMessage(data: MessageEvent<any>) {
+    setCurrentCount(currentCount + 1);
+  }
 
   return (
     <div>
@@ -44,7 +27,7 @@ export const Counter: Component = () => {
 
       <p aria-live="polite">Current count: <strong>{currentCount}</strong></p>
 
-      <button className="btn btn-primary" onClick={incrementCounter}>Increment</button>
+      <button className="btn btn-primary" onClick={incrementCounterAndSend}>Increment</button>
     </div>
   );
 };

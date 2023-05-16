@@ -16,14 +16,12 @@ public class WsController : ControllerBase
     }
 
     [HttpGet]
-    public async void TestWebSocket()
+    public async Task Get()
     {
-        // TODO test websocket https://learn.microsoft.com/en-us/aspnet/core/fundamentals/websockets?view=aspnetcore-7.0
         if (HttpContext.WebSockets.IsWebSocketRequest)
         {
-            var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-            _logger.Log(LogLevel.Information, "Accepted WebSocket connection from {ConnectionId}",
-                HttpContext.Connection.Id);
+            using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+            _logger.Log(LogLevel.Information, "WebSocket connection established to {}", HttpContext.Connection.Id);
             await Echo(webSocket);
         }
         else
@@ -35,37 +33,29 @@ public class WsController : ControllerBase
     private async Task Echo(WebSocket webSocket)
     {
         var buffer = new byte[1024 * 4];
-        WebSocketReceiveResult? receiveResult;
+        WebSocketReceiveResult? result;
 
-        // While the WebSocket connection remains open run a simple loop that receives data and sends it back.
         do
         {
-            // Receive the request and store it in a buffer
-            receiveResult = await webSocket.ReceiveAsync(
-                new ArraySegment<byte>(buffer), CancellationToken.None);
+            result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+            _logger.Log(LogLevel.Information, "Message received from Client");
 
-            _logger.Log(LogLevel.Information, "Received {Count} bytes", receiveResult.Count);
+            if (result.CloseStatus.HasValue) break;
 
-            if (receiveResult.CloseStatus.HasValue) break;
-            var msg = Encoding.UTF8.GetString(buffer);
-            _logger.Log(LogLevel.Information, "Received {Message}", msg);
+            var serverMsg = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(buffer));
 
-            // Send the request back to the client
             await webSocket.SendAsync(
-                new ArraySegment<byte>(buffer, 0, receiveResult.Count),
-                receiveResult.MessageType,
-                receiveResult.EndOfMessage,
-                CancellationToken.None);
+                new ArraySegment<byte>(serverMsg, 0, result.Count),
+                result.MessageType,
+                result.EndOfMessage, CancellationToken.None);
 
-            _logger.Log(LogLevel.Information, "Sent {Count} bytes", receiveResult.Count);
+            _logger.Log(LogLevel.Information, "Message sent to Client");
         } while (true);
 
-        // Close the WebSocket connection
         await webSocket.CloseAsync(
-            receiveResult.CloseStatus.Value,
-            receiveResult.CloseStatusDescription,
+            result.CloseStatus.Value,
+            result.CloseStatusDescription,
             CancellationToken.None);
-        _logger.Log(LogLevel.Information, "Closed WebSocket connection {ConnectionId}",
-            HttpContext.Connection.Id);
+        _logger.Log(LogLevel.Information, "WebSocket connection closed from {}", HttpContext.Connection.Id);
     }
 }
