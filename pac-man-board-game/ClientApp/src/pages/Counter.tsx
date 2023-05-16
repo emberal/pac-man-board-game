@@ -1,5 +1,26 @@
 import React from "react";
 
+const ws = new WebSocket("wss://localhost:3000/api/");
+
+let isWsOpen = false;
+
+ws.onopen = () => {
+  isWsOpen = true;
+  console.log("WebSocket Client Connected");
+};
+
+ws.onmessage = (data) => {
+  console.log(`Received message: ${data}`);
+};
+
+ws.onerror = (err) => {
+  console.error(err);
+};
+
+ws.onclose = () => {
+  console.log("WebSocket Client Disconnected");
+};
+
 export const Counter: Component = () => {
 
   const [currentCount, setCurrentCount] = React.useState(0);
@@ -7,6 +28,13 @@ export const Counter: Component = () => {
   function incrementCounter() {
     setCurrentCount(currentCount + 1);
   }
+
+  React.useEffect(() => {
+
+    if (isWsOpen) {
+      ws.send(`Current count: ${currentCount}`);
+    }
+  }, [currentCount]);
 
   return (
     <div>

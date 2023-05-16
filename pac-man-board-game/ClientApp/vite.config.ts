@@ -1,11 +1,11 @@
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import {defineConfig} from "vite";
 
 // @ts-ignore
 import fs from "fs";
 // @ts-ignore
 import path from "path";
-import { execSync } from "child_process";
+import {execSync} from "child_process";
 
 export default defineConfig({
   plugins: [react()],
@@ -18,6 +18,7 @@ export default defineConfig({
       "/api": {
         changeOrigin: true,
         secure: false,
+        ws: true,
         rewrite: (path) => path.replace(/^\/api/, "/api"),
         // target taken from src/setupProxy.js in ASP.NET React template
         target: process.env.ASPNETCORE_HTTPS_PORT
