@@ -10,7 +10,7 @@
         <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
         <SpaProxyServerUrl>https://localhost:3000</SpaProxyServerUrl>
         <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
-        <RootNamespace>pac_man_board_game</RootNamespace>
+        <RootNamespace>pacMan</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 

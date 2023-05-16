@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace pac_man_board_game.Controllers;
+namespace pacMan.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

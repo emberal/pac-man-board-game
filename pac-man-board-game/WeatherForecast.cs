@@ -1,4 +1,4 @@
-namespace pac_man_board_game;
+namespace pacMan;
 
 public class WeatherForecast
 {
