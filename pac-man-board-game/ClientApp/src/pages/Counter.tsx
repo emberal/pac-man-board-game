@@ -1,5 +1,5 @@
 import React from "react";
-import WebSocketService from "../hooks/useWebSocket";
+import WebSocketService from "../classes/WebSocketService";
 
 const ws = new WebSocketService({});
 
@@ -18,6 +18,13 @@ export const Counter: Component = () => { // TODO update values from different c
   function receiveMessage(data: MessageEvent<any>) {
     setCurrentCount(currentCount + 1);
   }
+
+  React.useEffect(() => {
+    ws.open();
+    return () => {
+      ws.close();
+    };
+  }, []);
 
   return (
     <div>
