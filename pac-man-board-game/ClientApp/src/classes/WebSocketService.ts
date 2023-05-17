@@ -1,6 +1,3 @@
-type VoidFunction = () => void;
-type MessageEventFunction = (data: MessageEvent<any>) => void;
-
 interface IWebSocket {
   onOpen?: VoidFunction,
   onReceive?: MessageEventFunction,

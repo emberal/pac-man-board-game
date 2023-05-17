@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
 using pacMan.Interfaces;
@@ -8,7 +9,7 @@ namespace pacMan.Services;
 public class WebSocketService : IWebSocketService
 {
     private readonly ILogger<WebSocketService> _logger;
-    private readonly List<WebSocket> _webSockets = new();
+    private readonly BlockingCollection<WebSocket> _webSockets = new();
 
     public WebSocketService(ILogger<WebSocketService> logger)
     {
@@ -19,13 +20,14 @@ public class WebSocketService : IWebSocketService
     public void Add(WebSocket webSocket)
     {
         _webSockets.Add(webSocket);
-        _logger.Log(LogLevel.Debug, "WebSocket \"{}\" added to list", webSocket.GetHashCode());
+        _logger.Log(LogLevel.Debug, "WebSocket added to list");
     }
 
-    public void Remove(WebSocket webSocket)
+    public bool Remove(WebSocket? webSocket)
     {
-        _webSockets.Remove(webSocket);
-        _logger.Log(LogLevel.Debug, "WebSocket \"{}\" removed from list", webSocket.GetHashCode());
+        var taken = _webSockets.TryTake(out webSocket);
+        _logger.Log(LogLevel.Debug, "WebSocket removed from list");
+        return taken;
     }
 
     public async Task Send(WebSocket webSocket, string message, int length)
@@ -44,9 +46,8 @@ public class WebSocketService : IWebSocketService
             CancellationToken.None);
         
         _logger.Log(LogLevel.Trace,
-            "Message \"{}\" sent to WebSocket {}",
-            message.GetString(length),
-            webSocket.GetHashCode());
+            "Message \"{}\" sent to WebSocket",
+            message.GetString(length));
     }
 
     public async Task SendToAll(string message, int length)
@@ -66,9 +67,8 @@ public class WebSocketService : IWebSocketService
     {
         var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
         _logger.Log(LogLevel.Debug,
-            "Message \"{}\" received from WebSocket {}",
-            buffer.GetString(result.Count),
-            webSocket.GetHashCode());
+            "Message \"{}\" received from WebSocket",
+            buffer.GetString(result.Count));
         return result;
     }
 
@@ -79,6 +79,8 @@ public class WebSocketService : IWebSocketService
             closeStatus,
             closeStatusDescription,
             CancellationToken.None);
-        _logger.Log(LogLevel.Information, "WebSocket connection closed from {}", webSocket.GetHashCode());
+        _logger.Log(LogLevel.Information, "WebSocket connection closed");
     }
+    
+    public int CountConnected() => _webSockets.Count;
 }

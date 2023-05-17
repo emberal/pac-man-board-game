@@ -5,7 +5,6 @@ const ws = new WebSocketService({});
 
 export const Counter: Component = () => {
 
-  ws.onReceive = receiveMessage;
   const [currentCount, setCurrentCount] = React.useState(0);
 
   function incrementCounterAndSend() {
@@ -21,6 +20,7 @@ export const Counter: Component = () => {
   }
 
   React.useEffect(() => {
+    ws.onReceive = receiveMessage;
     ws.open();
     return () => {
       ws.close();

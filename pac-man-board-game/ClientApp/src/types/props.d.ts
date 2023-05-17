@@ -1,5 +1,3 @@
-type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
-
 type Component<T = ComponentProps> = (props: T) => React.JSX.Element;
 
 interface ComponentProps {
