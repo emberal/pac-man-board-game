@@ -43,26 +43,26 @@ export default class WebSocketService {
   }
 
   set onOpen(onOpen: VoidFunction) {
+    this._onOpen = onOpen;
     if (!this.ws) return;
     this.ws.onopen = onOpen;
-    this._onOpen = onOpen;
   }
 
   set onReceive(onReceive: MessageEventFunction) {
+    this._onReceive = onReceive;
     if (!this.ws) return;
     this.ws.onmessage = onReceive;
-    this._onReceive = onReceive;
   }
 
   set onClose(onClose: VoidFunction) {
+    this._onClose = onClose;
     if (!this.ws) return;
     this.ws.onclose = onClose;
-    this._onClose = onClose;
   }
 
   set onError(onError: VoidFunction) {
+    this._onError = onError;
     if (!this.ws) return;
     this.ws.onerror = onError;
-    this._onError = onError;
   }
 }

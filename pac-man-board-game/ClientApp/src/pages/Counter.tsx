@@ -3,20 +3,21 @@ import WebSocketService from "../classes/WebSocketService";
 
 const ws = new WebSocketService({});
 
-export const Counter: Component = () => { // TODO update values from different clients at the same time
+export const Counter: Component = () => {
 
   ws.onReceive = receiveMessage;
   const [currentCount, setCurrentCount] = React.useState(0);
 
   function incrementCounterAndSend() {
-    setCurrentCount(currentCount + 1);
     if (ws.isOpen()) {
-      ws.send(`Current count: ${currentCount}`);
+      ws.send((currentCount + 1).toString());
     }
   }
 
   function receiveMessage(data: MessageEvent<any>) {
-    setCurrentCount(currentCount + 1);
+    const count = parseInt(data.data);
+    if (!isNaN(count))
+      setCurrentCount(count);
   }
 
   React.useEffect(() => {

@@ -1,6 +1,6 @@
 using System.Net.WebSockets;
-using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using pacMan.Interfaces;
 
 namespace pacMan.Controllers;
 
@@ -9,10 +9,14 @@ namespace pacMan.Controllers;
 public class WsController : ControllerBase
 {
     private readonly ILogger<WsController> _logger;
+    private readonly IWebSocketService _wsService;
+    private const int BufferSize = 1024 * 4;
 
-    public WsController(ILogger<WsController> logger)
+    public WsController(ILogger<WsController> logger, IWebSocketService wsService)
     {
         _logger = logger;
+        _wsService = wsService;
+        _logger.Log(LogLevel.Debug, "WebSocket Controller created");
     }
 
     [HttpGet]
@@ -22,6 +26,7 @@ public class WsController : ControllerBase
         {
             using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
             _logger.Log(LogLevel.Information, "WebSocket connection established to {}", HttpContext.Connection.Id);
+            _wsService.Add(webSocket);
             await Echo(webSocket);
         }
         else
@@ -32,37 +37,26 @@ public class WsController : ControllerBase
 
     private async Task Echo(WebSocket webSocket)
     {
-
         try
         {
-            var buffer = new byte[1024 * 4];
+            var buffer = new byte[BufferSize];
             WebSocketReceiveResult? result;
             do
             {
-                result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-                _logger.Log(LogLevel.Information, "Message received from Client");
-
+                result = await _wsService.Receive(webSocket, buffer);
+                
                 if (result.CloseStatus.HasValue) break;
 
-                var serverMsg = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(buffer));
-
-                await webSocket.SendAsync(
-                    new ArraySegment<byte>(serverMsg, 0, result.Count),
-                    result.MessageType,
-                    result.EndOfMessage, CancellationToken.None);
-
-                _logger.Log(LogLevel.Information, "Message sent to Client");
+                await _wsService.SendToAll(buffer, result.Count);
             } while (true);
 
-            await webSocket.CloseAsync(
-                result.CloseStatus.Value,
-                result.CloseStatusDescription,
-                CancellationToken.None);
-            _logger.Log(LogLevel.Information, "WebSocket connection closed from {}", HttpContext.Connection.Id);
+            await _wsService.Close(webSocket, result.CloseStatus.Value, result.CloseStatusDescription ?? "No reason");
         }
         catch (WebSocketException e)
         {
             _logger.Log(LogLevel.Error, "{}", e.Message);
         }
+
+        _wsService.Remove(webSocket);
     }
 }
