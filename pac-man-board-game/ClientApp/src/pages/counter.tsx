@@ -1,19 +1,19 @@
 import React from "react";
 import WebSocketService from "../classes/WebSocketService";
 
-const ws = new WebSocketService({});
+const ws = new WebSocketService("wss://localhost:3000/api/ws");
 
 export const Counter: Component = () => {
 
   const [currentCount, setCurrentCount] = React.useState(0);
 
-  function incrementCounterAndSend() {
+  async function incrementCounterAndSend() {
     if (ws.isOpen()) {
-      ws.send((currentCount + 1).toString());
+      await ws.send((currentCount + 1).toString());
     }
   }
 
-  function receiveMessage(data: MessageEvent<any>) {
+  function receiveMessage(data: MessageEvent<string>) {
     const count = parseInt(data.data);
     if (!isNaN(count))
       setCurrentCount(count);
@@ -22,6 +22,7 @@ export const Counter: Component = () => {
   React.useEffect(() => {
     ws.onReceive = receiveMessage;
     ws.open();
+    ws.registerEvents();
     return () => {
       ws.close();
     };

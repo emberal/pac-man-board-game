@@ -8,8 +8,10 @@ public interface IWebSocketService
     bool Remove(WebSocket webSocket);
     Task Send(WebSocket webSocket, string message, int length);
     Task Send(WebSocket webSocket, byte[] message, int length);
+    Task Send(WebSocket webSocket, ArraySegment<byte> segment);
     Task SendToAll(string message, int length);
     Task SendToAll(byte[] message, int length);
+    Task SendToAll(ArraySegment<byte> segment);
     Task<WebSocketReceiveResult> Receive(WebSocket webSocket, byte[] buffer);
     Task Close(WebSocket webSocket, WebSocketCloseStatus closeStatus, string closeStatusDescription);
     int CountConnected();

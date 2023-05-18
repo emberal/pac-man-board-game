@@ -7,12 +7,14 @@ interface IWebSocket {
 
 export default class WebSocketService {
   private ws?: WebSocket;
+  private readonly _url: string;
   private _onOpen?: VoidFunction;
   private _onReceive?: MessageEventFunction;
   private _onClose?: VoidFunction;
   private _onError?: VoidFunction;
 
-  constructor({onOpen, onReceive, onClose, onError}: IWebSocket) {
+  constructor(url: string, {onOpen, onReceive, onClose, onError}: IWebSocket = {}) {
+    this._url = url;
     this._onOpen = onOpen;
     this._onReceive = onReceive;
     this._onClose = onClose;
@@ -20,22 +22,48 @@ export default class WebSocketService {
   }
 
   public open(): void {
-    this.ws = new WebSocket("wss://localhost:3000/api/ws");
+    this.ws = new WebSocket(this._url);
+  }
+
+  public registerEvents(): void {
+    if (!this.ws) return;
     if (this._onOpen) this.ws.onopen = this._onOpen;
     if (this._onReceive) this.ws.onmessage = this._onReceive;
     if (this._onClose) this.ws.onclose = this._onClose;
     if (this._onError) this.ws.onerror = this._onError;
   }
 
-  public send(data: string | ArrayBufferLike | Blob | ArrayBufferView) {
+  public send(data: WebSocketData): void {
     this.ws?.send(data);
   }
 
-  public close() {
-    this.ws?.close();
+  public async sendAndReceive<T>(data: WebSocketData): Promise<T> {
+    if (!this.isOpen()) return Promise.reject("WebSocket is not open");
+
+    let result: T | undefined;
+    this.onReceive = (event: MessageEvent) => {
+      result = JSON.parse(event.data) as T;
+    };
+
+    this.send(data);
+    return new Promise<T>((resolve) => {
+      function f() {
+        if (result === undefined) {
+          setTimeout(f, 50);
+          return;
+        }
+      }
+
+      f();
+      return resolve(result!);
+    });
   }
 
-  public isOpen() {
+  public async close(): Promise<void> {
+    return new Promise(() => this.ws?.close());
+  }
+
+  public isOpen(): boolean {
     return this.ws?.readyState === WebSocket.OPEN;
   }
 

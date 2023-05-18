@@ -1,5 +1,5 @@
 import React from "react";
-import {Counter} from "./pages/Counter";
+import {Counter} from "./pages/counter";
 import Home from "./pages/home";
 
 const AppRoutes = [

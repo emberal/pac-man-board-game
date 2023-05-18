@@ -6,57 +6,18 @@ namespace pacMan.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class WsController : ControllerBase
+public class WsController : GenericController
 {
-    private readonly ILogger<WsController> _logger;
-    private readonly IWebSocketService _wsService;
-    private const int BufferSize = 1024 * 4;
-
-    public WsController(ILogger<WsController> logger, IWebSocketService wsService)
+    public WsController(ILogger<WsController> logger, IWebSocketService wsService) : base(logger, wsService)
     {
-        _logger = logger;
-        _wsService = wsService;
-        _logger.Log(LogLevel.Debug, "WebSocket Controller created");
     }
 
     [HttpGet]
-    public async Task Get()
+    public override async Task Accept() => await base.Accept();
+
+    protected override ArraySegment<byte> Run(WebSocketReceiveResult result, byte[] data)
     {
-        if (HttpContext.WebSockets.IsWebSocketRequest)
-        {
-            using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-            _logger.Log(LogLevel.Information, "WebSocket connection established to {}", HttpContext.Connection.Id);
-            _wsService.Add(webSocket);
-            await Echo(webSocket);
-        }
-        else
-        {
-            HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-        }
-    }
-
-    private async Task Echo(WebSocket webSocket)
-    {
-        try
-        {
-            var buffer = new byte[BufferSize];
-            WebSocketReceiveResult? result;
-            do
-            {
-                result = await _wsService.Receive(webSocket, buffer);
-                
-                if (result.CloseStatus.HasValue) break;
-
-                await _wsService.SendToAll(buffer, result.Count);
-            } while (true);
-
-            await _wsService.Close(webSocket, result.CloseStatus.Value, result.CloseStatusDescription ?? "No reason");
-        }
-        catch (WebSocketException e)
-        {
-            _logger.Log(LogLevel.Error, "{}", e.Message);
-        }
-
-        _wsService.Remove(webSocket);
+        var segment = new ArraySegment<byte>(data, 0, result.Count);
+        return segment;
     }
 }

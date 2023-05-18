@@ -8,7 +8,7 @@ namespace pacMan.Services;
 public class WebSocketService : IWebSocketService
 {
     private readonly ILogger<WebSocketService> _logger;
-    private readonly SynchronizedCollection<WebSocket> _webSockets = new();
+    private readonly SynchronizedCollection<WebSocket> _webSockets = new(); // TODO separate connections into groups
 
     public WebSocketService(ILogger<WebSocketService> logger)
     {
@@ -38,15 +38,18 @@ public class WebSocketService : IWebSocketService
     public async Task Send(WebSocket webSocket, byte[] message, int length)
     {
         var msgSegment = new ArraySegment<byte>(message, 0, length);
+        await Send(webSocket, msgSegment);
+    }
+
+    public async Task Send(WebSocket webSocket, ArraySegment<byte> segment)
+    {
         await webSocket.SendAsync(
-            msgSegment,
+            segment,
             WebSocketMessageType.Text,
             true,
             CancellationToken.None);
-        
-        _logger.Log(LogLevel.Trace,
-            "Message \"{}\" sent to WebSocket",
-            message.GetString(length));
+
+        _logger.Log(LogLevel.Trace, "Message sent to WebSocket");
     }
 
     public async Task SendToAll(string message, int length)
@@ -60,6 +63,11 @@ public class WebSocketService : IWebSocketService
         foreach (var ws in _webSockets) await Send(ws, message, length);
 
         _logger.Log(LogLevel.Debug, "Message sent to all WebSockets");
+    }
+
+    public async Task SendToAll(ArraySegment<byte> segment)
+    {
+        foreach (var ws in _webSockets) await Send(ws, segment);
     }
 
     public async Task<WebSocketReceiveResult> Receive(WebSocket webSocket, byte[] buffer)
@@ -80,6 +88,6 @@ public class WebSocketService : IWebSocketService
             CancellationToken.None);
         _logger.Log(LogLevel.Information, "WebSocket connection closed");
     }
-    
+
     public int CountConnected() => _webSockets.Count;
 }
