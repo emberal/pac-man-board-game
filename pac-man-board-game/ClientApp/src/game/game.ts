@@ -1,11 +1,12 @@
 import WebSocketService from "../classes/WebSocketService";
+import {Action} from "../classes/actions";
 
 export default class Game {
 
-  private wsService: WebSocketService;
+  private _wsService: WebSocketService;
 
   constructor() {
-    this.wsService = new WebSocketService("wss://localhost:3000/api/game");
+    this._wsService = new WebSocketService("wss://localhost:3000/api/game");
     // Connect to the server
 
     // Create players
@@ -15,12 +16,10 @@ export default class Game {
     // Roll to start
   }
 
-  public gameLoop(setDice: Setter<number[]>): void {
+  public async gameLoop(setDice: Setter<number[] | undefined>): Promise<void> {
     // Throw the dices
-    this.rollDice().then((dices) => {
-      console.log(dices);
-      setDice(dices);
-    });
+    const result = await this.rollDice();
+    setDice(result);
 
     // Choose a dice and move pac-man or a ghost
 
@@ -32,12 +31,12 @@ export default class Game {
   }
 
   public connectToServer(): void {
-    this.wsService.open();
-    this.wsService.registerEvents();
+    this._wsService.open();
+    this._wsService.registerEvents();
   }
 
   public isConnected(): boolean {
-    return this.wsService.isOpen();
+    return this._wsService.isOpen();
   }
 
   private createPlayers(): void {
@@ -54,7 +53,7 @@ export default class Game {
 
   private async rollDice(): Promise<number[]> {
     let result: number[];
-    result = await this.wsService.sendAndReceive<number[]>("roll");
+    result = await this._wsService.sendAndReceive<number[]>({action: Action.rollDice});
     return result;
   }
 
@@ -76,6 +75,10 @@ export default class Game {
 
   private nextPlayer(): void {
     throw new Error("Not implemented");
+  }
+
+  get wsService(): WebSocketService {
+    return this._wsService;
   }
 
 }

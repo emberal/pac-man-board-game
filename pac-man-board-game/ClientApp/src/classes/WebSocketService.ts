@@ -33,29 +33,34 @@ export default class WebSocketService {
     if (this._onError) this.ws.onerror = this._onError;
   }
 
-  public send(data: WebSocketData): void {
+  public send(data: ActionRequest | string): void {
+    if (typeof data !== "string") {
+      data = JSON.stringify(data);
+    }
     this.ws?.send(data);
   }
-
-  public async sendAndReceive<T>(data: WebSocketData): Promise<T> {
+  
+  public async sendAndReceive<R>(data: ActionRequest): Promise<R> {
     if (!this.isOpen()) return Promise.reject("WebSocket is not open");
 
-    let result: T | undefined;
-    this.onReceive = (event: MessageEvent) => {
-      result = JSON.parse(event.data) as T;
+    let result: R | undefined;
+    this.ws!.onmessage = (event: MessageEvent<string>) => {
+      result = JSON.parse(event.data) as R;
     };
 
     this.send(data);
-    return new Promise<T>((resolve) => {
-      function f() {
+    return new Promise<R>((resolve) => {
+      const f = () => {
         if (result === undefined) {
           setTimeout(f, 50);
           return;
         }
-      }
+        const resolved = resolve(result);
+        if (this._onReceive) this.onReceive = this._onReceive;
+        return resolved;
+      };
 
       f();
-      return resolve(result!);
     });
   }
 
