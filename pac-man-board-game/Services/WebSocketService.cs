@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
 using pacMan.Interfaces;
@@ -9,7 +8,7 @@ namespace pacMan.Services;
 public class WebSocketService : IWebSocketService
 {
     private readonly ILogger<WebSocketService> _logger;
-    private readonly BlockingCollection<WebSocket> _webSockets = new();
+    private readonly SynchronizedCollection<WebSocket> _webSockets = new();
 
     public WebSocketService(ILogger<WebSocketService> logger)
     {
@@ -23,9 +22,9 @@ public class WebSocketService : IWebSocketService
         _logger.Log(LogLevel.Debug, "WebSocket added to list");
     }
 
-    public bool Remove(WebSocket? webSocket)
+    public bool Remove(WebSocket webSocket)
     {
-        var taken = _webSockets.TryTake(out webSocket);
+        var taken = _webSockets.Remove(webSocket);
         _logger.Log(LogLevel.Debug, "WebSocket removed from list");
         return taken;
     }
