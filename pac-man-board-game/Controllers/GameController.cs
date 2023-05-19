@@ -31,7 +31,7 @@ public class GameController : GenericController
         stringResult = Regex.Replace(stringResult, @"\p{C}+", "");
 
         Logger.Log(LogLevel.Information, "Received: {}", stringResult);
-        var action = JsonSerializer.Deserialize<ActionRequest>(stringResult);
+        var action = JsonSerializer.Deserialize<ActionMessage>(stringResult);
 
         switch (action?.Action)
         {
@@ -39,7 +39,8 @@ public class GameController : GenericController
                 var rolls = _diceCup.Roll();
                 Logger.Log(LogLevel.Information, "Rolled {}", string.Join(", ", rolls));
 
-                return rolls.ToArraySegment();
+                action.Data = rolls;
+                return action.ToArraySegment();
             default:
                 return new ArraySegment<byte>("Invalid action"u8.ToArray());
         }

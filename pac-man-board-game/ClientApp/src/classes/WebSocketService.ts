@@ -33,14 +33,14 @@ export default class WebSocketService {
     if (this._onError) this.ws.onerror = this._onError;
   }
 
-  public send(data: ActionRequest | string): void {
+  public send(data: ActionMessage | string): void {
     if (typeof data !== "string") {
       data = JSON.stringify(data);
     }
     this.ws?.send(data);
   }
   
-  public async sendAndReceive<R>(data: ActionRequest): Promise<R> {
+  public async sendAndReceive<R>(data: ActionMessage): Promise<R> {
     if (!this.isOpen()) return Promise.reject("WebSocket is not open");
 
     let result: R | undefined;

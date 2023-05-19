@@ -2,6 +2,7 @@ import React from "react";
 import GameCanvas from "../components/gameCanvas";
 import Game from "../game/game";
 import {AllDice} from "./dice";
+import {Action} from "../classes/actions";
 
 let game: Game;
 export const GameComponent: Component = () => {
@@ -18,9 +19,12 @@ export const GameComponent: Component = () => {
 
   function updateState() {
     game.wsService.onReceive = (message) => {
-      const parsed = JSON.parse(message.data);
-      if (parsed instanceof Array) {
-        setDice(parsed);
+      const parsed: ActionMessage = JSON.parse(message.data);
+      console.log(parsed);
+      switch (parsed.Action) {
+        case Action.rollDice:
+          setDice(parsed.Data as number[]);
+          break;
       }
     };
   }

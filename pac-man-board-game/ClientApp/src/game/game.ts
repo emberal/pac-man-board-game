@@ -19,7 +19,7 @@ export default class Game {
   public async gameLoop(setDice: Setter<number[] | undefined>): Promise<void> {
     // Throw the dices
     const result = await this.rollDice();
-    setDice(result);
+    setDice(result.Data);
 
     // Choose a dice and move pac-man or a ghost
 
@@ -55,9 +55,9 @@ export default class Game {
     throw new Error("Not implemented");
   }
 
-  private async rollDice(): Promise<number[]> {
-    let result: number[];
-    result = await this._wsService.sendAndReceive<number[]>({action: Action.rollDice});
+  private async rollDice(): Promise<ActionMessage<number[]>> {
+    let result: ActionMessage<number[]>;
+    result = await this._wsService.sendAndReceive<ActionMessage<number[]>>({Action: Action.rollDice});
     return result;
   }
 
