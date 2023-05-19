@@ -31,6 +31,7 @@ export const GameComponent: Component = () => {
 
     game.connectToServer();
     startGameLoop();
+    return () => game.disconnect();
   }, []);
 
   return (

@@ -3,7 +3,7 @@ import {Action} from "../classes/actions";
 
 export default class Game {
 
-  private _wsService: WebSocketService;
+  private readonly _wsService: WebSocketService;
 
   constructor() {
     this._wsService = new WebSocketService("wss://localhost:3000/api/game");
@@ -37,6 +37,10 @@ export default class Game {
 
   public isConnected(): boolean {
     return this._wsService.isOpen();
+  }
+  
+  public disconnect(): void {
+    this._wsService.close();
   }
 
   private createPlayers(): void {

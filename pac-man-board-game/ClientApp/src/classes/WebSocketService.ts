@@ -64,8 +64,8 @@ export default class WebSocketService {
     });
   }
 
-  public async close(): Promise<void> {
-    return new Promise(() => this.ws?.close());
+  public close(): void {
+    this.ws?.close();
   }
 
   public isOpen(): boolean {
