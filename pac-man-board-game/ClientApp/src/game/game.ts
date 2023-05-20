@@ -4,6 +4,7 @@ import {Action} from "../classes/actions";
 export default class Game {
 
   private readonly _wsService: WebSocketService;
+  public selectedDice?: SelectedDice;
 
   constructor() {
     this._wsService = new WebSocketService("wss://localhost:3000/api/game");
@@ -17,11 +18,15 @@ export default class Game {
   }
 
   public async gameLoop(setDice: Setter<number[] | undefined>): Promise<void> {
-    // Throw the dices
+    // Throw the dice
     const result = await this.rollDice();
-    setDice(result.Data);
+    const dice = result.Data;
+    setDice(dice); // Updates the state of the current player
 
-    // Choose a dice and move pac-man or a ghost
+    // Choose a dice
+    
+    // Choose a character to move
+    // this.chooseCharacter();
 
     // Use the remaining dice to move pac-man if the player moved a ghost or vice versa
 
@@ -38,7 +43,7 @@ export default class Game {
   public isConnected(): boolean {
     return this._wsService.isOpen();
   }
-  
+
   public disconnect(): void {
     this._wsService.close();
   }
@@ -61,15 +66,11 @@ export default class Game {
     return result;
   }
 
-  private chooseDice(dices: number[]): number {
+  private movePacMan(steps: number): void {
     throw new Error("Not implemented");
   }
 
-  private movePacMan(dice: number): void {
-    throw new Error("Not implemented");
-  }
-
-  private moveGhost(dice: number): void {
+  private moveGhost(steps: number): void {
     throw new Error("Not implemented");
   }
 
@@ -81,8 +82,11 @@ export default class Game {
     throw new Error("Not implemented");
   }
 
+  private chooseCharacter(): void {
+    throw new Error("Method not implemented.");
+  }
+
   get wsService(): WebSocketService {
     return this._wsService;
   }
-
 }

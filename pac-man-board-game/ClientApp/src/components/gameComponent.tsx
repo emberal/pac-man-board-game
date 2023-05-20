@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import GameCanvas from "../components/gameCanvas";
 import Game from "../game/game";
 import {AllDice} from "./dice";
@@ -7,9 +7,15 @@ import {Action} from "../classes/actions";
 let game: Game;
 export const GameComponent: Component = () => {
 
-  const [dice, setDice] = React.useState<number[]>();
+  const [dice, setDice] = useState<number[]>();
+  const [selectedDice, setSelectedDice] = useState<SelectedDice>();
 
-  function startGameLoop() {
+  function handleDiceClick(selected: SelectedDice): void {
+    setSelectedDice(selected);
+    game.selectedDice = selected;
+  }
+
+  function startGameLoop(): void {
     if (!game.isConnected()) {
       setTimeout(startGameLoop, 50);
       return;
@@ -20,10 +26,10 @@ export const GameComponent: Component = () => {
   function updateState() {
     game.wsService.onReceive = (message) => {
       const parsed: ActionMessage = JSON.parse(message.data);
-      console.log(parsed);
+
       switch (parsed.Action) {
         case Action.rollDice:
-          setDice(parsed.Data as number[]);
+          setDice(parsed.Data as number[]); // Updates the state of other players
           break;
       }
     };
@@ -44,7 +50,7 @@ export const GameComponent: Component = () => {
       <div className={"flex justify-center"}>
         <button onClick={startGameLoop}>Roll dice</button>
       </div>
-      <AllDice values={dice}/>
+      <AllDice values={dice} onclick={handleDiceClick} selectedDiceIndex={selectedDice?.index}/>
       <GameCanvas className={"mx-auto"}/>
     </div>
   );

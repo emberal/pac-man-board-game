@@ -8,3 +8,8 @@ type ActionMessage<T = object> = {
   Action: import("../classes/actions").Action,
   Data?: T
 }
+
+type SelectedDice = {
+  value: number,
+  index: number
+};
