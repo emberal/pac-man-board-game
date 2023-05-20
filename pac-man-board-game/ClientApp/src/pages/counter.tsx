@@ -1,5 +1,5 @@
 import React from "react";
-import WebSocketService from "../classes/WebSocketService";
+import WebSocketService from "../websockets/WebSocketService";
 
 const ws = new WebSocketService("wss://localhost:3000/api/ws");
 

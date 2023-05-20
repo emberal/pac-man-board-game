@@ -1,15 +1,16 @@
-import React from "react";
+import React, {useEffect, useRef} from "react";
 import TileMap from "../game/tileMap";
 
 const tileMap = new TileMap();
 
 const GameCanvas: Component = ({className}) => {
 
-  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const context = canvasRef.current?.getContext("2d");
     if (!context) return;
+    context.canvas.height = context.canvas.width;
 
     tileMap.draw(context);
   }, []);

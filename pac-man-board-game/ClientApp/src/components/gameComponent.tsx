@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import GameCanvas from "../components/gameCanvas";
 import Game from "../game/game";
 import {AllDice} from "./dice";
-import {Action} from "../classes/actions";
+import {Action} from "../websockets/actions";
 
 let game: Game;
 export const GameComponent: Component = () => {
@@ -23,7 +23,7 @@ export const GameComponent: Component = () => {
     void game.gameLoop(setDice);
   }
 
-  function updateState() {
+  function updateState(): void {
     game.wsService.onReceive = (message) => {
       const parsed: ActionMessage = JSON.parse(message.data);
 

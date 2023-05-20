@@ -1,3 +1,5 @@
+import {Character, Ghost, PacMan} from "./character";
+
 export default class TileMap {
 
   /**
@@ -22,8 +24,15 @@ export default class TileMap {
     [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
   ];
 
+  public characters: Character[] = [];
+
+  public constructor() {
+    this.characters.push(new PacMan("yellow", {x: 3, y: 3}), new Ghost("blue", {x: 7, y: 3}));
+  }
+
   public draw(ctx: CanvasRenderingContext2D): void {
     this.drawMap(ctx);
+    this.drawCharacters(ctx);
   }
 
   private drawMap(context: CanvasRenderingContext2D): void {
@@ -60,9 +69,25 @@ export default class TileMap {
     context.fillRect(x, y, tileSize, tileSize);
   }
 
+  private drawCharacters(ctx: CanvasRenderingContext2D): void {
+    for (const character of this.characters) {
+      this.drawCircle(ctx, character);
+    }
+  }
+
+  private drawCircle(ctx: CanvasRenderingContext2D, character: Character): void {
+    const tileSize = this.getTileSize(ctx);
+    const x = character.position.x * tileSize;
+    const y = character.position.y * tileSize;
+    ctx.fillStyle = character.color;
+    ctx.beginPath();
+    ctx.arc(x + tileSize / 2, y + tileSize / 2, tileSize / 2, tileSize / 2, 0.34 * Math.PI);
+    ctx.fill();
+    ctx.stroke();
+  }
+
   private getTileSize(context: CanvasRenderingContext2D): number {
     const canvasSize = context.canvas.width;
-    context.canvas.height = canvasSize;
     return canvasSize / this.map[0].length;
   }
 }

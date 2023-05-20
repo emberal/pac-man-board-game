@@ -1,5 +1,5 @@
-import WebSocketService from "../classes/WebSocketService";
-import {Action} from "../classes/actions";
+import WebSocketService from "../websockets/WebSocketService";
+import {Action} from "../websockets/actions";
 
 export default class Game {
 

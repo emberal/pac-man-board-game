@@ -5,7 +5,7 @@ type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
 type WebSocketData = string | ArrayBufferLike | Blob | ArrayBufferView;
 
 type ActionMessage<T = object> = {
-  Action: import("../classes/actions").Action,
+  Action: import("../websockets/actions").Action,
   Data?: T
 }
 
@@ -13,3 +13,5 @@ type SelectedDice = {
   value: number,
   index: number
 };
+
+type CharacterPosition = { x: number, y: number };
