@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Game from "../game/game";
 import {AllDice} from "./dice";
 import {Action} from "../websockets/actions";
@@ -20,6 +20,7 @@ export const GameComponent: Component = () => {
   }
 
   function startGameLoop(): void {
+    setSelectedDice(undefined);
     if (!game.isConnected()) {
       setTimeout(startGameLoop, 50);
       return;
@@ -39,7 +40,7 @@ export const GameComponent: Component = () => {
     };
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     game = new Game();
     updateState();
 
@@ -55,7 +56,7 @@ export const GameComponent: Component = () => {
         <button onClick={startGameLoop}>Roll dice</button>
       </div>
       <AllDice values={dice} onclick={handleDiceClick} selectedDiceIndex={selectedDice?.index}/>
-      <GameBoard className={"mx-auto"} characters={characters}/>
+      <GameBoard className={"mx-auto"} characters={characters} selectedDice={selectedDice}/>
     </div>
   );
 };

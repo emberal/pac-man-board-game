@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Character, PacMan} from "../game/character";
+import {findPossiblePositions} from "../utils/game";
 
 /**
  * 0 = empty
@@ -23,7 +24,7 @@ const map: number[][] = [
   [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
 ];
 
-enum TileType {
+export enum TileType {
   empty,
   wall,
   pellet,
@@ -33,15 +34,34 @@ enum TileType {
 }
 
 interface BoardProps extends ComponentProps {
-  characters: Character[];
+  characters: Character[],
+  selectedDice?: SelectedDice,
 }
 
-const Board: Component<BoardProps> = ({className, characters}) => {
+const Board: Component<BoardProps> = (
+  {
+    className,
+    characters,
+    selectedDice
+  }) => {
 
-  const [tileSize, setTileSize] = useState<number>(2);
+  const [tileSize, setTileSize] = useState(2);
+  const [selectedCharacter, setSelectedCharacter] = useState<Character>();
+  const [possiblePositions, setPossiblePositions] = useState<CharacterPosition[]>([]);
+
+  function handleSelectCharacter(character: Character) {
+    setSelectedCharacter(character);
+  }
 
   useEffect(() => {
-    
+    if (selectedCharacter && selectedDice) {
+      const possiblePositions = findPossiblePositions(map, selectedCharacter.position, selectedDice.value);
+      setPossiblePositions(possiblePositions);
+    }
+  }, [selectedCharacter, selectedDice]);
+
+  useEffect(() => {
+
     for (const character of characters) { // TODO make more dynamic
       if (character instanceof PacMan) {
         character.position = {x: 3, y: 3};
@@ -68,10 +88,14 @@ const Board: Component<BoardProps> = ({className, characters}) => {
           <div key={rowIndex} className={"flex"}>
             {
               row.map((tile, colIndex) =>
-                <Tile key={colIndex + rowIndex * colIndex}
+                <Tile className={`${possiblePositions.find(p => p.x === colIndex && p.y === rowIndex) ? "rounded-full" : ""}`}
+                      characterClass={`${selectedCharacter?.isAt({x: colIndex, y: rowIndex}) ? "animate-bounce" : ""}`}
+                      key={colIndex + rowIndex * colIndex}
                       type={tile}
                       size={tileSize}
-                      character={characters.find(c => c.position.x === colIndex && c.position.y === rowIndex)}/>
+                      character={characters.find(c => c.isAt({x: colIndex, y: rowIndex}))}
+                      onClick={handleSelectCharacter}
+                />
               )
             }
           </div>)
@@ -86,9 +110,19 @@ interface TileProps extends ComponentProps {
   size: number,
   type?: TileType,
   character?: Character,
+  onClick?: (character: Character) => void,
+  characterClass?: string,
 }
 
-const Tile: Component<TileProps> = ({size, type = TileType.empty, character}) => {
+const Tile: Component<TileProps> = (
+  {
+    size,
+    type = TileType.empty,
+    character,
+    onClick,
+    className,
+    characterClass,
+  }) => {
 
   function setColor(): string {
     switch (type) {
@@ -108,23 +142,30 @@ const Tile: Component<TileProps> = ({size, type = TileType.empty, character}) =>
   }
 
   return (
-    <div className={`${setColor()} relative`} style={{width: `${size}px`, height: `${size}px`}}>
+    <div className={`${setColor()} hover:border relative max-w-[75px] max-h-[75px] ${className}`}
+         style={{width: `${size}px`, height: `${size}px`}}>
       {character &&
         <div className={"inline-flex justify-center items-center w-full h-full"}>
-          <CharacterComponent character={character}/>
+          <CharacterComponent character={character} onClick={onClick} className={characterClass}/>
         </div>
       }
+
     </div>
   );
 };
 
 interface CharacterComponentProps extends ComponentProps {
   character: Character,
+  onClick?: (character: Character) => void,
 }
 
-const CharacterComponent: Component<CharacterComponentProps> = ({character}) => {
-  return (
-    <div className={"rounded-full w-4/5 h-4/5 cursor-pointer hover:border border-black"}
-         style={{backgroundColor: `${character.color}`}}/>
-  );
-};
+const CharacterComponent: Component<CharacterComponentProps> = (
+  {
+    character,
+    onClick,
+    className
+  }) => (
+  <div className={`rounded-full w-4/5 h-4/5 cursor-pointer hover:border border-black ${className}`}
+       style={{backgroundColor: `${character.color}`}}
+       onClick={onClick ? () => onClick(character) : undefined}/>
+);

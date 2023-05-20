@@ -10,6 +10,10 @@ export abstract class Character {
   }
 
   public abstract moveTo(position: CharacterPosition): void;
+  
+  public isAt(position: CharacterPosition): boolean {
+    return this.position.x === position.x && this.position.y === position.y;
+  }
 }
 
 export class PacMan extends Character {
