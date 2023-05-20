@@ -1,6 +1,4 @@
 using System.Net.WebSockets;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using pacMan.Game;
 using pacMan.Game.Interfaces;
@@ -27,22 +25,26 @@ public class GameController : GenericController
     protected override ArraySegment<byte> Run(WebSocketReceiveResult result, byte[] data)
     {
         var stringResult = data.GetString(data.Length);
-        // Removes invalid characters from the string
-        stringResult = Regex.Replace(stringResult, @"\p{C}+", "");
 
         Logger.Log(LogLevel.Information, "Received: {}", stringResult);
-        var action = JsonSerializer.Deserialize<ActionMessage>(stringResult);
+        var action = ActionMessage.FromJson(stringResult);
 
-        switch (action?.Action)
+        DoAction(action);
+        return action.ToArraySegment();
+    }
+
+    private void DoAction(ActionMessage message)
+    {
+        switch (message.Action)
         {
             case GameAction.RollDice:
                 var rolls = _diceCup.Roll();
                 Logger.Log(LogLevel.Information, "Rolled {}", string.Join(", ", rolls));
 
-                action.Data = rolls;
-                return action.ToArraySegment();
+                message.Data = rolls;
+                break;
             default:
-                return new ArraySegment<byte>("Invalid action"u8.ToArray());
+                throw new ArgumentOutOfRangeException(nameof(message), "Action not allowed");
         }
     }
 }
