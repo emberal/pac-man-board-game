@@ -1,10 +1,10 @@
-type CharacterColor = "red" | "blue" | "yellow" | "green";
+type CharacterColor = "red" | "blue" | "yellow" | "green" | "purple";
 
 export abstract class Character {
   public color: CharacterColor;
   public position: CharacterPosition;
 
-  public constructor(color: CharacterColor, startPosition: CharacterPosition) {
+  public constructor(color: CharacterColor, startPosition: CharacterPosition = {x: 0, y: 0}) {
     this.color = color;
     this.position = startPosition;
   }

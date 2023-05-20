@@ -1,10 +1,14 @@
 import React, {useState} from "react";
-import GameCanvas from "../components/gameCanvas";
 import Game from "../game/game";
 import {AllDice} from "./dice";
 import {Action} from "../websockets/actions";
+import GameBoard from "./gameBoard";
+import {Ghost, PacMan} from "../game/character";
 
 let game: Game;
+
+const characters = [new PacMan("yellow"), new Ghost("purple")];
+
 export const GameComponent: Component = () => {
 
   const [dice, setDice] = useState<number[]>();
@@ -51,7 +55,7 @@ export const GameComponent: Component = () => {
         <button onClick={startGameLoop}>Roll dice</button>
       </div>
       <AllDice values={dice} onclick={handleDiceClick} selectedDiceIndex={selectedDice?.index}/>
-      <GameCanvas className={"mx-auto"}/>
+      <GameBoard className={"mx-auto"} characters={characters}/>
     </div>
   );
 };
