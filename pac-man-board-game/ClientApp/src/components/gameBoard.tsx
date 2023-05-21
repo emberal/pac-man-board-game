@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Character, PacMan} from "../game/character";
-import {findPossiblePositions} from "../utils/game";
+import findPossiblePositions from "../game/possibleMovesAlgorithm";
+import {TileType} from "../game/tileType";
 
 /**
  * 0 = empty
@@ -24,15 +25,6 @@ const map: number[][] = [
   [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
 ];
 
-export enum TileType {
-  empty,
-  wall,
-  pellet,
-  powerPellet,
-  ghostSpawn,
-  pacmanSpawn,
-}
-
 interface BoardProps extends ComponentProps {
   characters: Character[],
   selectedDice?: SelectedDice,
@@ -49,7 +41,7 @@ const Board: Component<BoardProps> = (
   const [selectedCharacter, setSelectedCharacter] = useState<Character>();
   const [possiblePositions, setPossiblePositions] = useState<CharacterPosition[]>([]);
 
-  function handleSelectCharacter(character: Character) {
+  function handleSelectCharacter(character: Character): void {
     setSelectedCharacter(character);
   }
 
@@ -57,6 +49,8 @@ const Board: Component<BoardProps> = (
     if (selectedCharacter && selectedDice) {
       const possiblePositions = findPossiblePositions(map, selectedCharacter.position, selectedDice.value);
       setPossiblePositions(possiblePositions);
+    } else {
+      setPossiblePositions([]);
     }
   }, [selectedCharacter, selectedDice]);
 
@@ -88,7 +82,8 @@ const Board: Component<BoardProps> = (
           <div key={rowIndex} className={"flex"}>
             {
               row.map((tile, colIndex) =>
-                <Tile className={`${possiblePositions.find(p => p.x === colIndex && p.y === rowIndex) ? "rounded-full" : ""}`}
+                <Tile className={`${possiblePositions.find(p => p.x === colIndex && p.y === rowIndex) ?
+                  "border-4 border-white" : ""}`}
                       characterClass={`${selectedCharacter?.isAt({x: colIndex, y: rowIndex}) ? "animate-bounce" : ""}`}
                       key={colIndex + rowIndex * colIndex}
                       type={tile}
