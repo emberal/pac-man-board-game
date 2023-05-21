@@ -28,13 +28,15 @@ const map: number[][] = [
 interface BoardProps extends ComponentProps {
   characters: Character[],
   selectedDice?: SelectedDice,
+  onMove?: (character: Character) => void
 }
 
 const Board: Component<BoardProps> = (
   {
     className,
     characters,
-    selectedDice
+    selectedDice,
+    onMove
   }) => {
 
   const [tileSize, setTileSize] = useState(2);
@@ -43,6 +45,14 @@ const Board: Component<BoardProps> = (
 
   function handleSelectCharacter(character: Character): void {
     setSelectedCharacter(character);
+  }
+
+  function handleMoveCharacter(position: CharacterPosition): void {
+    if (selectedCharacter) {
+      selectedCharacter.moveTo(position);
+      onMove?.(selectedCharacter);
+      setSelectedCharacter(undefined);
+    }
   }
 
   useEffect(() => {
@@ -89,7 +99,9 @@ const Board: Component<BoardProps> = (
                       type={tile}
                       size={tileSize}
                       character={characters.find(c => c.isAt({x: colIndex, y: rowIndex}))}
-                      onClick={handleSelectCharacter}
+                      onCharacterClick={handleSelectCharacter}
+                      onClick={possiblePositions.find(p => p.x === colIndex && p.y === rowIndex) ?
+                        () => handleMoveCharacter({x: colIndex, y: rowIndex}) : undefined}
                 />
               )
             }
@@ -104,8 +116,9 @@ export default Board;
 interface TileProps extends ComponentProps {
   size: number,
   type?: TileType,
+  onClick?: () => void,
   character?: Character,
-  onClick?: (character: Character) => void,
+  onCharacterClick?: (character: Character) => void,
   characterClass?: string,
 }
 
@@ -113,10 +126,11 @@ const Tile: Component<TileProps> = (
   {
     size,
     type = TileType.empty,
-    character,
     onClick,
-    className,
+    character,
+    onCharacterClick,
     characterClass,
+    className,
   }) => {
 
   function setColor(): string {
@@ -138,10 +152,11 @@ const Tile: Component<TileProps> = (
 
   return (
     <div className={`${setColor()} hover:border relative max-w-[75px] max-h-[75px] ${className}`}
-         style={{width: `${size}px`, height: `${size}px`}}>
+         style={{width: `${size}px`, height: `${size}px`}}
+         onClick={onClick}>
       {character &&
         <div className={"inline-flex justify-center items-center w-full h-full"}>
-          <CharacterComponent character={character} onClick={onClick} className={characterClass}/>
+          <CharacterComponent character={character} onClick={onCharacterClick} className={characterClass}/>
         </div>
       }
 

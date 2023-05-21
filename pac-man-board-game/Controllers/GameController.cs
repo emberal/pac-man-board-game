@@ -24,7 +24,7 @@ public class GameController : GenericController
 
     protected override ArraySegment<byte> Run(WebSocketReceiveResult result, byte[] data)
     {
-        var stringResult = data.GetString(data.Length);
+        var stringResult = data.GetString(result.Count);
 
         Logger.Log(LogLevel.Information, "Received: {}", stringResult);
         var action = ActionMessage.FromJson(stringResult);
@@ -39,12 +39,13 @@ public class GameController : GenericController
         {
             case GameAction.RollDice:
                 var rolls = _diceCup.Roll();
-                Logger.Log(LogLevel.Information, "Rolled {}", string.Join(", ", rolls));
+                Logger.Log(LogLevel.Information, "Rolled [{}]", string.Join(", ", rolls));
 
                 message.Data = rolls;
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(message), "Action not allowed");
+                Logger.Log(LogLevel.Information, "Sending message to all clients");
+                break;
         }
     }
 }

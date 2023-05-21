@@ -18,12 +18,14 @@ export abstract class Character {
 
 export class PacMan extends Character {
   moveTo(position: CharacterPosition): void {
+    this.position = position;
   }
 
 }
 
 export class Ghost extends Character {
   moveTo(position: CharacterPosition): void {
+    this.position = position;
   }
 
 }

@@ -4,7 +4,8 @@ namespace pacMan.Game;
 
 public enum GameAction
 {
-    RollDice
+    RollDice,
+    MoveCharacter,
 }
 
 public class ActionMessage<T>

@@ -1,15 +1,15 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Game from "../game/game";
 import {AllDice} from "./dice";
 import {Action} from "../websockets/actions";
 import GameBoard from "./gameBoard";
-import {Ghost, PacMan} from "../game/character";
+import {Character, Ghost, PacMan} from "../game/character";
 
 let game: Game;
 
-const characters = [new PacMan("yellow"), new Ghost("purple")];
-
 export const GameComponent: Component = () => {
+  // Better for testing than outside of the component
+  const characters = useRef([new PacMan("yellow"), new Ghost("purple")]);
 
   const [dice, setDice] = useState<number[]>();
   const [selectedDice, setSelectedDice] = useState<SelectedDice>();
@@ -36,8 +36,31 @@ export const GameComponent: Component = () => {
         case Action.rollDice:
           setDice(parsed.Data as number[]); // Updates the state of other players
           break;
+        case Action.moveCharacter:
+          setDice(parsed.Data?.dice as number[]);
+          const character = parsed.Data?.character as Character;
+          characters.current.find(c => c.color === character.color)?.moveTo(character.position);
+          break;
       }
     };
+  }
+
+  function onCharacterMove(character: Character): void {
+    if (dice && selectedDice) {
+      // Remove the dice that was used from the list of dice
+
+      dice.splice(selectedDice.index, 1);
+      setDice([...dice]);
+    }
+    setSelectedDice(undefined);
+    const data: ActionMessage = {
+      Action: Action.moveCharacter,
+      Data: {
+        dice: dice?.length ?? 0 > 0 ? dice : null,
+        character: character
+      }
+    };
+    game.wsService.send(data);
   }
 
   useEffect(() => {
@@ -56,7 +79,8 @@ export const GameComponent: Component = () => {
         <button onClick={startGameLoop}>Roll dice</button>
       </div>
       <AllDice values={dice} onclick={handleDiceClick} selectedDiceIndex={selectedDice?.index}/>
-      <GameBoard className={"mx-auto"} characters={characters} selectedDice={selectedDice}/>
+      <GameBoard className={"mx-auto my-2"} characters={characters.current} selectedDice={selectedDice}
+                 onMove={onCharacterMove}/>
     </div>
   );
 };

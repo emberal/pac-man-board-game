@@ -14,18 +14,16 @@ export default function findPossiblePositions(board: number[][], currentPos: Cha
 
 function findPossibleRecursive(board: number[][], currentPos: CharacterPosition, steps: number,
                                possibleList: CharacterPosition[], visitedTiles: CharacterPosition[]): CharacterPosition | null {
-  if (isOutsideBoard(currentPos)) {
+  if (isOutsideBoard(currentPos, board.length)) {
     addTeleportationTiles(board, currentPos, steps, possibleList, visitedTiles);
   } else if (visitedTiles.find(tile => tile.x === currentPos.x && tile.y === currentPos.y)) {
     return null;
-  } else {
-    if (isWall(board, currentPos)) {
-      return null;
-    }
+  } else if (isWall(board, currentPos)) {
+    return null;
   }
   visitedTiles.push(currentPos);
   if (steps === 0) return currentPos;
-  
+
   const nextStep = steps - 1;
   const result = {
     up: findPossibleRecursive(board, {x: currentPos.x, y: currentPos.y + 1}, nextStep, possibleList, visitedTiles),
@@ -52,7 +50,7 @@ function addTeleportationTiles(board: number[][], currentPos: CharacterPosition,
 
 function pushToList(board: number[][], list: CharacterPosition[], newEntries: (CharacterPosition | null)[]): void {
   for (const entry of newEntries) {
-    if (entry !== null && !list.find(p => p.x === entry.x && p.y === entry.y) && !isSpawn(board, entry)) {
+    if (entry !== null && !list.find(p => p.x === entry.x && p.y === entry.y) && !isOutsideBoard(entry, board.length) && !isSpawn(board, entry)) {
       list.push(entry);
     }
   }
@@ -77,8 +75,8 @@ function findTeleportationTiles(board: number[][]): CharacterPosition[] {
   return possiblePositions;
 }
 
-function isOutsideBoard(currentPos: CharacterPosition): boolean {
-  return currentPos.x < 0 || currentPos.y < 0;
+function isOutsideBoard(currentPos: CharacterPosition, boardSize: number): boolean {
+  return currentPos.x < 0 || currentPos.x >= boardSize || currentPos.y < 0 || currentPos.y >= boardSize;
 }
 
 function isWall(board: number[][], currentPos: CharacterPosition): boolean {

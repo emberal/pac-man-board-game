@@ -23,11 +23,6 @@ export default class Game {
     const dice = result.Data;
     setDice(dice); // Updates the state of the current player
 
-    // Choose a dice
-    
-    // Choose a character to move
-    // this.chooseCharacter();
-
     // Use the remaining dice to move pac-man if the player moved a ghost or vice versa
 
     // Check if the game is over
@@ -64,14 +59,6 @@ export default class Game {
     let result: ActionMessage<number[]>;
     result = await this._wsService.sendAndReceive<ActionMessage<number[]>>({Action: Action.rollDice});
     return result;
-  }
-
-  private movePacMan(steps: number): void {
-    throw new Error("Not implemented");
-  }
-
-  private moveGhost(steps: number): void {
-    throw new Error("Not implemented");
   }
 
   private isGameOver(): boolean {
