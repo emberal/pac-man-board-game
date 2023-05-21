@@ -44,7 +44,7 @@ public class GameController : GenericController
                 message.Data = rolls;
                 break;
             default:
-                Logger.Log(LogLevel.Information, "Sending message to all clients");
+                Logger.Log(LogLevel.Information, "Forwarding message to all clients");
                 break;
         }
     }

@@ -36,12 +36,12 @@ public abstract class GenericController : ControllerBase
     {
         try
         {
-            var buffer = new byte[BufferSize];
             WebSocketReceiveResult? result;
             do
             {
+                var buffer = new byte[BufferSize];
                 result = await _wsService.Receive(webSocket, buffer);
-                
+
                 if (result.CloseStatus.HasValue) break;
 
                 var segment = Run(result, buffer);

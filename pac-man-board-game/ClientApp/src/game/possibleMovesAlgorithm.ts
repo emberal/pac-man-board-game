@@ -6,14 +6,14 @@ import {TileType} from "./tileType";
  * @param currentPos The current position of the character
  * @param steps The number of steps the character can move
  */
-export default function findPossiblePositions(board: number[][], currentPos: CharacterPosition, steps: number): CharacterPosition[] {
-  const possiblePositions: CharacterPosition[] = [];
+export default function findPossiblePositions(board: number[][], currentPos: Position, steps: number): Position[] {
+  const possiblePositions: Position[] = [];
   findPossibleRecursive(board, currentPos, steps, possiblePositions, []);
   return possiblePositions;
 }
 
-function findPossibleRecursive(board: number[][], currentPos: CharacterPosition, steps: number,
-                               possibleList: CharacterPosition[], visitedTiles: CharacterPosition[]): CharacterPosition | null {
+function findPossibleRecursive(board: number[][], currentPos: Position, steps: number,
+                               possibleList: Position[], visitedTiles: Position[]): Position | null {
   if (isOutsideBoard(currentPos, board.length)) {
     addTeleportationTiles(board, currentPos, steps, possibleList, visitedTiles);
   } else if (visitedTiles.find(tile => tile.x === currentPos.x && tile.y === currentPos.y)) {
@@ -36,9 +36,9 @@ function findPossibleRecursive(board: number[][], currentPos: CharacterPosition,
   return null;
 }
 
-function addTeleportationTiles(board: number[][], currentPos: CharacterPosition, steps: number,
-                               possibleList: CharacterPosition[], visitedTiles: CharacterPosition[]): void {
-  const newPositons: (CharacterPosition | null)[] = [];
+function addTeleportationTiles(board: number[][], currentPos: Position, steps: number,
+                               possibleList: Position[], visitedTiles: Position[]): void {
+  const newPositons: (Position | null)[] = [];
   const possiblePositions = findTeleportationTiles(board);
   for (const pos of possiblePositions) {
     if (pos.x !== Math.max(currentPos.x, 0) || pos.y !== Math.max(currentPos.y, 0)) {
@@ -48,7 +48,7 @@ function addTeleportationTiles(board: number[][], currentPos: CharacterPosition,
   pushToList(board, possibleList, newPositons);
 }
 
-function pushToList(board: number[][], list: CharacterPosition[], newEntries: (CharacterPosition | null)[]): void {
+function pushToList(board: number[][], list: Position[], newEntries: (Position | null)[]): void {
   for (const entry of newEntries) {
     if (entry !== null && !list.find(p => p.x === entry.x && p.y === entry.y) && !isOutsideBoard(entry, board.length) && !isSpawn(board, entry)) {
       list.push(entry);
@@ -56,8 +56,8 @@ function pushToList(board: number[][], list: CharacterPosition[], newEntries: (C
   }
 }
 
-function findTeleportationTiles(board: number[][]): CharacterPosition[] {
-  const possiblePositions: CharacterPosition[] = [];
+function findTeleportationTiles(board: number[][]): Position[] {
+  const possiblePositions: Position[] = [];
   const edge = [0, board.length - 1];
 
   for (const e of edge) {
@@ -75,15 +75,15 @@ function findTeleportationTiles(board: number[][]): CharacterPosition[] {
   return possiblePositions;
 }
 
-function isOutsideBoard(currentPos: CharacterPosition, boardSize: number): boolean {
+function isOutsideBoard(currentPos: Position, boardSize: number): boolean {
   return currentPos.x < 0 || currentPos.x >= boardSize || currentPos.y < 0 || currentPos.y >= boardSize;
 }
 
-function isWall(board: number[][], currentPos: CharacterPosition): boolean {
+function isWall(board: number[][], currentPos: Position): boolean {
   return board[currentPos.y][currentPos.x] === TileType.wall; // TODO shouldn't work, but it does
 }
 
-function isSpawn(board: number[][], currentPos: CharacterPosition): boolean {
+function isSpawn(board: number[][], currentPos: Position): boolean {
   return board[currentPos.x][currentPos.y] === TileType.pacmanSpawn ||
     board[currentPos.x][currentPos.y] === TileType.ghostSpawn;
 }

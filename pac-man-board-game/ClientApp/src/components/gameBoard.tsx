@@ -41,13 +41,14 @@ const Board: Component<BoardProps> = (
 
   const [tileSize, setTileSize] = useState(2);
   const [selectedCharacter, setSelectedCharacter] = useState<Character>();
-  const [possiblePositions, setPossiblePositions] = useState<CharacterPosition[]>([]);
+  // TODO show the paths to the positions when hovering over a possible position (type Path = CharacterPosition[])
+  const [possiblePositions, setPossiblePositions] = useState<Position[]>([]);
 
   function handleSelectCharacter(character: Character): void {
     setSelectedCharacter(character);
   }
 
-  function handleMoveCharacter(position: CharacterPosition): void {
+  function handleMoveCharacter(position: Position): void {
     if (selectedCharacter) {
       selectedCharacter.moveTo(position);
       onMove?.(selectedCharacter);

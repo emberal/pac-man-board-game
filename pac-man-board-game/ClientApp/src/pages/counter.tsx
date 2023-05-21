@@ -22,10 +22,7 @@ export const Counter: Component = () => {
   React.useEffect(() => {
     ws.onReceive = receiveMessage;
     ws.open();
-    ws.registerEvents();
-    return () => {
-      ws.close();
-    };
+    return () => ws.close();
   }, []);
 
   return (

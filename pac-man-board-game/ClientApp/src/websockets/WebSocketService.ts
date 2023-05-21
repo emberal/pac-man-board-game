@@ -23,10 +23,6 @@ export default class WebSocketService {
 
   public open(): void {
     this.ws = new WebSocket(this._url);
-  }
-
-  public registerEvents(): void {
-    if (!this.ws) return;
     if (this._onOpen) this.ws.onopen = this._onOpen;
     if (this._onReceive) this.ws.onmessage = this._onReceive;
     if (this._onClose) this.ws.onclose = this._onClose;

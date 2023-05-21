@@ -1,4 +1,4 @@
-type MessageEventFunction = (data: MessageEvent<any>) => void;
+type MessageEventFunction<T = any> = (data: MessageEvent<T>) => void;
 
 type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -14,4 +14,4 @@ type SelectedDice = {
   index: number
 };
 
-type CharacterPosition = { x: number, y: number };
+type Position = { x: number, y: number };
