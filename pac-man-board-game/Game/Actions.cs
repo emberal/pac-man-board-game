@@ -6,6 +6,7 @@ public enum GameAction
 {
     RollDice,
     MoveCharacter,
+    AppendBox
 }
 
 public class ActionMessage<T>

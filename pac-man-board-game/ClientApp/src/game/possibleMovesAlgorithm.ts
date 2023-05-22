@@ -1,14 +1,15 @@
 import {TileType} from "./tileType";
+import {Character} from "./character";
 
 /**
  * Finds all the possible positions for the character to move to
  * @param board The board the character is on
- * @param currentPos The current position of the character
+ * @param character The current position of the character
  * @param steps The number of steps the character can move
  */
-export default function findPossiblePositions(board: number[][], currentPos: Position, steps: number): Position[] {
+export default function findPossiblePositions(board: number[][], character: Character, steps: number): Position[] {
   const possiblePositions: Position[] = [];
-  findPossibleRecursive(board, currentPos, steps, possiblePositions, []);
+  findPossibleRecursive(board, character.position, steps, possiblePositions, []);
   return possiblePositions;
 }
 

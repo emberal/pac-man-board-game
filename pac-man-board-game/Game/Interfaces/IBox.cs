@@ -1,6 +1,8 @@
 namespace pacMan.Game.Interfaces;
 
-public interface IBox : IEnumerable<IOrb>
+public interface IBox : IEnumerable<IPellet>
 {
-    void Add(IOrb orb);
+    void Add(IPellet pellet);
+    
+    int CountNormal { get; }
 }

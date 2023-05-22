@@ -58,7 +58,7 @@ const Board: Component<BoardProps> = (
 
   useEffect(() => {
     if (selectedCharacter && selectedDice) {
-      const possiblePositions = findPossiblePositions(map, selectedCharacter.position, selectedDice.value);
+      const possiblePositions = findPossiblePositions(map, selectedCharacter, selectedDice.value);
       setPossiblePositions(possiblePositions);
     } else {
       setPossiblePositions([]);

@@ -13,10 +13,15 @@ namespace pacMan.Controllers;
 public class GameController : GenericController
 {
     private readonly IDiceCup _diceCup;
+    private readonly IPlayer _player;
 
     public GameController(ILogger<GameController> logger, IWebSocketService wsService) : base(logger, wsService)
     {
         _diceCup = new DiceCup();
+        _player = new Player
+        {
+            Box = new Box()
+        };
     }
 
     [HttpGet]
@@ -42,6 +47,11 @@ public class GameController : GenericController
                 Logger.Log(LogLevel.Information, "Rolled [{}]", string.Join(", ", rolls));
 
                 message.Data = rolls;
+                break;
+            case GameAction.AppendBox:
+                // TODO
+                // Add pellets to box
+                // Forward box to all clients
                 break;
             default:
                 Logger.Log(LogLevel.Information, "Forwarding message to all clients");
