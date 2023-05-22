@@ -42,7 +42,7 @@ const Board: Component<BoardProps> = (
   const [tileSize, setTileSize] = useState(2);
   const [selectedCharacter, setSelectedCharacter] = useState<Character>();
   // TODO show the paths to the positions when hovering over a possible position (type Path = CharacterPosition[])
-  const [possiblePositions, setPossiblePositions] = useState<Position[]>([]);
+  const [possiblePositions, setPossiblePositions] = useState<Position[]>([]); // TODO reset when other client moves a character
 
   function handleSelectCharacter(character: Character): void {
     setSelectedCharacter(character);
@@ -178,5 +178,5 @@ const CharacterComponent: Component<CharacterComponentProps> = (
   }) => (
   <div className={`rounded-full w-4/5 h-4/5 cursor-pointer hover:border border-black ${className}`}
        style={{backgroundColor: `${character.color}`}}
-       onClick={onClick ? () => onClick(character) : undefined}/>
+       onClick={() => onClick?.(character)}/>
 );

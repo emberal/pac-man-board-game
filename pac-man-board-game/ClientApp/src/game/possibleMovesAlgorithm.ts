@@ -16,7 +16,7 @@ function findPossibleRecursive(board: number[][], currentPos: Position, steps: n
                                possibleList: Position[], visitedTiles: Position[]): Position | null {
   if (isOutsideBoard(currentPos, board.length)) {
     addTeleportationTiles(board, currentPos, steps, possibleList, visitedTiles);
-  } else if (visitedTiles.find(tile => tile.x === currentPos.x && tile.y === currentPos.y)) {
+  } else if (visitedTiles.find(tile => tile.x === currentPos.x && tile.y === currentPos.y)) { // TODO might be true when teleporting, when it shouldn't (1,5) and 6 steps
     return null;
   } else if (isWall(board, currentPos)) {
     return null;
