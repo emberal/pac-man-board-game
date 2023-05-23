@@ -16,7 +16,6 @@ COPY ["pac-man-board-game/pac-man-board-game.csproj", "pac-man-board-game/"]
 RUN dotnet restore "pac-man-board-game/pac-man-board-game.csproj"
 COPY . .
 WORKDIR "/src/pac-man-board-game"
-# TODO missing build files from frontend
 RUN dotnet build "pac-man-board-game.csproj" -c Release -o /app/build
 
 FROM build AS publish
