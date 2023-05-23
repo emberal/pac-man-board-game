@@ -15,3 +15,5 @@ type SelectedDice = {
 };
 
 type Position = { x: number, y: number };
+
+type GameMap = number[][];

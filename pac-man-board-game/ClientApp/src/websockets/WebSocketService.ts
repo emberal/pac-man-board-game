@@ -22,6 +22,7 @@ export default class WebSocketService {
   }
 
   public open(): void {
+    if (typeof WebSocket === "undefined") return;
     this.ws = new WebSocket(this._url);
     if (this._onOpen) this.ws.onopen = this._onOpen;
     if (this._onReceive) this.ws.onmessage = this._onReceive;
@@ -65,7 +66,7 @@ export default class WebSocketService {
   }
 
   public isOpen(): boolean {
-    return this.ws?.readyState === WebSocket.OPEN;
+    return this.ws?.readyState === WebSocket?.OPEN;
   }
 
   set onOpen(onOpen: VoidFunction) {

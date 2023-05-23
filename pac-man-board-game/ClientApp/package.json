@@ -1,6 +1,6 @@
 {
   "name": "pac_man_board_game",
-  "version": "0.1-Testing",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
     "@headlessui/react": "^1.7.14",
@@ -14,7 +14,6 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.1",
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
     "@vitejs/plugin-react": "^4.0.0",
@@ -27,13 +26,15 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-react": "^7.32.2",
+    "happy-dom": "^9.20.1",
     "nan": "^2.17.0",
     "postcss": "^8.4.23",
     "tailwindcss": "^3.3.2",
     "typescript": "^5.0.4",
     "vite": "^4.3.6",
     "vite-plugin-svgr": "^3.2.0",
-    "vite-tsconfig-paths": "^4.2.0"
+    "vite-tsconfig-paths": "^4.2.0",
+    "vitest": "^0.31.1"
   },
   "resolutions": {
     "css-what": "^5.0.1",
@@ -44,7 +45,8 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "test": "cross-env CI=true react-scripts test --env=jsdom",
+    "test": "cross-env CI=true vitest",
+    "coverage": "vitest run --coverage",
     "lint": "eslint ./src/"
   },
   "eslintConfig": {

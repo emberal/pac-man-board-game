@@ -12,6 +12,7 @@
         <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
         <RootNamespace>pacMan</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -26,6 +27,9 @@
     <ItemGroup>
         <!-- Don't publish the SPA source files, but do show them in the project files list -->
         <Content Remove="$(SpaRoot)**" />
+        <Content Include="..\.dockerignore">
+          <Link>.dockerignore</Link>
+        </Content>
         <None Remove="$(SpaRoot)**" />
         <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
     </ItemGroup>
@@ -39,6 +43,7 @@
       <TypeScriptCompile Remove="ClientApp\src\game\tileMap.ts" />
       <TypeScriptCompile Remove="ClientApp\src\components\gameCanvas.tsx" />
       <TypeScriptCompile Remove="ClientApp\src\game\game.ts" />
+      <TypeScriptCompile Remove="ClientApp\src\App.test.tsx" />
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

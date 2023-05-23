@@ -7,13 +7,13 @@ import {Character} from "./character";
  * @param character The current position of the character
  * @param steps The number of steps the character can move
  */
-export default function findPossiblePositions(board: number[][], character: Character, steps: number): Position[] {
+export default function findPossiblePositions(board: GameMap, character: Character, steps: number): Position[] {
   const possiblePositions: Position[] = [];
   findPossibleRecursive(board, character.position, steps, possiblePositions, []);
   return possiblePositions;
 }
 
-function findPossibleRecursive(board: number[][], currentPos: Position, steps: number,
+function findPossibleRecursive(board: GameMap, currentPos: Position, steps: number,
                                possibleList: Position[], visitedTiles: Position[]): Position | null {
   if (isOutsideBoard(currentPos, board.length)) {
     addTeleportationTiles(board, currentPos, steps, possibleList, visitedTiles);

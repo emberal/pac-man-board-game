@@ -2,28 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Character, PacMan} from "../game/character";
 import findPossiblePositions from "../game/possibleMovesAlgorithm";
 import {TileType} from "../game/tileType";
-
-/**
- * 0 = empty
- * 1 = wall
- * 2 = pellet
- * 3 = power pellet
- * 4 = ghost spawn
- * 5 = pacman spawn
- */
-const map: number[][] = [
-  [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
-  [1, 2, 0, 0, 0, 2, 0, 0, 0, 2, 1],
-  [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-  [1, 0, 1, 5, 1, 0, 1, 4, 1, 0, 1],
-  [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1],
-  [0, 2, 0, 0, 0, 3, 0, 0, 0, 2, 0],
-  [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1],
-  [1, 0, 1, 4, 1, 0, 1, 5, 1, 0, 1],
-  [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-  [1, 2, 0, 0, 0, 2, 0, 0, 0, 2, 1],
-  [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
-];
+import {testMap} from "../game/map";
 
 interface BoardProps extends ComponentProps {
   characters: Character[],
@@ -58,7 +37,7 @@ const Board: Component<BoardProps> = (
 
   useEffect(() => {
     if (selectedCharacter && selectedDice) {
-      const possiblePositions = findPossiblePositions(map, selectedCharacter, selectedDice.value);
+      const possiblePositions = findPossiblePositions(testMap, selectedCharacter, selectedDice.value);
       setPossiblePositions(possiblePositions);
     } else {
       setPossiblePositions([]);
@@ -89,7 +68,7 @@ const Board: Component<BoardProps> = (
   return (
     <div className={`w-fit ${className}`}>
       {
-        map.map((row, rowIndex) =>
+        testMap.map((row, rowIndex) =>
           <div key={rowIndex} className={"flex"}>
             {
               row.map((tile, colIndex) =>

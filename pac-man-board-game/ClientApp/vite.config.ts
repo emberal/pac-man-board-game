@@ -9,6 +9,10 @@ import {execSync} from "child_process";
 
 export default defineConfig({
   plugins: [react()],
+  test: {
+    globals: false,
+    environment: "happy-dom",
+  },
   server: {
     port: 3000,
     strictPort: true,
