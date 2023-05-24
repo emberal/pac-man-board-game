@@ -1,5 +1,5 @@
 import {TileType} from "./tileType";
-import {Character} from "./character";
+import {Character, PacMan} from "./character";
 
 /**
  * Finds all the possible positions for the character to move to
@@ -9,14 +9,15 @@ import {Character} from "./character";
  */
 export default function findPossiblePositions(board: GameMap, character: Character, steps: number): Position[] {
   const possiblePositions: Position[] = [];
-  findPossibleRecursive(board, character.position, steps, possiblePositions, []);
+  findPossibleRecursive(board, character.position, steps, character instanceof PacMan, possiblePositions, []);
   return possiblePositions;
 }
 
-function findPossibleRecursive(board: GameMap, currentPos: Position, steps: number,
+function findPossibleRecursive(board: GameMap, currentPos: Position, steps: number, isPacMan: boolean,
                                possibleList: Position[], visitedTiles: Position[]): Position | null {
-  if (isOutsideBoard(currentPos, board.length)) {
-    addTeleportationTiles(board, currentPos, steps, possibleList, visitedTiles);
+  
+  if (isPacMan && isOutsideBoard(currentPos, board.length)) {
+    addTeleportationTiles(board, currentPos, steps, isPacMan, possibleList, visitedTiles);
   } else if (visitedTiles.find(tile => tile.x === currentPos.x && tile.y === currentPos.y)) { // TODO might be true when teleporting, when it shouldn't (1,5) and 6 steps
     return null;
   } else if (isWall(board, currentPos)) {
@@ -27,23 +28,35 @@ function findPossibleRecursive(board: GameMap, currentPos: Position, steps: numb
 
   const nextStep = steps - 1;
   const result = {
-    up: findPossibleRecursive(board, {x: currentPos.x, y: currentPos.y + 1}, nextStep, possibleList, visitedTiles),
-    right: findPossibleRecursive(board, {x: currentPos.x + 1, y: currentPos.y}, nextStep, possibleList, visitedTiles),
-    down: findPossibleRecursive(board, {x: currentPos.x, y: currentPos.y - 1}, nextStep, possibleList, visitedTiles),
-    left: findPossibleRecursive(board, {x: currentPos.x - 1, y: currentPos.y}, nextStep, possibleList, visitedTiles),
+    up: findPossibleRecursive(board, {
+      x: currentPos.x,
+      y: currentPos.y + 1
+    }, nextStep, isPacMan, possibleList, visitedTiles),
+    right: findPossibleRecursive(board, {
+      x: currentPos.x + 1,
+      y: currentPos.y
+    }, nextStep, isPacMan, possibleList, visitedTiles),
+    down: findPossibleRecursive(board, {
+      x: currentPos.x,
+      y: currentPos.y - 1
+    }, nextStep, isPacMan, possibleList, visitedTiles),
+    left: findPossibleRecursive(board, {
+      x: currentPos.x - 1,
+      y: currentPos.y
+    }, nextStep, isPacMan, possibleList, visitedTiles),
   };
 
   pushToList(board, possibleList, Object.values(result));
   return null;
 }
 
-function addTeleportationTiles(board: number[][], currentPos: Position, steps: number,
+function addTeleportationTiles(board: number[][], currentPos: Position, steps: number, isPacMan: boolean,
                                possibleList: Position[], visitedTiles: Position[]): void {
   const newPositons: (Position | null)[] = [];
   const possiblePositions = findTeleportationTiles(board);
   for (const pos of possiblePositions) {
     if (pos.x !== Math.max(currentPos.x, 0) || pos.y !== Math.max(currentPos.y, 0)) {
-      newPositons.push(findPossibleRecursive(board, pos, steps, possibleList, visitedTiles));
+      newPositons.push(findPossibleRecursive(board, pos, steps, isPacMan, possibleList, visitedTiles));
     }
   }
   pushToList(board, possibleList, newPositons);
