@@ -21,15 +21,15 @@ const Board: Component<BoardProps> = (
   const [tileSize, setTileSize] = useState(2);
   const [selectedCharacter, setSelectedCharacter] = useState<Character>();
   // TODO show the paths to the positions when hovering over a possible position (type Path = CharacterPosition[])
-  const [possiblePositions, setPossiblePositions] = useState<Position[]>([]); // TODO reset when other client moves a character
+  const [possiblePositions, setPossiblePositions] = useState<Path[]>([]); // TODO reset when other client moves a character
 
   function handleSelectCharacter(character: Character): void {
     setSelectedCharacter(character);
   }
 
-  function handleMoveCharacter(position: Position): void {
+  function handleMoveCharacter(path: Path): void {
     if (selectedCharacter) {
-      selectedCharacter.moveTo(position);
+      selectedCharacter.follow(path);
       onMove?.(selectedCharacter);
       setSelectedCharacter(undefined);
     }
@@ -37,8 +37,8 @@ const Board: Component<BoardProps> = (
 
   useEffect(() => {
     if (selectedCharacter && selectedDice) {
-      const possiblePositions = findPossiblePositions(testMap, selectedCharacter, selectedDice.value);
-      setPossiblePositions(possiblePositions);
+      const possiblePaths = findPossiblePositions(testMap, selectedCharacter, selectedDice.value);
+      setPossiblePositions(possiblePaths);
     } else {
       setPossiblePositions([]);
     }
@@ -48,9 +48,9 @@ const Board: Component<BoardProps> = (
 
     for (const character of characters) { // TODO make more dynamic
       if (character instanceof PacMan) {
-        character.position = {x: 3, y: 3};
+        character.position = {end: {x: 3, y: 3}, direction: "up"};
       } else {
-        character.position = {x: 7, y: 3};
+        character.position = {end: {x: 7, y: 3}, direction: "up"};
       }
     }
 
@@ -72,7 +72,7 @@ const Board: Component<BoardProps> = (
           <div key={rowIndex} className={"flex"}>
             {
               row.map((tile, colIndex) =>
-                <Tile className={`${possiblePositions.find(p => p.x === colIndex && p.y === rowIndex) ?
+                <Tile className={`${possiblePositions.find(p => p.end.x === colIndex && p.end.y === rowIndex) ?
                   "border-4 border-white" : ""}`}
                       characterClass={`${selectedCharacter?.isAt({x: colIndex, y: rowIndex}) ? "animate-bounce" : ""}`}
                       key={colIndex + rowIndex * colIndex}
@@ -80,8 +80,8 @@ const Board: Component<BoardProps> = (
                       size={tileSize}
                       character={characters.find(c => c.isAt({x: colIndex, y: rowIndex}))}
                       onCharacterClick={handleSelectCharacter}
-                      onClick={possiblePositions.find(p => p.x === colIndex && p.y === rowIndex) ?
-                        () => handleMoveCharacter({x: colIndex, y: rowIndex}) : undefined}
+                      onClick={possiblePositions.filter(p => p.end.x === colIndex && p.end.y === rowIndex)
+                        .map(p => () => handleMoveCharacter(p))[0]}
                 />
               )
             }
@@ -154,8 +154,28 @@ const CharacterComponent: Component<CharacterComponentProps> = (
     character,
     onClick,
     className
-  }) => (
-  <div className={`rounded-full w-4/5 h-4/5 cursor-pointer hover:border border-black ${className}`}
-       style={{backgroundColor: `${character.color}`}}
-       onClick={() => onClick?.(character)}/>
-);
+  }) => {
+
+  function getSide() {
+    switch (character.position.direction) {
+      case "up":
+        return "right-1/4 top-0";
+      case "down":
+        return "right-1/4 bottom-0";
+      case "left":
+        return "left-0 top-1/4";
+      case "right":
+        return "right-0 top-1/4";
+    }
+  }
+
+  return (
+    <div className={`rounded-full w-4/5 h-4/5 cursor-pointer hover:border border-black relative ${className}`}
+         style={{backgroundColor: `${character.color}`}}
+         onClick={() => onClick?.(character)}>
+      <div>
+        <div className={`absolute ${getSide()} w-1/2 h-1/2 rounded-full bg-black`}/>
+      </div>
+    </div>
+  );
+};

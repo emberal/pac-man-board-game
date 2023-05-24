@@ -17,3 +17,16 @@ type SelectedDice = {
 type Position = { x: number, y: number };
 
 type GameMap = number[][];
+
+type Direction = "up" | "right" | "down" | "left";
+
+type DirectionalPosition = {
+  at: Position,
+  direction: Direction
+}
+
+type Path = {
+  path?: Position[],
+  end: Position,
+  direction: Direction
+}

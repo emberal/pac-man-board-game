@@ -7,98 +7,139 @@ import {Character, PacMan} from "./character";
  * @param character The current position of the character
  * @param steps The number of steps the character can move
  */
-export default function findPossiblePositions(board: GameMap, character: Character, steps: number): Position[] {
-  const possiblePositions: Position[] = [];
-  findPossibleRecursive(board, character.position, steps, character instanceof PacMan, possiblePositions, []);
+export default function findPossiblePositions(board: GameMap, character: Character, steps: number): Path[] {
+  const possiblePositions: Path[] = [];
+  findPossibleRecursive(board, character.position, steps, // TODO sometimes the character steps on the same tile twice
+    character instanceof PacMan, possiblePositions);
   return possiblePositions;
 }
 
-function findPossibleRecursive(board: GameMap, currentPos: Position, steps: number, isPacMan: boolean,
-                               possibleList: Position[], visitedTiles: Position[]): Position | null {
-  
-  if (isPacMan && isOutsideBoard(currentPos, board.length)) {
-    addTeleportationTiles(board, currentPos, steps, isPacMan, possibleList, visitedTiles);
-  } else if (visitedTiles.find(tile => tile.x === currentPos.x && tile.y === currentPos.y)) { // TODO might be true when teleporting, when it shouldn't (1,5) and 6 steps
-    return null;
-  } else if (isWall(board, currentPos)) {
+function findPossibleRecursive(board: GameMap, currentPath: Path, steps: number,
+                               isPacMan: boolean, possibleList: Path[]): Path | null {
+
+  if (isOutsideBoard(currentPath, board.length)) {
+    if (!isPacMan) return null;
+    addTeleportationTiles(board, currentPath, steps, isPacMan, possibleList);
+  } else if (isWall(board, currentPath)) {
     return null;
   }
-  visitedTiles.push(currentPos);
-  if (steps === 0) return currentPos;
+  if (steps === 0) return currentPath;
 
-  const nextStep = steps - 1;
-  const result = {
-    up: findPossibleRecursive(board, {
-      x: currentPos.x,
-      y: currentPos.y + 1
-    }, nextStep, isPacMan, possibleList, visitedTiles),
-    right: findPossibleRecursive(board, {
-      x: currentPos.x + 1,
-      y: currentPos.y
-    }, nextStep, isPacMan, possibleList, visitedTiles),
-    down: findPossibleRecursive(board, {
-      x: currentPos.x,
-      y: currentPos.y - 1
-    }, nextStep, isPacMan, possibleList, visitedTiles),
-    left: findPossibleRecursive(board, {
-      x: currentPos.x - 1,
-      y: currentPos.y
-    }, nextStep, isPacMan, possibleList, visitedTiles),
-  };
+  steps--;
+  const possibleTiles: (Path | null)[] = [];
 
-  pushToList(board, possibleList, Object.values(result));
+  if (currentPath.direction !== "down") {
+    const up = findPossibleRecursive(board, {
+      end: {
+        x: currentPath.end.x,
+        y: currentPath.end.y - 1,
+      }, direction: "up"
+    }, steps, isPacMan, possibleList);
+    possibleTiles.push(up);
+  }
+
+  if (currentPath.direction !== "left") {
+    const right = findPossibleRecursive(board, {
+      end: {
+        x: currentPath.end.x + 1,
+        y: currentPath.end.y
+      }, direction: "right"
+    }, steps, isPacMan, possibleList);
+    possibleTiles.push(right);
+  }
+
+  if (currentPath.direction !== "up") {
+    const down = findPossibleRecursive(board, {
+      end: {
+        x: currentPath.end.x,
+        y: currentPath.end.y + 1
+      }, direction: "down"
+    }, steps, isPacMan, possibleList);
+    possibleTiles.push(down);
+  }
+
+  if (currentPath.direction !== "right") {
+    const left = findPossibleRecursive(board, {
+      end: {
+        x: currentPath.end.x - 1,
+        y: currentPath.end.y
+      }, direction: "left"
+    }, steps, isPacMan, possibleList);
+    possibleTiles.push(left);
+  }
+
+  pushToList(board, possibleList, possibleTiles);
   return null;
 }
 
-function addTeleportationTiles(board: number[][], currentPos: Position, steps: number, isPacMan: boolean,
-                               possibleList: Position[], visitedTiles: Position[]): void {
-  const newPositons: (Position | null)[] = [];
+function addTeleportationTiles(board: number[][], currentPath: Path, steps: number, isPacMan: boolean,
+                               possibleList: Path[]): void {
+  const newPositons: (Path | null)[] = [];
   const possiblePositions = findTeleportationTiles(board);
   for (const pos of possiblePositions) {
-    if (pos.x !== Math.max(currentPos.x, 0) || pos.y !== Math.max(currentPos.y, 0)) {
-      newPositons.push(findPossibleRecursive(board, pos, steps, isPacMan, possibleList, visitedTiles));
+    if (pos.end.x !== Math.max(currentPath.end.x, 0) || pos.end.y !== Math.max(currentPath.end.y, 0)) {
+      newPositons.push(findPossibleRecursive(board, pos, steps, isPacMan, possibleList));
     }
   }
   pushToList(board, possibleList, newPositons);
 }
 
-function pushToList(board: number[][], list: Position[], newEntries: (Position | null)[]): void {
+function pushToList(board: number[][], list: Path[], newEntries: (Path | null)[]): void {
   for (const entry of newEntries) {
-    if (entry !== null && !list.find(p => p.x === entry.x && p.y === entry.y) && !isOutsideBoard(entry, board.length) && !isSpawn(board, entry)) {
+    if (entry !== null && !list.find(p => p.end.x === entry.end.x && p.end.y === entry.end.y) &&
+      !isOutsideBoard(entry, board.length) && !isSpawn(board, entry)) {
       list.push(entry);
     }
   }
 }
 
-function findTeleportationTiles(board: number[][]): Position[] {
-  const possiblePositions: Position[] = [];
+function findTeleportationTiles(board: number[][]): Path[] {
+  const possiblePositions: Path[] = [];
   const edge = [0, board.length - 1];
 
   for (const e of edge) {
     for (let i = 0; i < board[e].length; i++) {
 
-      if (board[e][i] !== TileType.wall) {
-        possiblePositions.push({x: i, y: e});
-      }
-      if (board[i][e] !== TileType.wall) {
-        possiblePositions.push({x: e, y: i});
-      }
+      pushPath(board, possiblePositions, i, e);
+      pushPath(board, possiblePositions, e, i);
     }
   }
 
   return possiblePositions;
 }
 
-function isOutsideBoard(currentPos: Position, boardSize: number): boolean {
-  return currentPos.x < 0 || currentPos.x >= boardSize || currentPos.y < 0 || currentPos.y >= boardSize;
+function pushPath(board: GameMap, possiblePositions: Path[], x: number, y: number) {
+  if (board[x][y] !== TileType.wall) {
+    possiblePositions.push({end: {x, y}, direction: findDirection(x, y, board.length)});
+  }
 }
 
-function isWall(board: number[][], currentPos: Position): boolean {
-  return board[currentPos.y][currentPos.x] === TileType.wall; // TODO shouldn't work, but it does
+function findDirection(x: number, y: number, length: number): Direction {
+  let direction: Direction;
+  if (x === 0) {
+    direction = "right";
+  } else if (y === 0) {
+    direction = "down";
+  } else if (x === length - 1) {
+    direction = "left";
+  } else {
+    direction = "up";
+  }
+  return direction;
 }
 
-function isSpawn(board: number[][], currentPos: Position): boolean {
-  return board[currentPos.x][currentPos.y] === TileType.pacmanSpawn ||
-    board[currentPos.x][currentPos.y] === TileType.ghostSpawn;
+function isOutsideBoard(currentPos: Path, boardSize: number): boolean {
+  const pos = currentPos.end;
+  return pos.x < 0 || pos.x >= boardSize || pos.y < 0 || pos.y >= boardSize;
+}
+
+function isWall(board: GameMap, currentPos: Path): boolean {
+  const pos = currentPos.end;
+  return board[pos.y][pos.x] === TileType.wall; // Shouldn't work, but it does
+}
+
+function isSpawn(board: GameMap, currentPos: Path): boolean {
+  const pos = currentPos.end;
+  return board[pos.x][pos.y] === TileType.pacmanSpawn || board[pos.x][pos.y] === TileType.ghostSpawn;
 }
 

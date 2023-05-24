@@ -6,51 +6,66 @@ import {Character, PacMan} from "../../src/game/character";
 let pacMan: Character;
 
 beforeEach(() => {
-  pacMan = new PacMan("yellow", {x: 3, y: 3});
+  pacMan = new PacMan("yellow", {end: {x: 3, y: 3}, direction: "up"});
 });
 
-test("One from start, should return one position", () => {
+test("Pac-Man rolls one from start, should return one position", () => {
   const result = possibleMovesAlgorithm(testMap, pacMan, 1);
-  expect(result).toEqual([{x: 3, y: 2}]);
   expect(result.length).toBe(1);
+  expect(result).toEqual(getPath({at: {x: 3, y: 2}, direction: "up"}));
 });
 
-test("Two from start, should return one position", () => {
+test("Pac-Man rolls two from start, should return one position", () => {
   const result = possibleMovesAlgorithm(testMap, pacMan, 2);
-  expect(result).toEqual([{x: 3, y: 1}]);
   expect(result.length).toBe(1);
+  expect(result).toEqual(getPath({at: {x: 3, y: 1}, direction: "up"}));
 });
 
-test("Three from start, should return two positions", () => {
+test("Pac-Man rolls three from start, should return two positions", () => {
   const result = possibleMovesAlgorithm(testMap, pacMan, 3);
-  arrayEquals(result, [{x: 2, y: 1}, {x: 4, y: 1}]);
   expect(result.length).toBe(2);
+  arrayEquals(result, getPath({at: {x: 2, y: 1}, direction: "left"}, {at: {x: 4, y: 1}, direction: "right"}));
 });
 
-test("Four from start, should return two positions", () => {
+test("Pac-Man rolls four from start, should return two positions", () => {
   const result = possibleMovesAlgorithm(testMap, pacMan, 4);
-  arrayEquals(result, [{x: 1, y: 1}, {x: 5, y: 1}]);
   expect(result.length).toBe(2);
+  arrayEquals(result, getPath({at: {x: 1, y: 1}, direction: "left"}, {at: {x: 5, y: 1}, direction: "right"}));
 });
 
-test("Five from start, should return four positions", () => {
+test("Pac-Man rolls five from start, should return four positions", () => {
   const result = possibleMovesAlgorithm(testMap, pacMan, 5);
-  arrayEquals(result, [{x: 5, y: 0}, {x: 6, y: 1}, {x: 1, y: 2}, {x: 5, y: 2}]);
   expect(result.length).toBe(4);
+  arrayEquals(result, getPath(
+    {at: {x: 5, y: 0}, direction: "up"},
+    {at: {x: 6, y: 1}, direction: "right"},
+    {at: {x: 1, y: 2}, direction: "down"},
+    {at: {x: 5, y: 2}, direction: "down"}
+  ));
 });
 
-test("Six from start, should return six positions", () => {
+test("Pac-Man rolls six from start, should return six positions", () => {
   const result = possibleMovesAlgorithm(testMap, pacMan, 6);
-  arrayEquals(result, [{x: 1, y: 3}, {x: 0, y: 5}, {x: 5, y: 3}, {x: 7, y: 1}, {x: 10, y: 5}, {x: 5, y: 10}]);
   expect(result.length).toBe(6);
+  arrayEquals(result, getPath(
+    {at: {x: 1, y: 3}, direction: "down"},
+    {at: {x: 0, y: 5}, direction: "right"},
+    {at: {x: 5, y: 3}, direction: "down"},
+    {at: {x: 7, y: 1}, direction: "right"},
+    {at: {x: 10, y: 5}, direction: "left"},
+    {at: {x: 5, y: 10}, direction: "up"}));
 });
 
-test("Six from position [1,5], should return 14", () => {
-  pacMan.moveTo({x: 1, y: 5});
+test("Pac-Man rolls six from position [1,5], should return 14", () => {
+  pacMan.follow({end: {x: 1, y: 5}, direction: "down"});
   const result = possibleMovesAlgorithm(testMap, pacMan, 6);
   // TODO add possible moves
-  expect(result.length).toBe(14);
+  expect(result.length).toBe(14); // TODO Oof
 });
+
+function getPath(...positions: DirectionalPosition[]): Path[] {
+  return positions.map(pos => ({end: {x: pos.at.x, y: pos.at.y}, direction: pos.direction}));
+}
 
 function arrayEquals<T extends any[]>(result: T, expected: T, message?: string): void {
   for (const item of expected) {

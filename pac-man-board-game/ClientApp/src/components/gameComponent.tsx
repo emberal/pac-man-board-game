@@ -41,7 +41,7 @@ export const GameComponent: Component = () => {
       case Action.moveCharacter:
         setDice(parsed.Data?.dice as number[]);
         const character = parsed.Data?.character as Character;
-        characters.current.find(c => c.color === character.color)?.moveTo(character.position);
+        characters.current.find(c => c.color === character.color)?.follow(character.position);
         break;
     }
   }
