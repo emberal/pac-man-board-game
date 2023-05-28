@@ -1,5 +1,4 @@
 using System.Net.WebSockets;
-using System.Text;
 using pacMan.Interfaces;
 using pacMan.Utils;
 
@@ -8,37 +7,12 @@ namespace pacMan.Services;
 public class WebSocketService : IWebSocketService
 {
     private readonly ILogger<WebSocketService> _logger;
-    private readonly SynchronizedCollection<WebSocket> _webSockets = new(); // TODO separate connections into groups
+    public event Func<ArraySegment<byte>, Task>? Connections; // TODO separate connections into groups (1 event per game)
 
     public WebSocketService(ILogger<WebSocketService> logger)
     {
         _logger = logger;
         logger.Log(LogLevel.Debug, "WebSocket Service created");
-    }
-
-    public void Add(WebSocket webSocket)
-    {
-        _webSockets.Add(webSocket);
-        _logger.Log(LogLevel.Debug, "WebSocket added to list");
-    }
-
-    public bool Remove(WebSocket webSocket)
-    {
-        var taken = _webSockets.Remove(webSocket);
-        _logger.Log(LogLevel.Debug, "WebSocket removed from list");
-        return taken;
-    }
-
-    public async Task Send(WebSocket webSocket, string message, int length)
-    {
-        var bytes = Encoding.UTF8.GetBytes(message);
-        await Send(webSocket, bytes, length);
-    }
-
-    public async Task Send(WebSocket webSocket, byte[] message, int length)
-    {
-        var msgSegment = new ArraySegment<byte>(message, 0, length);
-        await Send(webSocket, msgSegment);
     }
 
     public async Task Send(WebSocket webSocket, ArraySegment<byte> segment)
@@ -52,23 +26,7 @@ public class WebSocketService : IWebSocketService
         _logger.Log(LogLevel.Trace, "Message sent to WebSocket");
     }
 
-    public async Task SendToAll(string message, int length)
-    {
-        var serverMsg = Encoding.UTF8.GetBytes(message);
-        await SendToAll(serverMsg, length);
-    }
-
-    public async Task SendToAll(byte[] message, int length)
-    {
-        foreach (var ws in _webSockets) await Send(ws, message, length);
-
-        _logger.Log(LogLevel.Debug, "Message sent to all WebSockets");
-    }
-
-    public async Task SendToAll(ArraySegment<byte> segment)
-    {
-        foreach (var ws in _webSockets) await Send(ws, segment);
-    }
+    public void SendToAll(ArraySegment<byte> segment) => Connections?.Invoke(segment);
 
     public async Task<WebSocketReceiveResult> Receive(WebSocket webSocket, byte[] buffer)
     {
@@ -89,5 +47,5 @@ public class WebSocketService : IWebSocketService
         _logger.Log(LogLevel.Information, "WebSocket connection closed");
     }
 
-    public int CountConnected() => _webSockets.Count;
+    public int CountConnected() => Connections?.GetInvocationList().Length ?? 0;
 }
