@@ -49,7 +49,6 @@ export const GameComponent: Component = () => {
   function onCharacterMove(character: Character): void {
     if (dice && selectedDice) {
       dice.splice(selectedDice.index, 1);
-      setDice([...dice]);
     }
     setSelectedDice(undefined);
     const data: ActionMessage = {

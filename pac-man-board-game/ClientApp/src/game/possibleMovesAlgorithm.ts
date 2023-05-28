@@ -19,8 +19,9 @@ function findPossibleRecursive(board: GameMap, currentPath: Path, steps: number,
                                isPacMan: boolean, possibleList: Path[]): void {
 
   if (isOutsideBoard(currentPath, board.length)) {
-    if (!isPacMan) return;
-    addTeleportationTiles(board, currentPath, steps, isPacMan, possibleList);
+    if (isPacMan) {
+      addTeleportationTiles(board, currentPath, steps, isPacMan, possibleList);
+    }
     return;
   } else if (isWall(board, currentPath)) {
     return;
