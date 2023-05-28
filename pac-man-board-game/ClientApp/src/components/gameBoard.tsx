@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {Character, Dummy, PacMan} from "../game/character";
+import {Character, PacMan} from "../game/character";
 import findPossiblePositions from "../game/possibleMovesAlgorithm";
-import {TileType} from "../game/tileType";
 import {testMap} from "../game/map";
 import {Direction} from "../game/direction";
+import {GameTile} from "./gameTile";
 
 interface BoardProps extends ComponentProps {
   characters: Character[],
@@ -21,15 +21,20 @@ const Board: Component<BoardProps> = (
 
   const [tileSize, setTileSize] = useState(2);
   const [selectedCharacter, setSelectedCharacter] = useState<Character>();
-  // TODO show the paths to the positions when hovering over a possible position (type Path = CharacterPosition[])
   const [possiblePositions, setPossiblePositions] = useState<Path[]>([]); // TODO reset when other client moves a character
+  const [hoveredPosition, setHoveredPosition] = useState<Path>();
 
   function handleSelectCharacter(character: Character): void {
     setSelectedCharacter(character);
   }
 
+  function handleShowPath(path: Path): void {
+    setHoveredPosition(path);
+  }
+
   function handleMoveCharacter(path: Path): void {
     if (selectedCharacter) {
+      setHoveredPosition(undefined);
       selectedCharacter.follow(path);
       onMove?.(selectedCharacter);
       setSelectedCharacter(undefined);
@@ -73,28 +78,18 @@ const Board: Component<BoardProps> = (
           <div key={rowIndex} className={"flex"}>
             {
               row.map((tile, colIndex) =>
-                <Tile className={`${possiblePositions.find(p => p.end.x === colIndex && p.end.y === rowIndex) ?
-                  "border-4 border-white" : ""}`}
-                      characterClass={`${selectedCharacter?.isAt({x: colIndex, y: rowIndex}) ? "animate-bounce" : ""}`}
-                      key={colIndex + rowIndex * colIndex}
-                      type={tile}
-                      size={tileSize}
-                      character={characters.find(c => c.isAt({x: colIndex, y: rowIndex}))}
-                      onClick={possiblePositions
-                        .filter(p => p.end.x === colIndex && p.end.y === rowIndex)
-                        .map(p => () => handleMoveCharacter(p))[0]}>
-                  <>
-                    {characters.find(c => c.isAt({x: colIndex, y: rowIndex})) &&
-                      <div className={"flex-center w-full h-full"}>
-                        <CharacterComponent
-                          character={characters.find(c => c.isAt({x: colIndex, y: rowIndex}))!}
-                          onClick={handleSelectCharacter}
-                          className={`${selectedCharacter?.isAt({x: colIndex, y: rowIndex}) ? "animate-bounce" : ""}`}/>
-                      </div>
-                    }
-                    <AddDummy path={possiblePositions.find(p => p.end.x === colIndex && p.end.y === rowIndex)}/>
-                  </>
-                </Tile>
+                <GameTile
+                  key={colIndex + rowIndex * colIndex}
+                  type={tile}
+                  size={tileSize}
+                  possiblePath={possiblePositions.find(p => p.end.x === colIndex && p.end.y === rowIndex)}
+                  character={characters.find(c => c.isAt({x: colIndex, y: rowIndex}))}
+                  isSelected={selectedCharacter?.isAt({x: colIndex, y: rowIndex})}
+                  showPath={hoveredPosition?.path?.find(pos => pos.x === colIndex && pos.y === rowIndex) !== undefined}
+                  handleMoveCharacter={handleMoveCharacter}
+                  handleSelectCharacter={handleSelectCharacter}
+                  handleStartShowPath={handleShowPath}
+                  handleStopShowPath={() => setHoveredPosition(undefined)}/>
               )
             }
           </div>)
@@ -104,99 +99,3 @@ const Board: Component<BoardProps> = (
 };
 
 export default Board;
-
-interface AddDummyProps extends ComponentProps {
-  path?: Path;
-}
-
-const AddDummy: Component<AddDummyProps> = ({path}) => (
-  <>
-    {path &&
-      <div className={"flex-center w-full h-full"}>
-        <CharacterComponent character={new Dummy(path)}/>
-      </div>
-    }
-  </>
-);
-
-interface TileProps extends ChildProps {
-  size: number,
-  type?: TileType,
-  onClick?: () => void,
-  character?: Character,
-  onCharacterClick?: (character: Character) => void,
-  characterClass?: string,
-}
-
-const Tile: Component<TileProps> = (
-  {
-    size,
-    type = TileType.empty,
-    onClick,
-    className,
-    children
-  }) => {
-
-  function setColor(): string {
-    switch (type) {
-      case TileType.empty:
-        return "bg-black";
-      case TileType.wall:
-        return "bg-blue-500";
-      case TileType.pellet:
-        return "bg-yellow-500";
-      case TileType.powerPellet:
-        return "bg-orange-500";
-      case TileType.ghostSpawn:
-        return "bg-red-500";
-      case TileType.pacmanSpawn:
-        return "bg-green-500";
-    }
-  }
-
-  return (
-    <div className={`${setColor()} hover:border relative max-w-[75px] max-h-[75px] ${className}`}
-         style={{width: `${size}px`, height: `${size}px`}}
-         onClick={onClick}>
-      {children}
-    </div>
-  );
-};
-
-interface CharacterComponentProps extends ComponentProps {
-  character?: Character,
-  onClick?: (character: Character) => void,
-}
-
-const CharacterComponent: Component<CharacterComponentProps> = (
-  {
-    character,
-    onClick,
-    className
-  }) => {
-
-  function getSide() {
-    switch (character?.position.direction) {
-      case Direction.up:
-        return "right-1/4 top-0";
-      case Direction.down:
-        return "right-1/4 bottom-0";
-      case Direction.left:
-        return "left-0 top-1/4";
-      case Direction.right:
-        return "right-0 top-1/4";
-    }
-  }
-
-  if (character === undefined) return null;
-
-  return (
-    <div className={`rounded-full w-4/5 h-4/5 cursor-pointer hover:border border-black relative ${className}`}
-         style={{backgroundColor: `${character.color}`}}
-         onClick={() => onClick?.(character)}>
-      <div>
-        <div className={`absolute ${getSide()} w-1/2 h-1/2 rounded-full bg-black`}/>
-      </div>
-    </div>
-  );
-};
