@@ -1,8 +1,10 @@
-type CharacterColor = "red" | "blue" | "yellow" | "green" | "purple";
+import {Direction} from "./direction";
+
+type CharacterColor = "red" | "blue" | "yellow" | "green" | "purple" | "grey";
 
 const defaultDirection: Path = {
   end: {x: 0, y: 0},
-  direction: "up"
+  direction: Direction.up
 };
 
 export abstract class Character {
@@ -39,4 +41,12 @@ export class Ghost extends Character {
   constructor(color: CharacterColor, startPosition = defaultDirection) {
     super(color, startPosition);
   }
+}
+
+export class Dummy extends Character {
+
+  constructor(path: Path) {
+    super("grey", path);
+  }
+
 }

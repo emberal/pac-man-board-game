@@ -7,6 +7,10 @@
     @apply after:content-['debug'] after:absolute;
 }
 
+.flex-center {
+    @apply flex justify-center items-center;
+}
+
 h1 {
     @apply text-4xl;
 }

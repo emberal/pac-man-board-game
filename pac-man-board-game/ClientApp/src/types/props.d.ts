@@ -1,4 +1,4 @@
-type Component<T = ComponentProps> = (props: T) => React.JSX.Element;
+type Component<T = ComponentProps> = (props: T) => React.JSX.Element | null;
 
 interface ComponentProps {
   className?: string,

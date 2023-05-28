@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {Character, PacMan} from "../game/character";
+import {Character, Dummy, PacMan} from "../game/character";
 import findPossiblePositions from "../game/possibleMovesAlgorithm";
 import {TileType} from "../game/tileType";
 import {testMap} from "../game/map";
+import {Direction} from "../game/direction";
 
 interface BoardProps extends ComponentProps {
   characters: Character[],
@@ -48,9 +49,9 @@ const Board: Component<BoardProps> = (
 
     for (const character of characters) { // TODO make more dynamic
       if (character instanceof PacMan) {
-        character.position = {end: {x: 3, y: 3}, direction: "up"};
+        character.position = {end: {x: 3, y: 3}, direction: Direction.up};
       } else {
-        character.position = {end: {x: 7, y: 3}, direction: "up"};
+        character.position = {end: {x: 7, y: 3}, direction: Direction.up};
       }
     }
 
@@ -79,10 +80,21 @@ const Board: Component<BoardProps> = (
                       type={tile}
                       size={tileSize}
                       character={characters.find(c => c.isAt({x: colIndex, y: rowIndex}))}
-                      onCharacterClick={handleSelectCharacter}
-                      onClick={possiblePositions.filter(p => p.end.x === colIndex && p.end.y === rowIndex)
-                        .map(p => () => handleMoveCharacter(p))[0]}
-                />
+                      onClick={possiblePositions
+                        .filter(p => p.end.x === colIndex && p.end.y === rowIndex)
+                        .map(p => () => handleMoveCharacter(p))[0]}>
+                  <>
+                    {characters.find(c => c.isAt({x: colIndex, y: rowIndex})) &&
+                      <div className={"flex-center w-full h-full"}>
+                        <CharacterComponent
+                          character={characters.find(c => c.isAt({x: colIndex, y: rowIndex}))!}
+                          onClick={handleSelectCharacter}
+                          className={`${selectedCharacter?.isAt({x: colIndex, y: rowIndex}) ? "animate-bounce" : ""}`}/>
+                      </div>
+                    }
+                    <AddDummy path={possiblePositions.find(p => p.end.x === colIndex && p.end.y === rowIndex)}/>
+                  </>
+                </Tile>
               )
             }
           </div>)
@@ -93,7 +105,21 @@ const Board: Component<BoardProps> = (
 
 export default Board;
 
-interface TileProps extends ComponentProps {
+interface AddDummyProps extends ComponentProps {
+  path?: Path;
+}
+
+const AddDummy: Component<AddDummyProps> = ({path}) => (
+  <>
+    {path &&
+      <div className={"flex-center w-full h-full"}>
+        <CharacterComponent character={new Dummy(path)}/>
+      </div>
+    }
+  </>
+);
+
+interface TileProps extends ChildProps {
   size: number,
   type?: TileType,
   onClick?: () => void,
@@ -107,10 +133,8 @@ const Tile: Component<TileProps> = (
     size,
     type = TileType.empty,
     onClick,
-    character,
-    onCharacterClick,
-    characterClass,
     className,
+    children
   }) => {
 
   function setColor(): string {
@@ -134,18 +158,13 @@ const Tile: Component<TileProps> = (
     <div className={`${setColor()} hover:border relative max-w-[75px] max-h-[75px] ${className}`}
          style={{width: `${size}px`, height: `${size}px`}}
          onClick={onClick}>
-      {character &&
-        <div className={"inline-flex justify-center items-center w-full h-full"}>
-          <CharacterComponent character={character} onClick={onCharacterClick} className={characterClass}/>
-        </div>
-      }
-
+      {children}
     </div>
   );
 };
 
 interface CharacterComponentProps extends ComponentProps {
-  character: Character,
+  character?: Character,
   onClick?: (character: Character) => void,
 }
 
@@ -157,17 +176,19 @@ const CharacterComponent: Component<CharacterComponentProps> = (
   }) => {
 
   function getSide() {
-    switch (character.position.direction) {
-      case "up":
+    switch (character?.position.direction) {
+      case Direction.up:
         return "right-1/4 top-0";
-      case "down":
+      case Direction.down:
         return "right-1/4 bottom-0";
-      case "left":
+      case Direction.left:
         return "left-0 top-1/4";
-      case "right":
+      case Direction.right:
         return "right-0 top-1/4";
     }
   }
+
+  if (character === undefined) return null;
 
   return (
     <div className={`rounded-full w-4/5 h-4/5 cursor-pointer hover:border border-black relative ${className}`}
