@@ -1,14 +1,14 @@
 import React, {useEffect, useState} from "react";
 import {Character, PacMan} from "../game/character";
 import findPossiblePositions from "../game/possibleMovesAlgorithm";
-import {testMap} from "../game/map";
 import {Direction} from "../game/direction";
 import {GameTile} from "./gameTile";
 
 interface BoardProps extends ComponentProps {
   characters: Character[],
   selectedDice?: SelectedDice,
-  onMove?: (character: Character) => void
+  onMove?: (character: Character) => void,
+  map: GameMap
 }
 
 const Board: Component<BoardProps> = (
@@ -16,10 +16,10 @@ const Board: Component<BoardProps> = (
     className,
     characters,
     selectedDice,
-    onMove
+    onMove,
+    map
   }) => {
 
-  const [tileSize, setTileSize] = useState(2);
   const [selectedCharacter, setSelectedCharacter] = useState<Character>();
   const [possiblePositions, setPossiblePositions] = useState<Path[]>([]); // TODO reset when other client moves a character
   const [hoveredPosition, setHoveredPosition] = useState<Path>();
@@ -43,7 +43,7 @@ const Board: Component<BoardProps> = (
 
   useEffect(() => {
     if (selectedCharacter && selectedDice) {
-      const possiblePaths = findPossiblePositions(testMap, selectedCharacter, selectedDice.value);
+      const possiblePaths = findPossiblePositions(map, selectedCharacter, selectedDice.value);
       setPossiblePositions(possiblePaths);
     } else {
       setPossiblePositions([]);
@@ -59,29 +59,18 @@ const Board: Component<BoardProps> = (
         character.position = {end: {x: 7, y: 3}, direction: Direction.up};
       }
     }
-
-    function handleResize(): void {
-      const newSize = Math.floor(window.innerWidth / 12);
-      setTileSize(newSize);
-    }
-
-    handleResize();
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
     <div className={`w-fit ${className}`}>
       {
-        testMap.map((row, rowIndex) =>
+        map.map((row, rowIndex) =>
           <div key={rowIndex} className={"flex"}>
             {
               row.map((tile, colIndex) =>
                 <GameTile
                   key={colIndex + rowIndex * colIndex}
                   type={tile}
-                  size={tileSize}
                   possiblePath={possiblePositions.find(p => p.end.x === colIndex && p.end.y === rowIndex)}
                   character={characters.find(c => c.isAt({x: colIndex, y: rowIndex}))}
                   isSelected={selectedCharacter?.isAt({x: colIndex, y: rowIndex})}

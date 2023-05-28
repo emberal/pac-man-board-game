@@ -20,6 +20,7 @@ export abstract class Character {
   public follow(path: Path): void {
     this.position.end = path.end;
     this.position.direction = path.direction;
+    this.position.path = undefined;
   }
 
   public isAt(position: Position): boolean {

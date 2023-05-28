@@ -4,6 +4,7 @@ import {Action} from "../websockets/actions";
 import GameBoard from "./gameBoard";
 import {Character, Ghost, PacMan} from "../game/character";
 import WebSocketService from "../websockets/WebSocketService";
+import {testMap} from "../game/map";
 
 const wsService = new WebSocketService("wss://localhost:3000/api/game");
 
@@ -64,7 +65,7 @@ export const GameComponent: Component = () => {
   useEffect(() => {
     wsService.onReceive = doAction;
     wsService.open();
-    
+
     startGameLoop();
     return () => wsService.close();
   }, []);
@@ -77,7 +78,7 @@ export const GameComponent: Component = () => {
       </div>
       <AllDice values={dice} onclick={handleDiceClick} selectedDiceIndex={selectedDice?.index}/>
       <GameBoard className={"mx-auto my-2"} characters={characters.current} selectedDice={selectedDice}
-                 onMove={onCharacterMove}/>
+                 onMove={onCharacterMove} map={testMap}/>
     </div>
   );
 };

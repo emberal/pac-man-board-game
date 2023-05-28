@@ -51,7 +51,7 @@ function findPossibleRecursive(board: GameMap, currentPos: Path, steps: number, 
 function addToPath(currentPos: Path): void {
   if (!currentPos.path) {
     currentPos.path = [];
-  } else if(!currentPos.path.includes(currentPos.end)) {
+  } else if (!currentPos.path.includes(currentPos.end)) {
     currentPos.path = [...currentPos.path, currentPos.end];
   }
 }
@@ -112,12 +112,18 @@ function addTeleportationTiles(board: GameMap, currentPath: Path, steps: number,
   const possiblePositions = findTeleportationTiles(board);
   const paths: Path[] = [];
   for (const pos of possiblePositions) {
-    if (pos.end.x !== Math.max(currentPath.end.x, 0) || pos.end.y !== Math.max(currentPath.end.y, 0)) {
+    if (pos.end.x !== interval(0, board.length - 1, currentPath.end.x) ||
+      pos.end.y !== interval(0, board.length - 1, currentPath.end.y)) {
+      
       pos.path = currentPath.path;
       paths.push(...findPossibleRecursive(board, pos, steps, isPacMan));
     }
   }
   return paths;
+}
+
+function interval(lower: number, upper: number, value: number): number {
+  return Math.max(Math.min(value, upper), lower);
 }
 
 /**

@@ -1,5 +1,3 @@
-import {EnumType} from "typescript";
-
 export enum Direction {
   left,
   up,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {TileType} from "../game/tileType";
 import {Character, Dummy} from "../game/character";
 import {Direction} from "../game/direction";
@@ -6,7 +6,6 @@ import {Direction} from "../game/direction";
 interface TileWithCharacterProps extends ComponentProps {
   possiblePath?: Path,
   character?: Character,
-  size: number,
   type?: TileType,
   handleMoveCharacter?: (path: Path) => void,
   handleSelectCharacter?: (character: Character) => void,
@@ -20,7 +19,6 @@ export const GameTile: Component<TileWithCharacterProps> = (
   {
     possiblePath,
     character,
-    size,
     type,
     handleMoveCharacter,
     handleSelectCharacter,
@@ -32,7 +30,6 @@ export const GameTile: Component<TileWithCharacterProps> = (
   return (
     <Tile className={`${possiblePath?.end ? "border-4 border-white" : ""}`}
           type={type}
-          size={size}
           onClick={possiblePath ? () => handleMoveCharacter?.(possiblePath) : undefined}
           onMouseEnter={possiblePath ? () => handleStartShowPath?.(possiblePath) : undefined}
           onMouseLeave={handleStopShowPath}>
@@ -42,12 +39,10 @@ export const GameTile: Component<TileWithCharacterProps> = (
             <CharacterComponent
               character={character}
               onClick={handleSelectCharacter}
-              className={`${isSelected ? "animate-bounce" : ""}`}/>
+              className={isSelected ? "animate-bounce" : ""}/>
           </div>
         }
-        {showPath &&
-          <PathSymbol/>
-        }
+        {showPath && <PathSymbol/>}
         <AddDummy path={possiblePath}/>
       </>
     </Tile>
@@ -61,7 +56,6 @@ const PathSymbol: Component = () => ( // TODO sometimes shows up when it shouldn
 );
 
 interface TileProps extends ChildProps {
-  size: number,
   type?: TileType,
   onClick?: () => void,
   onMouseEnter?: () => void,
@@ -73,7 +67,6 @@ interface TileProps extends ChildProps {
 
 const Tile: Component<TileProps> = (
   {
-    size,
     type = TileType.empty,
     onClick,
     onMouseEnter,
@@ -81,6 +74,8 @@ const Tile: Component<TileProps> = (
     className,
     children
   }) => {
+
+  const [tileSize, setTileSize] = useState(2);
 
   function setColor(): string {
     switch (type) {
@@ -99,9 +94,22 @@ const Tile: Component<TileProps> = (
     }
   }
 
+  useEffect(() => {
+
+    function handleResize(): void {
+      const newSize = Math.floor(window.innerWidth / 12);
+      setTileSize(newSize);
+    }
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <div className={`${setColor()} hover:border relative max-w-[75px] max-h-[75px] ${className}`}
-         style={{width: `${size}px`, height: `${size}px`}}
+         style={{width: `${tileSize}px`, height: `${tileSize}px`}}
          onClick={onClick}
          onMouseEnter={onMouseEnter}
          onMouseLeave={onMouseLeave}>

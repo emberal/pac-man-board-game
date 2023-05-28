@@ -131,6 +131,12 @@ test("Pac-Man rolls six from position [7,1] (right), path to [9,5] should be fiv
   expect(result[0].path?.length).toBe(5);
 });
 
+test("Pac-Man rolls 5 from position [9,3] (down), should return 5", () => {
+  pacMan.follow({end: {x: 9, y: 3}, direction: Direction.down});
+  const result = possibleMovesAlgorithm(testMap, pacMan, 5);
+  expect(result.length).toBe(5);
+});
+
 function arrayEquals<T extends any[]>(result: T, expected: T, message?: string): void {
   for (const item of expected) {
     expect(result, message).toContainEqual(item);
