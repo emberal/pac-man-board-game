@@ -1,14 +1,23 @@
-import Box from "./box";
+import Box, {BoxProps} from "./box";
+import {Direction} from "./direction";
+
+interface CharacterProps {
+  colour: Colour,
+  position?: Path,
+  isEatable?: boolean,
+  spawnPosition: DirectionalPosition
+}
 
 export abstract class Character {
-  public color: Colour;
+  public readonly colour: Colour;
   public position: Path;
-  public isEatable = false;
+  public isEatable: boolean;
   public readonly spawnPosition: DirectionalPosition;
 
-  protected constructor(color: Colour, spawnPosition: DirectionalPosition) {
-    this.color = color;
-    this.position = {end: spawnPosition.at, direction: spawnPosition.direction};
+  protected constructor({colour, position, isEatable = false, spawnPosition}: CharacterProps) {
+    this.colour = colour;
+    this.position = position ?? {end: spawnPosition.at, direction: spawnPosition.direction};
+    this.isEatable = isEatable;
     this.spawnPosition = spawnPosition;
   }
 
@@ -18,34 +27,46 @@ export abstract class Character {
     this.position.path = undefined;
   }
 
+  public moveToSpawn(): void {
+    this.follow({end: this.spawnPosition.at, direction: this.spawnPosition.direction});
+  }
+
   public isAt(position: Position): boolean {
     return this.position.end.x === position.x && this.position.end.y === position.y;
   }
+}
+
+interface PacManProps extends CharacterProps {
+  box?: BoxProps,
 }
 
 export class PacMan extends Character {
 
   public box: Box;
 
-  public constructor(color: Colour, spawnPosition: DirectionalPosition) {
-    super(color, spawnPosition);
-    this.isEatable = true;
-    this.box = new Box(color);
+  public constructor({colour, position, isEatable = true, spawnPosition, box = {colour}}: PacManProps) {
+    super({colour, position, isEatable, spawnPosition});
+    this.isEatable = isEatable;
+    this.box = new Box(box);
+  }
+  
+  public stealFrom(other: PacMan): void {
+    
   }
 
 }
 
 export class Ghost extends Character {
 
-  public constructor(color: Colour, spawnPosition: DirectionalPosition) {
-    super(color, spawnPosition);
+  public constructor({colour, position, isEatable, spawnPosition}: CharacterProps) {
+    super({colour, position, isEatable, spawnPosition});
   }
 }
 
 export class Dummy extends Character {
 
-  public constructor(position: DirectionalPosition) {
-    super("grey", position);
+  public constructor(position: Path) { // TODO see-through
+    super({colour: "grey", position, isEatable: false, spawnPosition: {at: {x: 0, y: 0}, direction: Direction.up}});
   }
 
 }

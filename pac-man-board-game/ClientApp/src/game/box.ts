@@ -1,10 +1,15 @@
-import {NormalPellet, Pellet, PowerPellet} from "./pellet";
+import Pellet from "./pellet";
+
+export interface BoxProps {
+  pellets?: Pellet[],
+  readonly colour: Colour,
+}
 
 export default class Box {
-  private pellets: Pellet[] = [];
+  public pellets: Pellet[];
   public readonly colour: Colour;
 
-  public constructor(colour: Colour, pellets: Pellet[] = []) {
+  public constructor({colour, pellets = []}: BoxProps) {
     this.colour = colour;
     this.pellets = pellets;
   }
@@ -14,15 +19,15 @@ export default class Box {
   }
 
   get powerPellet(): Pellet | undefined {
-    return this.pellets.find(pellet => pellet instanceof PowerPellet);
+    return this.pellets.find(pellet => pellet.isPowerPellet);
   }
 
   get count(): number {
-    return this.pellets.filter(pellet => pellet instanceof NormalPellet).length;
+    return this.pellets.filter(pellet => !pellet.isPowerPellet).length;
   }
-  
+
   get countPowerPellets(): number {
-    return this.pellets.filter(pellet => pellet instanceof PowerPellet).length;
+    return this.pellets.filter(pellet => pellet.isPowerPellet).length;
   }
-  
+
 }

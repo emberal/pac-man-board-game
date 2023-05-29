@@ -11,6 +11,8 @@ type ActionMessage<T = any> = {
 
 type Action<T> = (obj: T) => void;
 
+type BiAction<T1, T2> = (obj1: T1, obj2: T2) => void;
+
 type SelectedDice = {
   value: number,
   index: number

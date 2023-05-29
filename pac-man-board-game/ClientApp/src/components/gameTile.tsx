@@ -35,7 +35,7 @@ export const GameTile: Component<TileWithCharacterProps> = (
         onMouseLeave={handleStopShowPath}>
     <>
       {character &&
-        <div className={"flex-center w-full h-full"}>
+        <div className={"flex-center wh-full"}>
           <CharacterComponent
             character={character}
             onClick={handleSelectCharacter}
@@ -60,11 +60,11 @@ const Circle: Component<CircleProps> = ({colour = "white"}) => (
 
 interface TileProps extends ChildProps {
   type?: TileType,
-  onClick?: () => void,
-  onMouseEnter?: () => void,
-  onMouseLeave?: () => void,
+  onClick?: VoidFunction,
+  onMouseEnter?: VoidFunction,
+  onMouseLeave?: VoidFunction,
   character?: Character,
-  onCharacterClick?: (character: Character) => void,
+  onCharacterClick?: Action<Character>,
   characterClass?: string,
 }
 
@@ -112,9 +112,9 @@ const Tile: Component<TileProps> = (
          onClick={onClick}
          onMouseEnter={onMouseEnter}
          onMouseLeave={onMouseLeave}>
+      {children}
       {type === TileType.pellet && <Circle colour={"yellow"}/>}
       {type === TileType.powerPellet && <Circle colour={"red"}/>}
-      {children}
     </div>
   );
 };
@@ -126,8 +126,8 @@ interface AddDummyProps extends ComponentProps {
 const AddDummy: Component<AddDummyProps> = ({path}) => (
   <>
     {path &&
-      <div className={"flex-center w-full h-full"}>
-        <CharacterComponent character={new Dummy({at: path.end, direction: path.direction})}/>
+      <div className={"flex-center wh-full"}>
+        <CharacterComponent character={new Dummy(path)}/>
       </div>
     }
   </>
@@ -135,7 +135,7 @@ const AddDummy: Component<AddDummyProps> = ({path}) => (
 
 interface CharacterComponentProps extends ComponentProps {
   character?: Character,
-  onClick?: (character: Character) => void,
+  onClick?: Action<Character>,
 }
 
 const CharacterComponent: Component<CharacterComponentProps> = (
@@ -162,7 +162,7 @@ const CharacterComponent: Component<CharacterComponentProps> = (
 
   return (
     <div className={`rounded-full w-4/5 h-4/5 cursor-pointer hover:border border-black relative ${className}`}
-         style={{backgroundColor: `${character.color}`}}
+         style={{backgroundColor: `${character.colour}`}}
          onClick={() => onClick?.(character)}>
       <div>
         <div className={`absolute ${getSide()} w-1/2 h-1/2 rounded-full bg-black`}/>

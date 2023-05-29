@@ -6,15 +6,19 @@ import {Character, Ghost, PacMan} from "../game/character";
 import WebSocketService from "../websockets/WebSocketService";
 import {testMap} from "../game/map";
 import {Direction} from "../game/direction";
-import Box from "../game/box";
+import {TileType} from "../game/tileType";
 
 const wsService = new WebSocketService("wss://localhost:3000/api/game");
 
 export const GameComponent: Component = () => {
   // TODO find spawn points
   const [characters, setCharacters] = useState([
-    new PacMan("yellow", {at: {x: 3, y: 3}, direction: Direction.up}),
-    new Ghost("purple", {at: {x: 8, y: 3}, direction: Direction.up})
+    new PacMan({
+      colour: "yellow", spawnPosition: {at: {x: 3, y: 3}, direction: Direction.up}
+    }),
+    new Ghost({
+      colour: "purple", spawnPosition: {at: {x: 8, y: 3}, direction: Direction.up}
+    })
   ]);
 
   const [dice, setDice] = useState<number[]>();
@@ -29,11 +33,11 @@ export const GameComponent: Component = () => {
   }
 
   function startGameLoop(): void {
-    setSelectedDice(undefined);
     if (!wsService.isOpen()) {
       setTimeout(startGameLoop, 50);
       return;
     }
+    setSelectedDice(undefined);
     rollDice();
   }
 
@@ -46,23 +50,34 @@ export const GameComponent: Component = () => {
         break;
       case GameAction.moveCharacter:
         setDice(parsed.Data?.dice as number[]);
-        const character = parsed.Data?.character satisfies Ghost | PacMan;
-        const currentCharacter = characters.find(c => c.color === character.color);
-
-        if (currentCharacter) {
-          currentCharacter.position = character.position;
-        }
-
-        // TODO update pellets on other clients (character and on map)
-        // if (character satisfies PacMan) {
-        //   (characters[currentCharacter] as PacMan).box = new Box(character.box.colour, character.box.pellets);
-        //   console.log(characters[currentCharacter]);
-        // }
+        updateCharacter(parsed);
+        removeEatenPellets(parsed);
         break;
     }
   }
 
-  function onCharacterMove(character: Character): void {
+  function removeEatenPellets(parsed: ActionMessage): void {
+    const pellets = parsed.Data?.eatenPellets as Position[];
+
+      for (const pellet of pellets){
+        testMap[pellet.y][pellet.x] = TileType.empty;
+      }
+  }
+
+  function updateCharacter(parsed: ActionMessage): void {
+    const updatedCharacter = parsed.Data?.character satisfies Ghost | PacMan;
+    const characterIndex = characters.findIndex(c => c.colour === updatedCharacter.colour);
+    
+    if (characters[characterIndex]) {
+      if (updatedCharacter satisfies PacMan) {
+        (characters[characterIndex] as PacMan) = new PacMan(updatedCharacter);
+      } else if (updatedCharacter satisfies Ghost) {
+        (characters[characterIndex] as Ghost) = new Ghost(updatedCharacter);
+      }
+    }
+  }
+
+  function onCharacterMove(character: Character, eatenPellets: Position[]): void {
     if (dice && selectedDice) {
       dice.splice(selectedDice.index, 1);
     }
@@ -71,7 +86,8 @@ export const GameComponent: Component = () => {
       Action: GameAction.moveCharacter,
       Data: {
         dice: dice?.length ?? 0 > 0 ? dice : null,
-        character: character
+        character: character,
+        eatenPellets: eatenPellets
       }
     };
     wsService.send(data);
@@ -94,8 +110,8 @@ export const GameComponent: Component = () => {
       <AllDice values={dice} onclick={handleDiceClick} selectedDiceIndex={selectedDice?.index}/>
       {
         (characters.filter(c => c instanceof PacMan) as PacMan[]).map(c =>
-          <div key={c.color} className={"mx-auto w-fit m-2"}>
-            <p>Pac-Man: {c.color}</p>
+          <div key={c.colour} className={"mx-auto w-fit m-2"}>
+            <p>Pac-Man: {c.colour}</p>
             <p>Pellets: {c.box.count}</p>
             <p>PowerPellets: {c.box.countPowerPellets}</p>
           </div>)

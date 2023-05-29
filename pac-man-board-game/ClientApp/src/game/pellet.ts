@@ -1,20 +1,7 @@
-export abstract class Pellet {
-  public readonly colour: Colour;
+export default class Pellet {
+  public readonly isPowerPellet: boolean;
 
-  protected constructor(colour: Colour) {
-    this.colour = colour;
-  }
-
-}
-
-export class NormalPellet extends Pellet {
-  public constructor() {
-    super("white");
-  }
-}
-
-export class PowerPellet extends Pellet {
-  public constructor() {
-    super("yellow");
+  public constructor(isPowerPellet = false) {
+    this.isPowerPellet = isPowerPellet;
   }
 }
