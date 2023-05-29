@@ -1,20 +1,15 @@
-import {Direction} from "./direction";
-
-type CharacterColor = "red" | "blue" | "yellow" | "green" | "purple" | "grey";
-
-const defaultDirection: Path = {
-  end: {x: 0, y: 0},
-  direction: Direction.up
-};
+import Box from "./box";
 
 export abstract class Character {
-  public color: CharacterColor;
+  public color: Colour;
   public position: Path;
-  public isEatable: boolean = false;
+  public isEatable = false;
+  public readonly spawnPosition: DirectionalPosition;
 
-  protected constructor(color: CharacterColor, startPosition = defaultDirection) {
+  protected constructor(color: Colour, spawnPosition: DirectionalPosition) {
     this.color = color;
-    this.position = startPosition;
+    this.position = {end: spawnPosition.at, direction: spawnPosition.direction};
+    this.spawnPosition = spawnPosition;
   }
 
   public follow(path: Path): void {
@@ -30,24 +25,27 @@ export abstract class Character {
 
 export class PacMan extends Character {
 
-  constructor(color: CharacterColor, startPosition = defaultDirection) {
-    super(color, startPosition);
+  public box: Box;
+
+  public constructor(color: Colour, spawnPosition: DirectionalPosition) {
+    super(color, spawnPosition);
     this.isEatable = true;
+    this.box = new Box(color);
   }
 
 }
 
 export class Ghost extends Character {
 
-  constructor(color: CharacterColor, startPosition = defaultDirection) {
-    super(color, startPosition);
+  public constructor(color: Colour, spawnPosition: DirectionalPosition) {
+    super(color, spawnPosition);
   }
 }
 
 export class Dummy extends Character {
 
-  constructor(path: Path) {
-    super("grey", path);
+  public constructor(position: DirectionalPosition) {
+    super("grey", position);
   }
 
 }

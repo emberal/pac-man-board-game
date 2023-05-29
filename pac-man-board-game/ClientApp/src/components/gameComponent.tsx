@@ -1,16 +1,21 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {AllDice} from "./dice";
-import {Action} from "../websockets/actions";
+import {GameAction} from "../websockets/actions";
 import GameBoard from "./gameBoard";
 import {Character, Ghost, PacMan} from "../game/character";
 import WebSocketService from "../websockets/WebSocketService";
 import {testMap} from "../game/map";
+import {Direction} from "../game/direction";
+import Box from "../game/box";
 
 const wsService = new WebSocketService("wss://localhost:3000/api/game");
 
 export const GameComponent: Component = () => {
-  // Better for testing than outside of the component
-  const characters = useRef([new PacMan("yellow"), new Ghost("purple")]);
+  // TODO find spawn points
+  const [characters, setCharacters] = useState([
+    new PacMan("yellow", {at: {x: 3, y: 3}, direction: Direction.up}),
+    new Ghost("purple", {at: {x: 8, y: 3}, direction: Direction.up})
+  ]);
 
   const [dice, setDice] = useState<number[]>();
   const [selectedDice, setSelectedDice] = useState<SelectedDice>();
@@ -20,7 +25,7 @@ export const GameComponent: Component = () => {
   }
 
   function rollDice(): void {
-    wsService.send({Action: Action.rollDice});
+    wsService.send({Action: GameAction.rollDice});
   }
 
   function startGameLoop(): void {
@@ -36,13 +41,23 @@ export const GameComponent: Component = () => {
     const parsed: ActionMessage = JSON.parse(message.data);
 
     switch (parsed.Action) {
-      case Action.rollDice:
+      case GameAction.rollDice:
         setDice(parsed.Data as number[]);
         break;
-      case Action.moveCharacter:
+      case GameAction.moveCharacter:
         setDice(parsed.Data?.dice as number[]);
-        const character = parsed.Data?.character as Character;
-        characters.current.find(c => c.color === character.color)?.follow(character.position);
+        const character = parsed.Data?.character satisfies Ghost | PacMan;
+        const currentCharacter = characters.find(c => c.color === character.color);
+
+        if (currentCharacter) {
+          currentCharacter.position = character.position;
+        }
+
+        // TODO update pellets on other clients (character and on map)
+        // if (character satisfies PacMan) {
+        //   (characters[currentCharacter] as PacMan).box = new Box(character.box.colour, character.box.pellets);
+        //   console.log(characters[currentCharacter]);
+        // }
         break;
     }
   }
@@ -53,7 +68,7 @@ export const GameComponent: Component = () => {
     }
     setSelectedDice(undefined);
     const data: ActionMessage = {
-      Action: Action.moveCharacter,
+      Action: GameAction.moveCharacter,
       Data: {
         dice: dice?.length ?? 0 > 0 ? dice : null,
         character: character
@@ -73,11 +88,19 @@ export const GameComponent: Component = () => {
   return (
     <div>
       <h1 className={"w-fit mx-auto"}>Pac-Man The Board Game</h1>
-      <div className={"flex justify-center"}>
+      <div className={"flex-center"}>
         <button onClick={startGameLoop}>Roll dice</button>
       </div>
       <AllDice values={dice} onclick={handleDiceClick} selectedDiceIndex={selectedDice?.index}/>
-      <GameBoard className={"mx-auto my-2"} characters={characters.current} selectedDice={selectedDice}
+      {
+        (characters.filter(c => c instanceof PacMan) as PacMan[]).map(c =>
+          <div key={c.color} className={"mx-auto w-fit m-2"}>
+            <p>Pac-Man: {c.color}</p>
+            <p>Pellets: {c.box.count}</p>
+            <p>PowerPellets: {c.box.countPowerPellets}</p>
+          </div>)
+      }
+      <GameBoard className={"mx-auto my-2"} characters={characters} selectedDice={selectedDice}
                  onMove={onCharacterMove} map={testMap}/>
     </div>
   );

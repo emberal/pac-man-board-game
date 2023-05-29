@@ -3,11 +3,13 @@ import {Character, PacMan} from "../game/character";
 import findPossiblePositions from "../game/possibleMovesAlgorithm";
 import {Direction} from "../game/direction";
 import {GameTile} from "./gameTile";
+import {TileType} from "../game/tileType";
+import {NormalPellet, PowerPellet} from "../game/pellet";
 
 interface BoardProps extends ComponentProps {
   characters: Character[],
   selectedDice?: SelectedDice,
-  onMove?: (character: Character) => void,
+  onMove?: Action<Character>,
   map: GameMap
 }
 
@@ -32,12 +34,31 @@ const Board: Component<BoardProps> = (
     setHoveredPosition(path);
   }
 
-  function handleMoveCharacter(path: Path): void {
+  function handleMoveCharacter(destination: Path): void {
     if (selectedCharacter) {
       setHoveredPosition(undefined);
-      selectedCharacter.follow(path);
+      selectedCharacter.follow(destination);
+      
+      pickUpPellets(destination);
       onMove?.(selectedCharacter);
       setSelectedCharacter(undefined);
+    }
+  }
+
+  function pickUpPellets(destination: Path): void {
+    if (selectedCharacter instanceof PacMan) {
+      const pacMan = selectedCharacter as PacMan;
+
+      for (const tile of [...destination.path ?? [], destination.end]) {
+        const currentTile = map[tile.y][tile.x];
+        if (currentTile === TileType.pellet) {
+          pacMan.box.addPellet(new NormalPellet());
+          map[tile.y][tile.x] = TileType.empty;
+        } else if (currentTile === TileType.powerPellet) {
+          pacMan.box.addPellet(new PowerPellet());
+          map[tile.y][tile.x] = TileType.empty;
+        }
+      }
     }
   }
 
