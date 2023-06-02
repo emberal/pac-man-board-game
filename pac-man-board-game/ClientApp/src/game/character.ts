@@ -1,12 +1,5 @@
-import Box, {BoxProps} from "./box";
+import Box from "./box";
 import {Direction} from "./direction";
-
-interface CharacterProps {
-  colour: Colour,
-  position?: Path,
-  isEatable?: boolean,
-  spawnPosition: DirectionalPosition
-}
 
 export abstract class Character {
   public readonly colour: Colour;
@@ -34,10 +27,6 @@ export abstract class Character {
   public isAt(position: Position): boolean {
     return this.position.end.x === position.x && this.position.end.y === position.y;
   }
-}
-
-interface PacManProps extends CharacterProps {
-  box?: BoxProps,
 }
 
 export class PacMan extends Character {

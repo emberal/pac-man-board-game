@@ -1,10 +1,5 @@
 import Pellet from "./pellet";
 
-export interface BoxProps {
-  pellets?: Pellet[],
-  readonly colour: Colour,
-}
-
 export default class Box {
   public pellets: Pellet[];
   public readonly colour: Colour;

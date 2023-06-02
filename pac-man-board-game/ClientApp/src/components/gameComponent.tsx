@@ -69,9 +69,9 @@ export const GameComponent: Component = () => {
     const characterIndex = characters.findIndex(c => c.colour === updatedCharacter.colour);
     
     if (characters[characterIndex]) {
-      if (updatedCharacter satisfies PacMan) {
+      if (updatedCharacter["box"] !== undefined) { // If Pac-Man
         (characters[characterIndex] as PacMan) = new PacMan(updatedCharacter);
-      } else if (updatedCharacter satisfies Ghost) {
+      } else if (updatedCharacter satisfies CharacterProps) {
         (characters[characterIndex] as Ghost) = new Ghost(updatedCharacter);
       }
     }

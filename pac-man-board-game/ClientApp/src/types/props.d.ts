@@ -10,3 +10,19 @@ interface ComponentProps {
 interface ChildProps extends ComponentProps {
   children?: React.JSX.Element,
 }
+
+interface CharacterProps {
+  colour: Colour,
+  position?: Path,
+  isEatable?: boolean,
+  spawnPosition: DirectionalPosition
+}
+
+interface PacManProps extends CharacterProps {
+  box?: BoxProps,
+}
+
+interface BoxProps {
+  pellets?: import("../game/pellet").default[],
+  readonly colour: Colour,
+}
