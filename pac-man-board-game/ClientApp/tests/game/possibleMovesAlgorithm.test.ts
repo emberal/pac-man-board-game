@@ -7,7 +7,9 @@ import {Direction} from "../../src/game/direction";
 let pacMan: Character;
 
 beforeEach(() => {
-  pacMan = new PacMan("yellow", {end: {x: 3, y: 3}, direction: Direction.up});
+  pacMan = new PacMan({
+    colour: "yellow", spawnPosition: {at: {x: 3, y: 3}, direction: Direction.up}
+  });
 });
 
 test("Pac-Man rolls one from start, should return one position", () => {
