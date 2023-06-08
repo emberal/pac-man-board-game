@@ -37,11 +37,25 @@ const Board: Component<BoardProps> = (
   function handleMoveCharacter(destination: Path): void {
     if (selectedCharacter) {
       setHoveredPosition(undefined);
+
+      if (selectedCharacter.isGhost()) {
+        tryMovePacManToSpawn(destination);
+      }
+
       selectedCharacter.follow(destination);
 
       const positions = pickUpPellets(destination);
       onMove?.(selectedCharacter, positions);
       setSelectedCharacter(undefined);
+    }
+  }
+  
+  function tryMovePacManToSpawn(destination: Path): void {
+    const takenChar = characters.find(c => c.isPacMan() && c.isAt(destination.end));
+    if (takenChar) {
+      takenChar.moveToSpawn();
+      // TODO send message to other client
+      // TODO steal from player
     }
   }
 
@@ -69,7 +83,7 @@ const Board: Component<BoardProps> = (
 
   useEffect(() => {
     if (selectedCharacter && selectedDice) {
-      const possiblePaths = findPossiblePositions(map, selectedCharacter, selectedDice.value);
+      const possiblePaths = findPossiblePositions(map, selectedCharacter, selectedDice.value, characters);
       setPossiblePositions(possiblePaths);
     } else {
       setPossiblePositions([]);

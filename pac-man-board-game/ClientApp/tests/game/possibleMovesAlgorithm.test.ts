@@ -105,7 +105,13 @@ test("Pac-Man rolls six from start, should return six positions", () => {
 test("Pac-Man rolls four from position [5,1] (right), should return 11", () => {
   pacMan.follow({end: {x: 5, y: 1}, direction: Direction.right});
   const result = possibleMovesAlgorithm(testMap, pacMan, 4);
-  expect(result.length).toBe(11); // TODO a character can't move to a different character's spawn
+  expect(result.length).toBe(11);
+});
+
+test("Pac-Man rolls four from position [5,1] (left), should return 12", () => {
+  pacMan.follow({end: {x: 5, y: 1}, direction: Direction.left});
+  const result = possibleMovesAlgorithm(testMap, pacMan, 4);
+  expect(result.length).toBe(12);
 });
 
 test("Pac-Man rolls three from position [1,5] (left), should return 5", () => {

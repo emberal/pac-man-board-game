@@ -24,6 +24,10 @@ export abstract class Character {
     return this instanceof PacMan;
   }
 
+  public isGhost(): this is Ghost {
+    return this instanceof Ghost;
+  }
+
   public moveToSpawn(): void {
     this.follow({end: this.spawnPosition.at, direction: this.spawnPosition.direction});
   }
