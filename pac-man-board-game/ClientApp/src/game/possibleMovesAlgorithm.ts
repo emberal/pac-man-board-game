@@ -1,6 +1,10 @@
 import {TileType} from "./tileType";
-import {Character, PacMan} from "./character";
+import {Character} from "./character";
 import {Direction, getDirections} from "./direction";
+
+// TODO ghosts can't move through another ghost
+// TODO if a ghost hit's a Pac-Man, the ghost can't walk further
+// TODO if a Pac-Man with a powerpellet hits a ghost, the Pac-Man can't walk further
 
 /**
  * Finds all the possible positions for the character to move to
@@ -10,7 +14,7 @@ import {Direction, getDirections} from "./direction";
  * @returns An array of paths the character can move to
  */
 export default function findPossiblePositions(board: GameMap, character: Character, steps: number): Path[] {
-  return findPossibleRecursive(board, character.position, steps, character instanceof PacMan);
+  return findPossibleRecursive(board, character.position, steps, character);
 }
 
 /**
@@ -18,26 +22,30 @@ export default function findPossiblePositions(board: GameMap, character: Charact
  * @param board The board the character is on
  * @param currentPos The current path the character is on
  * @param steps The number of steps the character can move
- * @param isPacMan True if the character is Pac-Man, false if it is a ghost
+ * @param character The current character
  * @returns An array of paths the character can move to
  */
-function findPossibleRecursive(board: GameMap, currentPos: Path, steps: number, isPacMan: boolean): Path[] {
+function findPossibleRecursive(board: GameMap, currentPos: Path, steps: number, character: Character): Path[] {
 
   const paths: Path[] = [];
   if (isOutsideBoard(currentPos, board.length)) {
-    if (isPacMan) {
-      return addTeleportationTiles(board, currentPos, steps, isPacMan);
+    if (character.isPacMan()) {
+      return addTeleportationTiles(board, currentPos, steps, character);
     }
   } else if (!isWall(board, currentPos)) {
-    if (steps === 0) {
-      paths.push(currentPos);
+
+    if (steps <= 0) {
+      if (!(isSpawn(board, currentPos) && !isOwnSpawn(currentPos, character))) {
+        paths.push(currentPos);
+      }
+      
     } else {
 
       addToPath(currentPos);
 
       steps--;
       for (const direction of getDirections()) {
-        paths.push(...tryMove(board, currentPos, direction, steps, isPacMan));
+        paths.push(...tryMove(board, currentPos, direction, steps, character));
       }
     }
   }
@@ -63,10 +71,10 @@ function addToPath(currentPos: Path): void {
  * @param path The current path the character is on
  * @param direction The direction to move in
  * @param steps The number of steps the character can move
- * @param isPacMan True if the character is Pac-Man, false if it is a ghost
+ * @param character The current character
  * @returns An array of paths the character can move to
  */
-function tryMove(board: GameMap, path: Path, direction: Direction, steps: number, isPacMan: boolean): Path[] {
+function tryMove(board: GameMap, path: Path, direction: Direction, steps: number, character: Character): Path[] {
 
   function getNewPosition(): Position {
     switch (direction) {
@@ -96,7 +104,7 @@ function tryMove(board: GameMap, path: Path, direction: Direction, steps: number
   if (path.direction !== (direction + 2) % 4) {
     return findPossibleRecursive(board, {
       end: getNewPosition(), direction: direction, path: path.path
-    }, steps, isPacMan);
+    }, steps, character);
   }
   return [];
 }
@@ -106,17 +114,17 @@ function tryMove(board: GameMap, path: Path, direction: Direction, steps: number
  * @param board The board the character is on
  * @param currentPath The current path the character is on
  * @param steps The number of steps the character can move
- * @param isPacMan True if the character is Pac-Man, false if it is a ghost
+ * @param character The current character
  */
-function addTeleportationTiles(board: GameMap, currentPath: Path, steps: number, isPacMan: boolean): Path[] {
+function addTeleportationTiles(board: GameMap, currentPath: Path, steps: number, character: Character): Path[] {
   const possiblePositions = findTeleportationTiles(board);
   const paths: Path[] = [];
   for (const pos of possiblePositions) {
     if (pos.end.x !== interval(0, board.length - 1, currentPath.end.x) ||
       pos.end.y !== interval(0, board.length - 1, currentPath.end.y)) {
-      
+
       pos.path = currentPath.path;
-      paths.push(...findPossibleRecursive(board, pos, steps, isPacMan));
+      paths.push(...findPossibleRecursive(board, pos, steps, character));
     }
   }
   return paths;
@@ -204,8 +212,19 @@ function isWall(board: GameMap, currentPos: Path): boolean {
  * @param board The board the character is on
  * @param currentPos The current position of the character
  */
-function isSpawn(board: GameMap, currentPos: Path): boolean { // TODO check if character is on it's own spawn
+function isSpawn(board: GameMap, currentPos: Path) {
   const pos = currentPos.end;
-  return board[pos.x][pos.y] === TileType.pacmanSpawn || board[pos.x][pos.y] === TileType.ghostSpawn;
+  return board[pos.y][pos.x] === TileType.pacmanSpawn || board[pos.y][pos.x] === TileType.ghostSpawn;
+}
+
+/**
+ * Checks if the character is on its own spawn
+ * @param currentPos The current position of the character
+ * @param character The current character
+ */
+function isOwnSpawn(currentPos: Path, character: Character): boolean {
+  const pos = currentPos.end;
+  const charPos = character.spawnPosition.at;
+  return charPos.x === pos.x && charPos.y === pos.y;
 }
 

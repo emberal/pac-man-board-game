@@ -20,6 +20,10 @@ export abstract class Character {
     this.position.path = undefined;
   }
 
+  public isPacMan(): this is PacMan {
+    return this instanceof PacMan;
+  }
+
   public moveToSpawn(): void {
     this.follow({end: this.spawnPosition.at, direction: this.spawnPosition.direction});
   }
@@ -38,9 +42,9 @@ export class PacMan extends Character {
     this.isEatable = isEatable;
     this.box = new Box(box);
   }
-  
+
   public stealFrom(other: PacMan): void {
-    
+
   }
 
 }
