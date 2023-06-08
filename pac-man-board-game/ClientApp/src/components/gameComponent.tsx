@@ -50,7 +50,7 @@ export const GameComponent: Component = () => {
         break;
       case GameAction.moveCharacter:
         setDice(parsed.Data?.dice as number[]);
-        updateCharacter(parsed);
+        updateCharacters(parsed);
         removeEatenPellets(parsed);
         break;
     }
@@ -59,25 +59,28 @@ export const GameComponent: Component = () => {
   function removeEatenPellets(parsed: ActionMessage): void {
     const pellets = parsed.Data?.eatenPellets as Position[];
 
-      for (const pellet of pellets){
-        testMap[pellet.y][pellet.x] = TileType.empty;
-      }
-  }
-
-  function updateCharacter(parsed: ActionMessage): void {
-    const updatedCharacter = parsed.Data?.character satisfies Ghost | PacMan;
-    const characterIndex = characters.findIndex(c => c.colour === updatedCharacter.colour);
-    
-    if (characters[characterIndex]) {
-      if (updatedCharacter["box"] !== undefined) { // If Pac-Man
-        (characters[characterIndex] as PacMan) = new PacMan(updatedCharacter);
-      } else if (updatedCharacter satisfies CharacterProps) {
-        (characters[characterIndex] as Ghost) = new Ghost(updatedCharacter);
-      }
+    for (const pellet of pellets) {
+      testMap[pellet.y][pellet.x] = TileType.empty;
     }
   }
 
-  function onCharacterMove(character: Character, eatenPellets: Position[]): void {
+  function updateCharacters(parsed: ActionMessage): void {
+    const updatedCharacters = parsed.Data?.characters as (PacManProps | CharacterProps)[] | undefined;
+
+    if (updatedCharacters) {
+      const newList: Character[] = [];
+      for (const character of updatedCharacters) {
+        if ("box" in character) { // If Pac-Man
+          newList.push(new PacMan(character));
+        } else if (character satisfies CharacterProps) {
+          newList.push(new Ghost(character));
+        }
+      }
+      setCharacters(newList);
+    }
+  }
+
+  function onCharacterMove(eatenPellets: Position[]): void {
     if (dice && selectedDice) {
       dice.splice(selectedDice.index, 1);
     }
@@ -86,7 +89,7 @@ export const GameComponent: Component = () => {
       Action: GameAction.moveCharacter,
       Data: {
         dice: dice?.length ?? 0 > 0 ? dice : null,
-        character: character,
+        characters: characters,
         eatenPellets: eatenPellets
       }
     };

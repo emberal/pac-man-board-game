@@ -9,7 +9,7 @@ import Pellet from "../game/pellet";
 interface BoardProps extends ComponentProps {
   characters: Character[],
   selectedDice?: SelectedDice,
-  onMove?: BiAction<Character, Position[]>,
+  onMove?: Action<Position[]>,
   map: GameMap
 }
 
@@ -45,7 +45,7 @@ const Board: Component<BoardProps> = (
       selectedCharacter.follow(destination);
 
       const positions = pickUpPellets(destination);
-      onMove?.(selectedCharacter, positions);
+      onMove?.(positions);
       setSelectedCharacter(undefined);
     }
   }
@@ -54,7 +54,6 @@ const Board: Component<BoardProps> = (
     const takenChar = characters.find(c => c.isPacMan() && c.isAt(destination.end));
     if (takenChar) {
       takenChar.moveToSpawn();
-      // TODO send message to other client
       // TODO steal from player
     }
   }

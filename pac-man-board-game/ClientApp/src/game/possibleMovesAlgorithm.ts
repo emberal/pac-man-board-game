@@ -41,7 +41,7 @@ function findPossibleRecursive(board: GameMap, currentPath: Path, steps: number,
         paths.push(currentPath);
       }
 
-    } else if (character.isGhost() && characters.find(c => c.isPacMan() && c.isAt(currentPath.end))) {
+    } else if (ghostHitsPacMan(character, currentPath, characters)) {
       paths.push(currentPath);
     } else {
 
@@ -54,6 +54,16 @@ function findPossibleRecursive(board: GameMap, currentPath: Path, steps: number,
     }
   }
   return paths;
+}
+
+/**
+ * Checks if the current character is a ghost, and Pac-Man is on the same tile
+ * @param character The current character
+ * @param currentPath The current path the character is on
+ * @param characters All the characters on the board
+ */
+function ghostHitsPacMan(character: Character, currentPath: Path, characters: Character[]): boolean {
+  return character.isGhost() && characters.find(c => c.isPacMan() && c.isAt(currentPath.end)) !== undefined;
 }
 
 /**
