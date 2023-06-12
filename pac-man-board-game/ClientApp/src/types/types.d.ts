@@ -13,6 +13,8 @@ type Action<T> = (obj: T) => void;
 
 type BiAction<T1, T2> = (obj1: T1, obj2: T2) => void;
 
+type Predicate<T> = (obj: T) => boolean;
+
 type SelectedDice = {
   value: number,
   index: number

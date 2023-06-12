@@ -89,17 +89,6 @@ const Board: Component<BoardProps> = (
     }
   }, [selectedCharacter, selectedDice]);
 
-  useEffect(() => {
-
-    for (const character of characters) { // TODO make more dynamic
-      if (character instanceof PacMan) {
-        character.position = {end: {x: 3, y: 3}, direction: Direction.up};
-      } else {
-        character.position = {end: {x: 7, y: 3}, direction: Direction.up};
-      }
-    }
-  }, []);
-
   return (
     <div className={`w-fit ${className}`}>
       {

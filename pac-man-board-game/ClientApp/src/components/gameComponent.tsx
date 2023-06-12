@@ -16,8 +16,14 @@ export const GameComponent: Component = () => {
     new PacMan({
       colour: "yellow", spawnPosition: {at: {x: 3, y: 3}, direction: Direction.up}
     }),
+    new PacMan({
+      colour: "blue", spawnPosition: {at: {x: 7, y: 7}, direction: Direction.down}
+    }),
     new Ghost({
-      colour: "purple", spawnPosition: {at: {x: 8, y: 3}, direction: Direction.up}
+      colour: "purple", spawnPosition: {at: {x: 7, y: 3}, direction: Direction.up}
+    }),
+    new Ghost({
+      colour: "purple", spawnPosition: {at: {x: 3, y: 7}, direction: Direction.down}
     })
   ]);
 

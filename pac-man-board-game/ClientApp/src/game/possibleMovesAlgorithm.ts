@@ -2,8 +2,6 @@ import {TileType} from "./tileType";
 import {Character} from "./character";
 import {Direction, getDirections} from "./direction";
 
-// TODO ghosts can't move through another ghost
-// TODO if a ghost hit's a Pac-Man, the ghost can't walk further
 // TODO if a Pac-Man with a powerpellet hits a ghost, the Pac-Man can't walk further
 
 /**
@@ -36,20 +34,22 @@ function findPossibleRecursive(board: GameMap, currentPath: Path, steps: number,
     }
   } else if (!isWall(board, currentPath)) {
 
-    if (steps <= 0) {
-      if (!(isSpawn(board, currentPath) && !isOwnSpawn(currentPath, character))) {
+    if (!characterHitsAnotherCharacter(character, currentPath, characters)) {
+      if (steps <= 0) {
+        if (!(isSpawn(board, currentPath) && !isOwnSpawn(currentPath, character))) {
+          paths.push(currentPath);
+        }
+
+      } else if (ghostHitsPacMan(character, currentPath, characters)) {
         paths.push(currentPath);
-      }
+      } else {
 
-    } else if (ghostHitsPacMan(character, currentPath, characters)) {
-      paths.push(currentPath);
-    } else {
+        addToPath(currentPath);
 
-      addToPath(currentPath);
-
-      steps--;
-      for (const direction of getDirections()) {
-        paths.push(...tryMove(board, currentPath, direction, steps, character, characters));
+        steps--;
+        for (const direction of getDirections()) {
+          paths.push(...tryMove(board, currentPath, direction, steps, character, characters));
+        }
       }
     }
   }
@@ -61,9 +61,21 @@ function findPossibleRecursive(board: GameMap, currentPath: Path, steps: number,
  * @param character The current character
  * @param currentPath The current path the character is on
  * @param characters All the characters on the board
+ * @returns True if the character is a ghost and hits Pac-Man
  */
 function ghostHitsPacMan(character: Character, currentPath: Path, characters: Character[]): boolean {
   return character.isGhost() && characters.find(c => c.isPacMan() && c.isAt(currentPath.end)) !== undefined;
+}
+
+/**
+ * Checks if the current character hits another character
+ * @param character The current character
+ * @param currentPath The current path the character is on
+ * @param characters All the characters on the board
+ * @returns True if the character hits another character
+ */
+function characterHitsAnotherCharacter(character: Character, currentPath: Path, characters: Character[]): boolean {
+  return characters.find(c => c !== character && c.isAt(currentPath.end)) !== undefined;
 }
 
 /**
