@@ -26,3 +26,9 @@ interface BoxProps {
   pellets?: import("../game/pellet").default[],
   readonly colour: Colour,
 }
+
+interface PlayerProps {
+  readonly character: CharacterProps | PacManProps,
+  readonly colour: Colour,
+  readonly box: BoxProps,
+}

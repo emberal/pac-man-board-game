@@ -47,10 +47,6 @@ export class PacMan extends Character {
     this.box = new Box(box);
   }
 
-  public stealFrom(other: PacMan): void {
-
-  }
-
 }
 
 export class Ghost extends Character {
