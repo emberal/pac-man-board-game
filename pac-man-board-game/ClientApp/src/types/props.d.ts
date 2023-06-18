@@ -15,11 +15,8 @@ interface CharacterProps {
   colour: Colour,
   position?: Path,
   isEatable?: boolean,
-  spawnPosition: DirectionalPosition
-}
-
-interface PacManProps extends CharacterProps {
-  box?: BoxProps,
+  spawnPosition: DirectionalPosition,
+  type?: import("../game/character").CharacterType,
 }
 
 interface BoxProps {
@@ -28,7 +25,7 @@ interface BoxProps {
 }
 
 interface PlayerProps {
-  readonly character: CharacterProps | PacManProps,
+  readonly pacMan?: CharacterProps,
   readonly colour: Colour,
-  readonly box: BoxProps,
+  readonly box?: BoxProps,
 }

@@ -13,7 +13,7 @@ namespace pacMan.Controllers;
 public class GameController : GenericController
 {
     private readonly IDiceCup _diceCup;
-    private readonly IPlayer _player;
+    private readonly IPlayer _player; // TODO recieve player from client and choose a starter
 
     public GameController(ILogger<GameController> logger, IWebSocketService wsService) : base(logger, wsService)
     {

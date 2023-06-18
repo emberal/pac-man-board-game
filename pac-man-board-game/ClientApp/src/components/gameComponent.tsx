@@ -7,10 +7,11 @@ import WebSocketService from "../websockets/WebSocketService";
 import {testMap} from "../game/map";
 import {Direction} from "../game/direction";
 import {TileType} from "../game/tileType";
+import Player from "../game/player";
 
 const wsService = new WebSocketService("wss://localhost:3000/api/game");
 
-export const GameComponent: Component = () => {
+export const GameComponent: Component<{ player: Player }> = ({player = new Player({colour: "yellow"})}) => {
   // TODO find spawn points
   const [characters, setCharacters] = useState([
     new PacMan({
@@ -29,6 +30,7 @@ export const GameComponent: Component = () => {
 
   const [dice, setDice] = useState<number[]>();
   const [selectedDice, setSelectedDice] = useState<SelectedDice>();
+  const [currentPlayer, setCurrentPlayer] = useState<Player>();
 
   function handleDiceClick(selected: SelectedDice): void {
     setSelectedDice(selected);
@@ -39,6 +41,8 @@ export const GameComponent: Component = () => {
   }
 
   function startGameLoop(): void {
+    if (currentPlayer !== player) return;
+
     if (!wsService.isOpen()) {
       setTimeout(startGameLoop, 50);
       return;
@@ -71,16 +75,12 @@ export const GameComponent: Component = () => {
   }
 
   function updateCharacters(parsed: ActionMessage): void {
-    const updatedCharacters = parsed.Data?.characters as (PacManProps | CharacterProps)[] | undefined;
+    const updatedCharacters = parsed.Data?.characters as CharacterProps[] | undefined;
 
     if (updatedCharacters) {
       const newList: Character[] = [];
       for (const character of updatedCharacters) {
-        if ("box" in character) { // If Pac-Man
-          newList.push(new PacMan(character));
-        } else if (character satisfies CharacterProps) {
-          newList.push(new Ghost(character));
-        }
+        newList.push(new Character(character));
       }
       setCharacters(newList);
     }
@@ -106,7 +106,9 @@ export const GameComponent: Component = () => {
     wsService.onReceive = doAction;
     wsService.open();
 
-    startGameLoop();
+    // TODO send player info to backend
+    // TODO send action to backend when all players are ready
+    //  The backend should then send the first player as current player
     return () => wsService.close();
   }, []);
 
@@ -120,9 +122,9 @@ export const GameComponent: Component = () => {
       {
         (characters.filter(c => c instanceof PacMan) as PacMan[]).map(c =>
           <div key={c.colour} className={"mx-auto w-fit m-2"}>
-            <p>Pac-Man: {c.colour}</p>
-            <p>Pellets: {c.box.count}</p>
-            <p>PowerPellets: {c.box.countPowerPellets}</p>
+            <p>Player: {player.colour}</p>
+            <p>Pellets: {player.box.count}</p>
+            <p>PowerPellets: {player.box.countPowerPellets}</p>
           </div>)
       }
       <GameBoard className={"mx-auto my-2"} characters={characters} selectedDice={selectedDice}
