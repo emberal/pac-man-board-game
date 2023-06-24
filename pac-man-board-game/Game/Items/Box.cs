@@ -1,17 +1,26 @@
-using System.Collections;
 using pacMan.Game.Interfaces;
 
 namespace pacMan.Game.Items;
 
-public class Box : IBox
+public class Box
 {
-    private readonly IList<IPellet> _pellets = new List<IPellet>();
-    
-    public int CountNormal => _pellets.Count(pellet => pellet.Get == PelletType.Normal);
+    public required List<Pellet>? Pellets { get; init; } = new();
+    public required string Colour { get; init; }
 
-    public void Add(IPellet pellet) => _pellets.Add(pellet);
+    public int CountNormal => Pellets?.Count(pellet => !pellet.IsPowerPellet) ?? 0;
 
-    public IEnumerator<IPellet> GetEnumerator() => _pellets.GetEnumerator();
+    public IEnumerator<IPellet> GetEnumerator()
+    {
+        return Pellets?.GetEnumerator() ?? new List<Pellet>.Enumerator();
+    }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    // IEnumerator IEnumerable.GetEnumerator()
+    // {
+    //     return GetEnumerator();
+    // }
+
+    public void Add(Pellet pellet)
+    {
+        Pellets?.Add(pellet);
+    }
 }

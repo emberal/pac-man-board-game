@@ -1,4 +1,5 @@
 using System.Net.WebSockets;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using pacMan.Game;
 using pacMan.Game.Interfaces;
@@ -13,19 +14,17 @@ namespace pacMan.Controllers;
 public class GameController : GenericController
 {
     private readonly IDiceCup _diceCup;
-    private readonly IPlayer _player; // TODO recieve player from client and choose a starter
 
     public GameController(ILogger<GameController> logger, IWebSocketService wsService) : base(logger, wsService)
     {
         _diceCup = new DiceCup();
-        _player = new Player
-        {
-            Box = new Box()
-        };
     }
 
     [HttpGet]
-    public override async Task Accept() => await base.Accept();
+    public override async Task Accept()
+    {
+        await base.Accept();
+    }
 
     protected override ArraySegment<byte> Run(WebSocketReceiveResult result, byte[] data)
     {
@@ -48,10 +47,14 @@ public class GameController : GenericController
 
                 message.Data = rolls;
                 break;
-            case GameAction.AppendBox:
-                // TODO
-                // Add pellets to box
-                // Forward box to all clients
+            case GameAction.PlayerInfo:
+                Player player = JsonSerializer.Deserialize<Player>(message.Data);
+                var group = WsService.AddPlayer(player); // TODO missing some data?
+
+                message.Data = group.Players;
+                break;
+            case GameAction.Ready:
+                // TODO select starter player
                 break;
             default:
                 Logger.Log(LogLevel.Information, "Forwarding message to all clients");

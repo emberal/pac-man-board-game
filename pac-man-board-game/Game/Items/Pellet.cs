@@ -4,5 +4,5 @@ namespace pacMan.Game.Items;
 
 public class Pellet : IPellet
 {
-    public PelletType Get { get; set; }
+    public bool IsPowerPellet { get; init; }
 }

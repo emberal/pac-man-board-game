@@ -6,15 +6,15 @@ namespace pacMan.Controllers;
 
 public abstract class GenericController : ControllerBase
 {
-    protected readonly ILogger<GenericController> Logger;
-    private readonly IWebSocketService _wsService;
-    private WebSocket? _webSocket;
     private const int BufferSize = 1024 * 4;
+    protected readonly ILogger<GenericController> Logger;
+    protected readonly IWebSocketService WsService;
+    private WebSocket? _webSocket;
 
     protected GenericController(ILogger<GenericController> logger, IWebSocketService wsService)
     {
         Logger = logger;
-        _wsService = wsService;
+        WsService = wsService;
         Logger.Log(LogLevel.Debug, "WebSocket Controller created");
     }
 
@@ -25,7 +25,7 @@ public abstract class GenericController : ControllerBase
             using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
             Logger.Log(LogLevel.Information, "WebSocket connection established to {}", HttpContext.Connection.Id);
             _webSocket = webSocket;
-            _wsService.Connections += WsServiceOnFire;
+            WsService.Connections += WsServiceOnFire;
             await Echo();
         }
         else
@@ -37,7 +37,7 @@ public abstract class GenericController : ControllerBase
     private async Task WsServiceOnFire(ArraySegment<byte> segment)
     {
         if (_webSocket == null) return;
-        await _wsService.Send(_webSocket, segment);
+        await WsService.Send(_webSocket, segment);
     }
 
 
@@ -50,23 +50,23 @@ public abstract class GenericController : ControllerBase
             do
             {
                 var buffer = new byte[BufferSize];
-                result = await _wsService.Receive(_webSocket, buffer);
+                result = await WsService.Receive(_webSocket, buffer);
 
                 if (result.CloseStatus.HasValue) break;
 
                 var segment = Run(result, buffer);
 
-                _wsService.SendToAll(segment);
+                WsService.SendToAll(segment);
             } while (true);
 
-            await _wsService.Close(_webSocket, result.CloseStatus.Value, result.CloseStatusDescription ?? "No reason");
+            await WsService.Close(_webSocket, result.CloseStatus.Value, result.CloseStatusDescription ?? "No reason");
         }
         catch (WebSocketException e)
         {
             Logger.Log(LogLevel.Error, "{}", e.Message);
         }
 
-        _wsService.Connections -= WsServiceOnFire;
+        WsService.Connections -= WsServiceOnFire;
     }
 
     protected abstract ArraySegment<byte> Run(WebSocketReceiveResult result, byte[] data);

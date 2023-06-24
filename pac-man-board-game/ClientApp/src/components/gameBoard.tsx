@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Character, PacMan} from "../game/character";
 import findPossiblePositions from "../game/possibleMovesAlgorithm";
-import {Direction} from "../game/direction";
 import {GameTile} from "./gameTile";
 import {TileType} from "../game/tileType";
-import Pellet from "../game/pellet";
 
 interface BoardProps extends ComponentProps {
   characters: Character[],
@@ -49,9 +47,9 @@ const Board: Component<BoardProps> = (
       setSelectedCharacter(undefined);
     }
   }
-  
+
   function tryMovePacManToSpawn(destination: Path): void {
-    const takenChar = characters.find(c => c.isPacMan() && c.isAt(destination.end));
+    const takenChar = characters.find(c => c.isPacMan() && c.isAt(destination.End));
     if (takenChar) {
       takenChar.moveToSpawn();
       // TODO steal from player
@@ -63,15 +61,15 @@ const Board: Component<BoardProps> = (
     if (selectedCharacter instanceof PacMan) {
       const pacMan = selectedCharacter as PacMan;
 
-      for (const tile of [...destination.path ?? [], destination.end]) {
+      for (const tile of [...destination.Path ?? [], destination.End]) {
         const currentTile = map[tile.y][tile.x];
-        
+
         if (currentTile === TileType.pellet) {
-          pacMan.box.addPellet(new Pellet());
+          // pacMan.box.addPellet(new Pellet()); // TODO update to current player
           map[tile.y][tile.x] = TileType.empty;
           positions.push(tile);
         } else if (currentTile === TileType.powerPellet) {
-          pacMan.box.addPellet(new Pellet(true));
+          // pacMan.box.addPellet(new Pellet(true));
           map[tile.y][tile.x] = TileType.empty;
           positions.push(tile);
         }
@@ -99,10 +97,10 @@ const Board: Component<BoardProps> = (
                 <GameTile
                   key={colIndex + rowIndex * colIndex}
                   type={tile}
-                  possiblePath={possiblePositions.find(p => p.end.x === colIndex && p.end.y === rowIndex)}
+                  possiblePath={possiblePositions.find(p => p.End.x === colIndex && p.End.y === rowIndex)}
                   character={characters.find(c => c.isAt({x: colIndex, y: rowIndex}))}
                   isSelected={selectedCharacter?.isAt({x: colIndex, y: rowIndex})}
-                  showPath={hoveredPosition?.path?.find(pos => pos.x === colIndex && pos.y === rowIndex) !== undefined}
+                  showPath={hoveredPosition?.Path?.find(pos => pos.x === colIndex && pos.y === rowIndex) !== undefined}
                   handleMoveCharacter={handleMoveCharacter}
                   handleSelectCharacter={handleSelectCharacter}
                   handleStartShowPath={handleShowPath}

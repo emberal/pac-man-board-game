@@ -25,14 +25,14 @@ type Position = { x: number, y: number };
 type GameMap = number[][];
 
 type DirectionalPosition = {
-  at: Position,
-  direction: import("../game/direction").Direction
+  At: Position,
+  Direction: import("../game/direction").Direction
 }
 
 type Path = {
-  path?: Position[],
-  end: Position,
-  direction: import("../game/direction").Direction
+  Path?: Position[] | null,
+  End: Position,
+  Direction: import("../game/direction").Direction
 }
 
 type Colour = "white" | "red" | "blue" | "yellow" | "green" | "purple" | "grey";

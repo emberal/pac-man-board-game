@@ -1,4 +1,5 @@
 using System.Net.WebSockets;
+using pacMan.Game.Interfaces;
 using pacMan.Interfaces;
 using pacMan.Utils;
 
@@ -7,13 +8,16 @@ namespace pacMan.Services;
 public class WebSocketService : IWebSocketService
 {
     private readonly ILogger<WebSocketService> _logger;
-    public event Func<ArraySegment<byte>, Task>? Connections; // TODO separate connections into groups (1 event per game)
 
     public WebSocketService(ILogger<WebSocketService> logger)
     {
         _logger = logger;
         logger.Log(LogLevel.Debug, "WebSocket Service created");
     }
+
+    public SynchronizedCollection<GameGroup> Games { get; } = new();
+
+    public event Func<ArraySegment<byte>, Task>? Connections;
 
     public async Task Send(WebSocket webSocket, ArraySegment<byte> segment)
     {
@@ -26,7 +30,10 @@ public class WebSocketService : IWebSocketService
         _logger.Log(LogLevel.Trace, "Message sent to WebSocket");
     }
 
-    public void SendToAll(ArraySegment<byte> segment) => Connections?.Invoke(segment);
+    public void SendToAll(ArraySegment<byte> segment)
+    {
+        Connections?.Invoke(segment);
+    }
 
     public async Task<WebSocketReceiveResult> Receive(WebSocket webSocket, byte[] buffer)
     {
@@ -47,5 +54,25 @@ public class WebSocketService : IWebSocketService
         _logger.Log(LogLevel.Information, "WebSocket connection closed");
     }
 
-    public int CountConnected() => Connections?.GetInvocationList().Length ?? 0;
+    public int CountConnected()
+    {
+        return Connections?.GetInvocationList().Length ?? 0;
+    }
+
+    public GameGroup AddPlayer(IPlayer player)
+    {
+        var index = 0;
+        try
+        {
+            while (!Games[index].AddPlayer(player)) index++;
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            var game = new GameGroup();
+            game.AddPlayer(player);
+            Games.Add(game);
+        }
+
+        return Games[index];
+    }
 }

@@ -13,9 +13,9 @@ interface ChildProps extends ComponentProps {
 
 interface CharacterProps {
   colour: Colour,
-  position?: Path,
+  position?: Path | null,
   isEatable?: boolean,
-  spawnPosition: DirectionalPosition,
+  spawnPosition?: DirectionalPosition | null,
   type?: import("../game/character").CharacterType,
 }
 
@@ -25,6 +25,7 @@ interface BoxProps {
 }
 
 interface PlayerProps {
+  readonly name: string,
   readonly pacMan?: CharacterProps,
   readonly colour: Colour,
   readonly box?: BoxProps,

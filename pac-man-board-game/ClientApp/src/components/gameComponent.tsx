@@ -11,20 +11,20 @@ import Player from "../game/player";
 
 const wsService = new WebSocketService("wss://localhost:3000/api/game");
 
-export const GameComponent: Component<{ player: Player }> = ({player = new Player({colour: "yellow"})}) => {
+export const GameComponent: Component<{ player: Player }> = (
+  {
+    player = new Player({
+      name: "Martin",
+      colour: "yellow",
+    })
+  }) => {
   // TODO find spawn points
   const [characters, setCharacters] = useState([
-    new PacMan({
-      colour: "yellow", spawnPosition: {at: {x: 3, y: 3}, direction: Direction.up}
-    }),
-    new PacMan({
-      colour: "blue", spawnPosition: {at: {x: 7, y: 7}, direction: Direction.down}
+    new Ghost({
+      colour: "purple", spawnPosition: {At: {x: 7, y: 3}, Direction: Direction.up}
     }),
     new Ghost({
-      colour: "purple", spawnPosition: {at: {x: 7, y: 3}, direction: Direction.up}
-    }),
-    new Ghost({
-      colour: "purple", spawnPosition: {at: {x: 3, y: 7}, direction: Direction.down}
+      colour: "purple", spawnPosition: {At: {x: 3, y: 7}, Direction: Direction.down}
     })
   ]);
 
@@ -62,6 +62,10 @@ export const GameComponent: Component<{ player: Player }> = ({player = new Playe
         setDice(parsed.Data?.dice as number[]);
         updateCharacters(parsed);
         removeEatenPellets(parsed);
+        break;
+      case GameAction.playerInfo:
+        const players = parsed.Data as Player[];
+        // TODO set all characters
         break;
     }
   }
@@ -102,11 +106,16 @@ export const GameComponent: Component<{ player: Player }> = ({player = new Playe
     wsService.send(data);
   }
 
+  async function sendPlayer(): Promise<void> {
+    await wsService.waitForOpen();
+    wsService.send({Action: GameAction.playerInfo, Data: player});
+  }
+
   useEffect(() => {
     wsService.onReceive = doAction;
     wsService.open();
 
-    // TODO send player info to backend
+    void sendPlayer();
     // TODO send action to backend when all players are ready
     //  The backend should then send the first player as current player
     return () => wsService.close();
@@ -121,10 +130,10 @@ export const GameComponent: Component<{ player: Player }> = ({player = new Playe
       <AllDice values={dice} onclick={handleDiceClick} selectedDiceIndex={selectedDice?.index}/>
       {
         (characters.filter(c => c instanceof PacMan) as PacMan[]).map(c =>
-          <div key={c.colour} className={"mx-auto w-fit m-2"}>
-            <p>Player: {player.colour}</p>
-            <p>Pellets: {player.box.count}</p>
-            <p>PowerPellets: {player.box.countPowerPellets}</p>
+          <div key={c.Colour} className={"mx-auto w-fit m-2"}>
+            <p className={currentPlayer === player ? "underline" : ""}>Player: {player.Colour}</p>
+            <p>Pellets: {player.Box.count}</p>
+            <p>PowerPellets: {player.Box.countPowerPellets}</p>
           </div>)
       }
       <GameBoard className={"mx-auto my-2"} characters={characters} selectedDice={selectedDice}

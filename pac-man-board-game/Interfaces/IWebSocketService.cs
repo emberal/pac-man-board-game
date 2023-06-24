@@ -1,4 +1,6 @@
 using System.Net.WebSockets;
+using pacMan.Game.Interfaces;
+using pacMan.Services;
 
 namespace pacMan.Interfaces;
 
@@ -10,4 +12,5 @@ public interface IWebSocketService
     Task<WebSocketReceiveResult> Receive(WebSocket webSocket, byte[] buffer);
     Task Close(WebSocket webSocket, WebSocketCloseStatus closeStatus, string closeStatusDescription);
     int CountConnected();
+    GameGroup AddPlayer(IPlayer player);
 }

@@ -28,7 +28,7 @@ export const GameTile: Component<TileWithCharacterProps> = (
     isSelected = false,
     showPath = false
   }) => (
-  <Tile className={`${possiblePath?.end ? "border-4 border-white" : ""}`}
+  <Tile className={`${possiblePath?.End ? "border-4 border-white" : ""}`}
         type={type}
         onClick={possiblePath ? () => handleMoveCharacter?.(possiblePath) : undefined}
         onMouseEnter={possiblePath ? () => handleStartShowPath?.(possiblePath) : undefined}
@@ -146,7 +146,7 @@ const CharacterComponent: Component<CharacterComponentProps> = (
   }) => {
 
   function getSide() {
-    switch (character?.position.direction) {
+    switch (character?.Position.Direction) {
       case Direction.up:
         return "right-1/4 top-0";
       case Direction.down:
@@ -162,7 +162,7 @@ const CharacterComponent: Component<CharacterComponentProps> = (
 
   return (
     <div className={`rounded-full w-4/5 h-4/5 cursor-pointer hover:border border-black relative ${className}`}
-         style={{backgroundColor: `${character.colour}`}}
+         style={{backgroundColor: `${character.Colour}`}}
          onClick={() => onClick?.(character)}>
       <div>
         <div className={`absolute ${getSide()} w-1/2 h-1/2 rounded-full bg-black`}/>

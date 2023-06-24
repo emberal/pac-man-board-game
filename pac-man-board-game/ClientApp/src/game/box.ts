@@ -1,28 +1,28 @@
 import Pellet from "./pellet";
 
 export default class Box {
-  public pellets: Pellet[];
-  public readonly colour: Colour;
+  public Pellets: Pellet[];
+  public readonly Colour: Colour;
 
   public constructor({colour, pellets = []}: BoxProps) {
-    this.colour = colour;
-    this.pellets = pellets;
-  }
-
-  public addPellet(pellet: Pellet): void {
-    this.pellets.push(pellet);
+    this.Colour = colour;
+    this.Pellets = pellets;
   }
 
   get powerPellet(): Pellet | undefined {
-    return this.pellets.find(pellet => pellet.isPowerPellet);
+    return this.Pellets.find(pellet => pellet.isPowerPellet);
   }
 
   get count(): number {
-    return this.pellets.filter(pellet => !pellet.isPowerPellet).length;
+    return this.Pellets.filter(pellet => !pellet.isPowerPellet).length;
   }
 
   get countPowerPellets(): number {
-    return this.pellets.filter(pellet => pellet.isPowerPellet).length;
+    return this.Pellets.filter(pellet => pellet.isPowerPellet).length;
+  }
+
+  public addPellet(pellet: Pellet): void {
+    this.Pellets.push(pellet);
   }
 
 }
