@@ -5,28 +5,25 @@ import GameBoard from "./gameBoard";
 import {Character, Ghost, PacMan} from "../game/character";
 import WebSocketService from "../websockets/WebSocketService";
 import {testMap} from "../game/map";
-import {Direction} from "../game/direction";
 import {TileType} from "../game/tileType";
 import Player from "../game/player";
 
-const wsService = new WebSocketService("wss://localhost:3000/api/game");
+const wsService = new WebSocketService(import.meta.env.VITE_API);
+
+const ghosts = [
+  new Ghost({Colour: "purple"}),
+  new Ghost({Colour: "purple"})
+];
 
 export const GameComponent: Component<{ player: Player }> = (
   {
     player = new Player({
-      name: "Martin",
-      colour: "yellow",
+      Name: "Martin",
+      Colour: "yellow",
     })
   }) => {
   // TODO find spawn points
-  const [characters, setCharacters] = useState([
-    new Ghost({
-      colour: "purple", spawnPosition: {At: {x: 7, y: 3}, Direction: Direction.up}
-    }),
-    new Ghost({
-      colour: "purple", spawnPosition: {At: {x: 3, y: 7}, Direction: Direction.down}
-    })
-  ]);
+  const [characters, setCharacters] = useState<Character[]>();
 
   const [dice, setDice] = useState<number[]>();
   const [selectedDice, setSelectedDice] = useState<SelectedDice>();
@@ -64,8 +61,11 @@ export const GameComponent: Component<{ player: Player }> = (
         removeEatenPellets(parsed);
         break;
       case GameAction.playerInfo:
-        const players = parsed.Data as Player[];
-        // TODO set all characters
+        const players = parsed.Data as PlayerProps[];
+        const pacMen = players.filter(p => p.PacMan).map(p => new PacMan(p.PacMan!));
+        console.log(pacMen);
+        // TODO find spawn points
+        setCharacters([...pacMen, ...ghosts]);
         break;
     }
   }
@@ -129,15 +129,19 @@ export const GameComponent: Component<{ player: Player }> = (
       </div>
       <AllDice values={dice} onclick={handleDiceClick} selectedDiceIndex={selectedDice?.index}/>
       {
-        (characters.filter(c => c instanceof PacMan) as PacMan[]).map(c =>
+        (characters?.filter(c => c.isPacMan()) as PacMan[] | undefined)?.map(c =>
           <div key={c.Colour} className={"mx-auto w-fit m-2"}>
             <p className={currentPlayer === player ? "underline" : ""}>Player: {player.Colour}</p>
             <p>Pellets: {player.Box.count}</p>
             <p>PowerPellets: {player.Box.countPowerPellets}</p>
           </div>)
       }
-      <GameBoard className={"mx-auto my-2"} characters={characters} selectedDice={selectedDice}
-                 onMove={onCharacterMove} map={testMap}/>
+      {characters &&
+        <GameBoard className={"mx-auto my-2"}
+                   characters={characters}
+                   selectedDice={selectedDice}
+                   onMove={onCharacterMove} map={testMap}/>
+      }
     </div>
   );
 };

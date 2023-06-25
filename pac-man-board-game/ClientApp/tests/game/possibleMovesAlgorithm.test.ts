@@ -8,7 +8,7 @@ let pacMan: Character;
 
 beforeEach(() => {
   pacMan = new PacMan({
-    colour: "yellow", spawnPosition: {At: {x: 3, y: 3}, Direction: Direction.up}
+    Colour: "yellow", SpawnPosition: {At: {x: 3, y: 3}, Direction: Direction.up}
   });
 });
 

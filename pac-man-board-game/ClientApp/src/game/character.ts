@@ -15,21 +15,21 @@ export class Character {
 
   public constructor(
     {
-      colour,
-      position = null,
-      type = CharacterType.dummy,
-      isEatable = type === CharacterType.pacMan,
-      spawnPosition = null
+      Colour,
+      Position = null,
+      Type = CharacterType.dummy,
+      IsEatable = Type === CharacterType.pacMan,
+      SpawnPosition = null
     }: CharacterProps) {
-    this.Colour = colour;
-    this.IsEatable = isEatable;
-    this.SpawnPosition = spawnPosition;
+    this.Colour = Colour;
+    this.IsEatable = IsEatable;
+    this.SpawnPosition = SpawnPosition;
 
-    this.Position = position ?? spawnPosition ? {
-      End: spawnPosition!.At,
-      Direction: spawnPosition!.Direction
+    this.Position = Position ?? SpawnPosition ? {
+      End: SpawnPosition!.At,
+      Direction: SpawnPosition!.Direction
     } : null;
-    this.Type = type;
+    this.Type = Type;
   }
 
   public follow(path: Path): void {
@@ -62,16 +62,16 @@ export class Character {
 
 export class PacMan extends Character {
 
-  public constructor({colour, position, isEatable = true, spawnPosition, type = CharacterType.pacMan}: CharacterProps) {
-    super({colour, position, isEatable, spawnPosition, type});
+  public constructor({Colour, Position, IsEatable = true, SpawnPosition, Type = CharacterType.pacMan}: CharacterProps) {
+    super({Colour: Colour, Position: Position, IsEatable: IsEatable, SpawnPosition: SpawnPosition, Type: Type});
   }
 
 }
 
 export class Ghost extends Character {
 
-  public constructor({colour, position, isEatable, spawnPosition, type = CharacterType.ghost}: CharacterProps) {
-    super({colour, position, isEatable, spawnPosition, type});
+  public constructor({Colour, Position, IsEatable, SpawnPosition, Type = CharacterType.ghost}: CharacterProps) {
+    super({Colour: Colour, Position: Position, IsEatable: IsEatable, SpawnPosition: SpawnPosition, Type: Type});
   }
 }
 
@@ -79,11 +79,11 @@ export class Dummy extends Character {
 
   public constructor(position: Path) { // TODO see-through
     super({
-      colour: "grey",
-      position,
-      isEatable: false,
-      spawnPosition: {At: {x: 0, y: 0}, Direction: Direction.up},
-      type: CharacterType.dummy,
+      Colour: "grey",
+      Position: position,
+      IsEatable: false,
+      SpawnPosition: {At: {x: 0, y: 0}, Direction: Direction.up},
+      Type: CharacterType.dummy,
     });
   }
 

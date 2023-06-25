@@ -8,12 +8,12 @@ export default class Player {
   public readonly Box: Box;
 
   constructor(props: PlayerProps) {
-    this.Name = props.name;
-    this.Colour = props.colour;
-    this.Box = new Box(props.box ?? {colour: props.colour});
-    this.PacMan = new Character(props.pacMan ?? {
-      colour: props.colour,
-      type: CharacterType.pacMan
+    this.Name = props.Name;
+    this.Colour = props.Colour;
+    this.Box = new Box(props.Box ?? {colour: props.Colour});
+    this.PacMan = new Character(props.PacMan ?? {
+      Colour: props.Colour,
+      Type: CharacterType.pacMan
     });
   }
 
