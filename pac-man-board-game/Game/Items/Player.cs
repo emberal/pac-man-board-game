@@ -8,4 +8,5 @@ public class Player : IPlayer
     public required Character PacMan { get; init; }
     public required string Colour { get; init; }
     public required Box Box { get; init; }
+    public State State { get; set; } = State.WaitingForPlayers;
 }

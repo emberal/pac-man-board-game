@@ -5,6 +5,7 @@ using pacMan.Game;
 using pacMan.Game.Interfaces;
 using pacMan.Game.Items;
 using pacMan.Interfaces;
+using pacMan.Services;
 using pacMan.Utils;
 
 namespace pacMan.Controllers;
@@ -14,6 +15,8 @@ namespace pacMan.Controllers;
 public class GameController : GenericController
 {
     private readonly IDiceCup _diceCup;
+    private GameGroup _group = new();
+    private IPlayer? _player;
 
     public GameController(ILogger<GameController> logger, IWebSocketService wsService) : base(logger, wsService)
     {
@@ -48,13 +51,17 @@ public class GameController : GenericController
                 message.Data = rolls;
                 break;
             case GameAction.PlayerInfo:
-                Player player = JsonSerializer.Deserialize<Player>(message.Data);
-                var group = WsService.AddPlayer(player); // TODO missing some data?
+                _player = JsonSerializer.Deserialize<Player>(message.Data);
+                _group = WsService.AddPlayer(_player); // TODO missing some data?
 
-                message.Data = group.Players;
+                message.Data = _group.Players;
                 break;
             case GameAction.Ready:
-                // TODO select starter player
+                if (_player != null) _group.SetReady(_player);
+                if (_group.AllReady())
+                {
+                    // TODO select starter player and send response
+                }
                 break;
             default:
                 Logger.Log(LogLevel.Information, "Forwarding message to all clients");

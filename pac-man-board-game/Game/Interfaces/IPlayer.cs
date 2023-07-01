@@ -8,4 +8,12 @@ public interface IPlayer
     Character PacMan { get; init; }
     string Colour { get; init; }
     Box Box { get; init; }
+    State State { get; set; }
+}
+
+public enum State
+{
+    WaitingForPlayers,
+    Ready,
+    InGame
 }

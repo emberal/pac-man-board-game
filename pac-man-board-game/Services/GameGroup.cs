@@ -13,6 +13,7 @@ public class GameGroup
         if (Players.Count >= Rules.MaxPlayers) return false;
         if (Players.Exists(p => p.Name == player.Name)) return false;
 
+        player.State = State.WaitingForPlayers;
         Players.Add(player);
         return true;
     }
@@ -20,5 +21,15 @@ public class GameGroup
     public void SendToAll(ArraySegment<byte> segment)
     {
         Connections?.Invoke(segment);
+    }
+
+    public bool AllReady()
+    {
+        return Players.All(p => p.State == State.Ready);
+    }
+
+    public void SetReady(IPlayer player)
+    {
+        player.State = State.Ready;
     }
 }
