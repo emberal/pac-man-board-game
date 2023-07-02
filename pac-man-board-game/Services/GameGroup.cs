@@ -5,7 +5,10 @@ namespace pacMan.Services;
 
 public class GameGroup
 {
+    private readonly Random _random = new();
     public List<IPlayer> Players { get; } = new();
+
+    public IPlayer RandomPlayer => Players[_random.Next(Players.Count)];
     public event Func<ArraySegment<byte>, Task>? Connections;
 
     public bool AddPlayer(IPlayer player)
@@ -18,18 +21,11 @@ public class GameGroup
         return true;
     }
 
-    public void SendToAll(ArraySegment<byte> segment)
-    {
-        Connections?.Invoke(segment);
-    }
+    public void SendToAll(ArraySegment<byte> segment) => Connections?.Invoke(segment);
 
-    public bool AllReady()
-    {
-        return Players.All(p => p.State == State.Ready);
-    }
-
-    public void SetReady(IPlayer player)
+    public IEnumerable<IPlayer> SetReady(IPlayer player)
     {
         player.State = State.Ready;
+        return Players;
     }
 }

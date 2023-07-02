@@ -6,7 +6,7 @@ import {Character, Ghost, PacMan} from "../game/character";
 import WebSocketService from "../websockets/WebSocketService";
 import {testMap} from "../game/map";
 import {TileType} from "../game/tileType";
-import Player from "../game/player";
+import Player, {State} from "../game/player";
 
 const wsService = new WebSocketService(import.meta.env.VITE_API);
 
@@ -17,10 +17,7 @@ const ghosts = [
 
 export const GameComponent: Component<{ player: Player }> = (
   {
-    player = new Player({
-      Name: "Martin",
-      Colour: "yellow",
-    })
+    player
   }) => {
   // TODO find spawn points
   const [characters, setCharacters] = useState<Character[]>();
@@ -62,6 +59,7 @@ export const GameComponent: Component<{ player: Player }> = (
         break;
       case GameAction.playerInfo:
         const players = parsed.Data as PlayerProps[];
+        console.log(players);
         const pacMen = players.filter(p => p.PacMan).map(p => new PacMan(p.PacMan!));
         console.log(pacMen);
         // TODO find spawn points
@@ -121,11 +119,19 @@ export const GameComponent: Component<{ player: Player }> = (
     return () => wsService.close();
   }, []);
 
+  function sendReady() {
+    wsService.send({Action: GameAction.ready});
+  }
+
   return (
     <div>
       <h1 className={"w-fit mx-auto"}>Pac-Man The Board Game</h1>
       <div className={"flex-center"}>
-        <button onClick={startGameLoop}>Roll dice</button>
+        {
+          player.State === State.waitingForPlayers ?
+            <button onClick={sendReady}>Ready</button> :
+            <button onClick={startGameLoop}>Roll dice</button>
+        }
       </div>
       <AllDice values={dice} onclick={handleDiceClick} selectedDiceIndex={selectedDice?.index}/>
       {

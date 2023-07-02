@@ -29,4 +29,5 @@ interface PlayerProps {
   readonly PacMan?: CharacterProps,
   readonly Colour: Colour,
   readonly Box?: BoxProps,
+  State?: import("../game/player").State,
 }

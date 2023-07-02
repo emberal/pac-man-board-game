@@ -13,8 +13,9 @@ import {Direction, getDirections} from "./direction";
  * @returns An array of paths the character can move to
  */
 export default function findPossiblePositions(board: GameMap, character: Character, steps: number, characters: Character[]): Path[] {
+  if (!character.Position || !character.SpawnPosition) throw new Error("Character has no position or spawn position");
   return findPossibleRecursive(board, character.Position, steps, character, characters);
-}
+};
 
 /**
  * Uses recursion to move through the board and find all the possible positions
@@ -253,7 +254,7 @@ function isSpawn(board: GameMap, currentPos: Path) {
  */
 function isOwnSpawn(currentPos: Path, character: Character): boolean {
   const pos = currentPos.End;
-  const charPos = character.SpawnPosition.At;
+  const charPos = character.SpawnPosition!.At;
   return charPos.x === pos.x && charPos.y === pos.y;
 }
 

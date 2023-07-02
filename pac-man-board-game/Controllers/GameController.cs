@@ -18,16 +18,11 @@ public class GameController : GenericController
     private GameGroup _group = new();
     private IPlayer? _player;
 
-    public GameController(ILogger<GameController> logger, IWebSocketService wsService) : base(logger, wsService)
-    {
+    public GameController(ILogger<GameController> logger, IWebSocketService wsService) : base(logger, wsService) =>
         _diceCup = new DiceCup();
-    }
 
     [HttpGet]
-    public override async Task Accept()
-    {
-        await base.Accept();
-    }
+    public override async Task Accept() => await base.Accept();
 
     protected override ArraySegment<byte> Run(WebSocketReceiveResult result, byte[] data)
     {
@@ -57,11 +52,20 @@ public class GameController : GenericController
                 message.Data = _group.Players;
                 break;
             case GameAction.Ready:
-                if (_player != null) _group.SetReady(_player);
-                if (_group.AllReady())
+                if (_player != null)
                 {
-                    // TODO select starter player and send response
+                    var players = _group.SetReady(_player).ToArray();
+                    if (players.All(p => p.State == State.Ready))
+                        // TODO roll to start
+                        message.Data = new { AllReady = true, Starter = _group.RandomPlayer };
+                    else
+                        message.Data = new { AllReady = false, players };
                 }
+                else
+                {
+                    message.Data = "Player not found, please create a new player";
+                }
+
                 break;
             default:
                 Logger.Log(LogLevel.Information, "Forwarding message to all clients");

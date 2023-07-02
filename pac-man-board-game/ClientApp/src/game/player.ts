@@ -1,11 +1,18 @@
 import {Character, CharacterType} from "./character";
 import Box from "./box";
 
+export enum State {
+  waitingForPlayers,
+  ready,
+  inGame
+}
+
 export default class Player {
   public readonly Name: string;
   public readonly PacMan: Character;
   public readonly Colour: Colour;
   public readonly Box: Box;
+  public State: State;
 
   constructor(props: PlayerProps) {
     this.Name = props.Name;
@@ -15,6 +22,7 @@ export default class Player {
       Colour: props.Colour,
       Type: CharacterType.pacMan
     });
+    this.State = props.State ?? State.waitingForPlayers;
   }
 
   public stealFrom(other: Player): void {
