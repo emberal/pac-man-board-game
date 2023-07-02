@@ -1,4 +1,5 @@
 import Pellet from "./pellet";
+import {Colour} from "./colour";
 
 export default class Box {
   public Pellets: Pellet[];

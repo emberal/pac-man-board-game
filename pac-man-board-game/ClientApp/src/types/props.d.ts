@@ -1,5 +1,7 @@
 type Component<T = ComponentProps> = (props: T) => React.JSX.Element | null;
 
+type FRComponent<T = ComponentProps, HTML extends HTMLElement = HTMLElement> = React.ForwardRefExoticComponent<React.PropsWithoutRef<T> & React.RefAttributes<HTML>>;
+
 interface ComponentProps {
   className?: string,
   style?: React.CSSProperties,
@@ -11,8 +13,14 @@ interface ChildProps extends ComponentProps {
   children?: React.JSX.Element,
 }
 
+interface InputProps extends ComponentProps {
+  type?: string,
+  placeholder?: string,
+  required?: boolean,
+}
+
 interface CharacterProps {
-  Colour: Colour,
+  Colour: import("../game/colour").Colour,
   Position?: Path | null,
   IsEatable?: boolean,
   SpawnPosition?: DirectionalPosition | null,
@@ -21,13 +29,13 @@ interface CharacterProps {
 
 interface BoxProps {
   pellets?: import("../game/pellet").default[],
-  readonly colour: Colour,
+  readonly colour: import("../game/colour").Colour,
 }
 
 interface PlayerProps {
   readonly Name: string,
   readonly PacMan?: CharacterProps,
-  readonly Colour: Colour,
+  readonly Colour: import("../game/colour").Colour,
   readonly Box?: BoxProps,
   State?: import("../game/player").State,
 }

@@ -7,12 +7,13 @@ import WebSocketService from "../websockets/WebSocketService";
 import {testMap} from "../game/map";
 import {TileType} from "../game/tileType";
 import Player, {State} from "../game/player";
+import {Colour} from "../game/colour";
 
 const wsService = new WebSocketService(import.meta.env.VITE_API);
 
 const ghosts = [
-  new Ghost({Colour: "purple"}),
-  new Ghost({Colour: "purple"})
+  new Ghost({Colour: Colour.Purple}),
+  new Ghost({Colour: Colour.Purple}),
 ];
 
 export const GameComponent: Component<{ player: Player }> = (
@@ -64,6 +65,14 @@ export const GameComponent: Component<{ player: Player }> = (
         console.log(pacMen);
         // TODO find spawn points
         setCharacters([...pacMen, ...ghosts]);
+        break;
+      case GameAction.ready:
+        const isReady = parsed.Data.AllReady as boolean;
+        if (isReady) {
+          setCurrentPlayer(parsed.Data.Starter as Player);
+        } else {
+          // TODO update player states
+        }
         break;
     }
   }
@@ -124,8 +133,7 @@ export const GameComponent: Component<{ player: Player }> = (
   }
 
   return (
-    <div>
-      <h1 className={"w-fit mx-auto"}>Pac-Man The Board Game</h1>
+    <>
       <div className={"flex-center"}>
         {
           player.State === State.waitingForPlayers ?
@@ -136,6 +144,7 @@ export const GameComponent: Component<{ player: Player }> = (
       <AllDice values={dice} onclick={handleDiceClick} selectedDiceIndex={selectedDice?.index}/>
       {
         (characters?.filter(c => c.isPacMan()) as PacMan[] | undefined)?.map(c =>
+          /*TODO use PlayerStats instead*/
           <div key={c.Colour} className={"mx-auto w-fit m-2"}>
             <p className={currentPlayer === player ? "underline" : ""}>Player: {player.Colour}</p>
             <p>Pellets: {player.Box.count}</p>
@@ -148,6 +157,6 @@ export const GameComponent: Component<{ player: Player }> = (
                    selectedDice={selectedDice}
                    onMove={onCharacterMove} map={testMap}/>
       }
-    </div>
+    </>
   );
 };

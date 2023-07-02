@@ -1,4 +1,5 @@
 import {Direction} from "./direction";
+import {Colour} from "./colour";
 
 export enum CharacterType {
   pacMan,
@@ -79,7 +80,7 @@ export class Dummy extends Character {
 
   public constructor(position: Path) { // TODO see-through
     super({
-      Colour: "grey",
+      Colour: Colour.Grey,
       Position: position,
       IsEatable: false,
       SpawnPosition: {At: {x: 0, y: 0}, Direction: Direction.up},

@@ -1,5 +1,6 @@
 import {Character, CharacterType} from "./character";
 import Box from "./box";
+import {Colour} from "./colour";
 
 export enum State {
   waitingForPlayers,

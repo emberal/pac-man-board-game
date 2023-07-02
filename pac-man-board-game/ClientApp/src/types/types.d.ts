@@ -34,5 +34,3 @@ type Path = {
   End: Position,
   Direction: import("../game/direction").Direction
 }
-
-type Colour = "white" | "red" | "blue" | "yellow" | "green" | "purple" | "grey";
