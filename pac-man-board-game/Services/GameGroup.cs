@@ -3,7 +3,7 @@ using pacMan.Game.Interfaces;
 
 namespace pacMan.Services;
 
-public class GameGroup
+public class GameGroup // TODO tests
 {
     private readonly Random _random = new();
     public List<IPlayer> Players { get; } = new();

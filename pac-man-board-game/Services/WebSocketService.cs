@@ -5,7 +5,7 @@ using pacMan.Utils;
 
 namespace pacMan.Services;
 
-public class WebSocketService : IWebSocketService
+public class WebSocketService : IWebSocketService // TODO add tests
 {
     private readonly ILogger<WebSocketService> _logger;
 
@@ -54,10 +54,7 @@ public class WebSocketService : IWebSocketService
         _logger.Log(LogLevel.Information, "WebSocket connection closed");
     }
 
-    public int CountConnected()
-    {
-        return Connections?.GetInvocationList().Length ?? 0;
-    }
+    public int CountConnected() => Connections?.GetInvocationList().Length ?? 0;
 
     public GameGroup AddPlayer(IPlayer player)
     {
