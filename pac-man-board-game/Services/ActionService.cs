@@ -9,9 +9,9 @@ namespace pacMan.Services;
 public interface IActionService
 {
     void DoAction(ActionMessage message);
-    void RollDice(ActionMessage message);
-    void PlayerInfo(ActionMessage message);
-    void Ready(ActionMessage message);
+    List<int> RollDice(ActionMessage message);
+    List<IPlayer> PlayerInfo(ActionMessage message);
+    object Ready(ActionMessage message);
 }
 
 public class ActionService : IActionService // TODO tests
@@ -32,54 +32,54 @@ public class ActionService : IActionService // TODO tests
 
     public void DoAction(ActionMessage message)
     {
-        switch (message.Action)
+        message.Data = message.Action switch
         {
-            case GameAction.RollDice:
-                RollDice(message);
-                break;
-            case GameAction.PlayerInfo:
-                PlayerInfo(message);
-                break;
-            case GameAction.Ready:
-                Ready(message);
-                break;
-            case GameAction.MoveCharacter:
-            default:
-                _logger.Log(LogLevel.Information, "Forwarding message to all clients");
-                break;
-        }
+            GameAction.RollDice => RollDice(message),
+
+            GameAction.PlayerInfo => PlayerInfo(message),
+            GameAction.Ready => Ready(message),
+            _ => message.Data
+        };
     }
 
-    public void RollDice(ActionMessage message)
+    public List<int> RollDice(ActionMessage message)
     {
         var rolls = _diceCup.Roll();
         _logger.Log(LogLevel.Information, "Rolled [{}]", string.Join(", ", rolls));
 
-        message.Data = rolls;
+        return rolls;
     }
 
-    public void PlayerInfo(ActionMessage message)
+    public List<IPlayer> PlayerInfo(ActionMessage message)
     {
         _player = JsonSerializer.Deserialize<Player>(message.Data);
         _group = _wsService.AddPlayer(_player); // TODO missing some data?
 
-        message.Data = _group.Players;
+        return _group.Players;
     }
 
-    public void Ready(ActionMessage message)
+    public object Ready(ActionMessage message)
     {
+        object data;
         if (_player != null)
         {
             var players = _group.SetReady(_player).ToArray();
             if (players.All(p => p.State == State.Ready))
+            {
                 // TODO roll to start
-                message.Data = new { AllReady = true, Starter = _group.RandomPlayer };
+                _group.SetAllInGame();
+                data = new { AllReady = true, Players = players, Starter = _group.RandomPlayer };
+            }
             else
-                message.Data = new { AllReady = false, players };
+            {
+                data = new { AllReady = false, Players = players };
+            }
         }
         else
         {
-            message.Data = "Player not found, please create a new player";
+            data = "Player not found, please create a new player";
         }
+
+        return data;
     }
 }

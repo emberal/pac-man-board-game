@@ -8,6 +8,7 @@ import {testMap} from "../game/map";
 import {TileType} from "../game/tileType";
 import Player, {State} from "../game/player";
 import {Colour} from "../game/colour";
+import PlayerStats from "../game/playerStats";
 
 const wsService = new WebSocketService(import.meta.env.VITE_API);
 
@@ -16,12 +17,10 @@ const ghosts = [
   new Ghost({Colour: Colour.Purple}),
 ];
 
-export const GameComponent: Component<{ player: Player }> = (
-  {
-    player
-  }) => {
+export const GameComponent: Component<{ player: Player }> = ({player}) => {
   // TODO find spawn points
   const [characters, setCharacters] = useState<Character[]>();
+  const [players, setPlayers] = useState<Player[]>([player]);
 
   const [dice, setDice] = useState<number[]>();
   const [selectedDice, setSelectedDice] = useState<SelectedDice>();
@@ -46,7 +45,7 @@ export const GameComponent: Component<{ player: Player }> = (
     rollDice();
   }
 
-  function doAction(message: MessageEvent<string>): void {
+  function doAction(message: MessageEvent<string>): void { // TODO move to Service
     const parsed: ActionMessage = JSON.parse(message.data);
 
     switch (parsed.Action) {
@@ -59,9 +58,10 @@ export const GameComponent: Component<{ player: Player }> = (
         removeEatenPellets(parsed);
         break;
       case GameAction.playerInfo:
-        const players = parsed.Data as PlayerProps[];
-        console.log(players);
-        const pacMen = players.filter(p => p.PacMan).map(p => new PacMan(p.PacMan!));
+        const playerProps = parsed.Data as PlayerProps[];
+        console.log(playerProps);
+        setPlayers(playerProps.map(p => new Player(p)));
+        const pacMen = playerProps.filter(p => p.PacMan).map(p => new PacMan(p.PacMan!));
         console.log(pacMen);
         // TODO find spawn points
         setCharacters([...pacMen, ...ghosts]);
@@ -69,10 +69,9 @@ export const GameComponent: Component<{ player: Player }> = (
       case GameAction.ready:
         const isReady = parsed.Data.AllReady as boolean;
         if (isReady) {
-          setCurrentPlayer(parsed.Data.Starter as Player);
-        } else {
-          // TODO update player states
+          setCurrentPlayer(new Player(parsed.Data.Starter as PlayerProps));
         }
+        setPlayers((parsed.Data.Players as PlayerProps[]).map(p => new Player(p)));
         break;
     }
   }
@@ -136,21 +135,13 @@ export const GameComponent: Component<{ player: Player }> = (
     <>
       <div className={"flex-center"}>
         {
-          player.State === State.waitingForPlayers ?
+          currentPlayer === undefined || currentPlayer.State === State.waitingForPlayers ?
             <button onClick={sendReady}>Ready</button> :
             <button onClick={startGameLoop}>Roll dice</button>
         }
       </div>
       <AllDice values={dice} onclick={handleDiceClick} selectedDiceIndex={selectedDice?.index}/>
-      {
-        (characters?.filter(c => c.isPacMan()) as PacMan[] | undefined)?.map(c =>
-          /*TODO use PlayerStats instead*/
-          <div key={c.Colour} className={"mx-auto w-fit m-2"}>
-            <p className={currentPlayer === player ? "underline" : ""}>Player: {player.Colour}</p>
-            <p>Pellets: {player.Box.count}</p>
-            <p>PowerPellets: {player.Box.countPowerPellets}</p>
-          </div>)
-      }
+      {players?.map(p => <PlayerStats key={p.Name} player={p} isCurrentPlayer={currentPlayer === p}/>)}
       {characters &&
         <GameBoard className={"mx-auto my-2"}
                    characters={characters}

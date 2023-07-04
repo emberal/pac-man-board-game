@@ -28,4 +28,9 @@ public class GameGroup // TODO tests
         player.State = State.Ready;
         return Players;
     }
+
+    public void SetAllInGame()
+    {
+        foreach (var player in Players) player.State = State.InGame;
+    }
 }

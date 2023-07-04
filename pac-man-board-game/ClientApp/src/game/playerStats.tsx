@@ -15,6 +15,7 @@ const PlayerStats: Component<PlayerStatsProps> = (
   }) => (
   <div key={player.Colour} className={`mx-auto w-fit m-2 ${className}`} id={id}>
     <p className={isCurrentPlayer ? "underline" : ""}>Player: {player.Name}</p>
+    <p>Colour: {player.Colour}</p>
     {player.State === State.inGame ?
       <>
         <p>Pellets: {player.Box.count}</p>
