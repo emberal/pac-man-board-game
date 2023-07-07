@@ -1,30 +1,24 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {AllDice} from "./dice";
-import {GameAction} from "../utils/actions";
+import {doAction, GameAction} from "../utils/actions";
 import GameBoard from "./gameBoard";
-import {Character, Ghost, PacMan} from "../game/character";
 import WebSocketService from "../websockets/WebSocketService";
 import {testMap} from "../game/map";
-import {TileType} from "../game/tileType";
 import Player, {State} from "../game/player";
-import {Colour} from "../game/colour";
 import PlayerStats from "../components/playerStats";
+import {useAtom} from "jotai";
+import {charactersAtom, currentPlayerAtom, diceAtom, playersAtom, selectedDiceAtom} from "../utils/state";
 
 const wsService = new WebSocketService(import.meta.env.VITE_API);
 
-const ghosts = [
-  new Ghost({Colour: Colour.Purple}),
-  new Ghost({Colour: Colour.Purple}),
-];
-
 export const GameComponent: Component<{ player: Player }> = ({player}) => {
   // TODO find spawn points
-  const [characters, setCharacters] = useState<Character[]>();
-  const [players, setPlayers] = useState<Player[]>([player]);
+  const [characters] = useAtom(charactersAtom);
+  const [players] = useAtom(playersAtom);
 
-  const [dice, setDice] = useState<number[]>();
-  const [selectedDice, setSelectedDice] = useState<SelectedDice>();
-  const [currentPlayer, setCurrentPlayer] = useState<Player>();
+  const [dice] = useAtom(diceAtom);
+  const [selectedDice, setSelectedDice] = useAtom(selectedDiceAtom);
+  const [currentPlayer] = useAtom(currentPlayerAtom);
 
   function handleDiceClick(selected: SelectedDice): void {
     setSelectedDice(selected);
@@ -43,57 +37,6 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
     }
     setSelectedDice(undefined);
     rollDice();
-  }
-
-  function doAction(message: MessageEvent<string>): void { // TODO move to actions.ts
-    const parsed: ActionMessage = JSON.parse(message.data);
-
-    switch (parsed.Action) {
-      case GameAction.rollDice:
-        setDice(parsed.Data as number[]);
-        break;
-      case GameAction.moveCharacter:
-        setDice(parsed.Data?.dice as number[]);
-        updateCharacters(parsed);
-        removeEatenPellets(parsed);
-        break;
-      case GameAction.playerInfo:
-        const playerProps = parsed.Data as PlayerProps[];
-        console.log(playerProps);
-        setPlayers(playerProps.map(p => new Player(p)));
-        const pacMen = playerProps.filter(p => p.PacMan).map(p => new PacMan(p.PacMan!));
-        console.log(pacMen);
-        // TODO find spawn points
-        setCharacters([...pacMen, ...ghosts]);
-        break;
-      case GameAction.ready:
-        const isReady = parsed.Data.AllReady as boolean;
-        if (isReady) {
-          setCurrentPlayer(new Player(parsed.Data.Starter as PlayerProps));
-        }
-        setPlayers((parsed.Data.Players as PlayerProps[]).map(p => new Player(p)));
-        break;
-    }
-  }
-
-  function removeEatenPellets(parsed: ActionMessage): void {
-    const pellets = parsed.Data?.eatenPellets as Position[];
-
-    for (const pellet of pellets) {
-      testMap[pellet.y][pellet.x] = TileType.empty;
-    }
-  }
-
-  function updateCharacters(parsed: ActionMessage): void {
-    const updatedCharacters = parsed.Data?.characters as CharacterProps[] | undefined;
-
-    if (updatedCharacters) {
-      const newList: Character[] = [];
-      for (const character of updatedCharacters) {
-        newList.push(new Character(character));
-      }
-      setCharacters(newList);
-    }
   }
 
   function onCharacterMove(eatenPellets: Position[]): void {
@@ -122,8 +65,7 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
     wsService.open();
 
     void sendPlayer();
-    // TODO send action to backend when all players are ready
-    //  The backend should then send the first player as current player
+
     return () => wsService.close();
   }, []);
 

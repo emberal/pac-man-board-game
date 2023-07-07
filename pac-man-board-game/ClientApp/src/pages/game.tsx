@@ -1,13 +1,23 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {GameComponent} from "../components/gameComponent";
-import {useLocation} from "react-router-dom";
-import Player from "../game/player";
+import {useAtom} from "jotai";
+import {thisPlayerAtom} from "../utils/state";
 
 const Game: Component = () => {
-  const location = useLocation();
-  const player = location.state as Player;
+  const [player] = useAtom(thisPlayerAtom);
 
-  return <GameComponent player={player}/>;
+  useEffect(() => {
+    if (!player) {
+      // TODO state dissapears on refresh
+      window.location.href = "/";
+    }
+  }, []);
+
+  if (player) {
+    return <GameComponent player={player}/>;
+  } else {
+    return null;
+  }
 };
 
 export default Game;
