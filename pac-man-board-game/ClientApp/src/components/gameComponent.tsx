@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {AllDice} from "./dice";
-import {GameAction} from "../websockets/actions";
+import {GameAction} from "../utils/actions";
 import GameBoard from "./gameBoard";
 import {Character, Ghost, PacMan} from "../game/character";
 import WebSocketService from "../websockets/WebSocketService";
@@ -8,7 +8,7 @@ import {testMap} from "../game/map";
 import {TileType} from "../game/tileType";
 import Player, {State} from "../game/player";
 import {Colour} from "../game/colour";
-import PlayerStats from "../game/playerStats";
+import PlayerStats from "../components/playerStats";
 
 const wsService = new WebSocketService(import.meta.env.VITE_API);
 
@@ -45,7 +45,7 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
     rollDice();
   }
 
-  function doAction(message: MessageEvent<string>): void { // TODO move to Service
+  function doAction(message: MessageEvent<string>): void { // TODO move to actions.ts
     const parsed: ActionMessage = JSON.parse(message.data);
 
     switch (parsed.Action) {

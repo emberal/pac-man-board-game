@@ -1,5 +1,5 @@
 import React from "react";
-import Player, {State} from "./player";
+import Player, {State} from "../game/player";
 
 export interface PlayerStatsProps extends ComponentProps {
   player: Player,

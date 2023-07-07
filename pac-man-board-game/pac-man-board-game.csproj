@@ -44,6 +44,8 @@
       <TypeScriptCompile Remove="ClientApp\src\components\gameCanvas.tsx" />
       <TypeScriptCompile Remove="ClientApp\src\game\game.ts" />
       <TypeScriptCompile Remove="ClientApp\src\App.test.tsx" />
+      <TypeScriptCompile Remove="ClientApp\src\game\playerStats.tsx" />
+      <TypeScriptCompile Remove="ClientApp\src\websockets\actions.ts" />
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
