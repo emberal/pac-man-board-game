@@ -18,7 +18,7 @@ export default class Player {
   constructor(props: PlayerProps) {
     this.Name = props.Name;
     this.Colour = props.Colour;
-    this.Box = new Box(props.Box ?? {colour: props.Colour});
+    this.Box = new Box(props.Box ?? {Colour: props.Colour});
     this.PacMan = new Character(props.PacMan ?? {
       Colour: props.Colour,
       Type: CharacterType.pacMan

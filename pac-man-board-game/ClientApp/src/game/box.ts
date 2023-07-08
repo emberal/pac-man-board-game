@@ -5,9 +5,9 @@ export default class Box {
   public Pellets: Pellet[];
   public readonly Colour: Colour;
 
-  public constructor({colour, pellets = []}: BoxProps) {
-    this.Colour = colour;
-    this.Pellets = pellets;
+  public constructor({Colour, Pellets = []}: BoxProps) {
+    this.Colour = Colour;
+    this.Pellets = Pellets;
   }
 
   get powerPellet(): Pellet | undefined {

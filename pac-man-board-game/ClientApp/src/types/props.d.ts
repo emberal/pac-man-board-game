@@ -28,8 +28,8 @@ interface CharacterProps {
 }
 
 interface BoxProps {
-  pellets?: import("../game/pellet").default[],
-  readonly colour: import("../game/colour").Colour,
+  Pellets?: import("../game/pellet").default[],
+  readonly Colour: import("../game/colour").Colour,
 }
 
 interface PlayerProps {
