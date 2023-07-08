@@ -69,7 +69,7 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
     return () => wsService.close();
   }, []);
 
-  function sendReady() {
+  function sendReady(): void {
     wsService.send({Action: GameAction.ready});
   }
 

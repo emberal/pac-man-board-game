@@ -10,7 +10,7 @@ public interface IWebSocketService
     Task Send(WebSocket webSocket, ArraySegment<byte> segment);
     void SendToAll(ArraySegment<byte> segment);
     Task<WebSocketReceiveResult> Receive(WebSocket webSocket, byte[] buffer);
-    Task Close(WebSocket webSocket, WebSocketCloseStatus closeStatus, string closeStatusDescription);
+    Task Close(WebSocket webSocket, WebSocketCloseStatus closeStatus, string? closeStatusDescription);
     int CountConnected();
     GameGroup AddPlayer(IPlayer player);
 }

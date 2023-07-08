@@ -44,8 +44,7 @@ public class WebSocketService : IWebSocketService // TODO add tests
         return result;
     }
 
-    public async Task Close(WebSocket webSocket, WebSocketCloseStatus closeStatus,
-        string closeStatusDescription = "No reason")
+    public async Task Close(WebSocket webSocket, WebSocketCloseStatus closeStatus, string? closeStatusDescription)
     {
         await webSocket.CloseAsync(
             closeStatus,

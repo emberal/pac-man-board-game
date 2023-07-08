@@ -59,7 +59,7 @@ public abstract class GenericController : ControllerBase
                 WsService.SendToAll(segment);
             } while (true);
 
-            await WsService.Close(_webSocket, result.CloseStatus.Value, result.CloseStatusDescription ?? "No reason");
+            await WsService.Close(_webSocket, result.CloseStatus.Value, result.CloseStatusDescription);
         }
         catch (WebSocketException e)
         {

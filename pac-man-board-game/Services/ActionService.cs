@@ -9,9 +9,9 @@ namespace pacMan.Services;
 public interface IActionService
 {
     void DoAction(ActionMessage message);
-    List<int> RollDice(ActionMessage message);
+    List<int> RollDice();
     List<IPlayer> PlayerInfo(ActionMessage message);
-    object Ready(ActionMessage message);
+    object Ready();
 }
 
 public class ActionService : IActionService // TODO tests
@@ -34,15 +34,14 @@ public class ActionService : IActionService // TODO tests
     {
         message.Data = message.Action switch
         {
-            GameAction.RollDice => RollDice(message),
-
+            GameAction.RollDice => RollDice(),
             GameAction.PlayerInfo => PlayerInfo(message),
-            GameAction.Ready => Ready(message),
+            GameAction.Ready => Ready(),
             _ => message.Data
         };
     }
 
-    public List<int> RollDice(ActionMessage message)
+    public List<int> RollDice()
     {
         var rolls = _diceCup.Roll();
         _logger.Log(LogLevel.Information, "Rolled [{}]", string.Join(", ", rolls));
@@ -58,7 +57,7 @@ public class ActionService : IActionService // TODO tests
         return _group.Players;
     }
 
-    public object Ready(ActionMessage message)
+    public object Ready()
     {
         object data;
         if (_player != null)

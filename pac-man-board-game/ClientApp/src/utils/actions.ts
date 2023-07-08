@@ -20,10 +20,10 @@ const ghosts = [
 
 const store = getDefaultStore();
 
-export function doAction(message: MessageEvent<string>): void { // TODO divide into smaller functions
+export const doAction: MessageEventFunction<string> = (message): void => { // TODO divide into smaller functions
   const parsed: ActionMessage = JSON.parse(message.data);
 
-  switch (parsed.Action) {
+  switch (parsed.Action as GameAction) {
     case GameAction.rollDice:
       store.set(diceAtom, parsed.Data as number[]);
       break;
@@ -49,7 +49,7 @@ export function doAction(message: MessageEvent<string>): void { // TODO divide i
       store.set(playersAtom, (parsed.Data.Players as PlayerProps[]).map(p => new Player(p)));
       break;
   }
-}
+};
 
 function removeEatenPellets(parsed: ActionMessage): void {
   const pellets = parsed.Data?.eatenPellets as Position[];

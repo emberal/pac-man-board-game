@@ -4,7 +4,7 @@ import {useAtom} from "jotai";
 import {thisPlayerAtom} from "../utils/state";
 
 const Game: Component = () => {
-  const [player] = useAtom(thisPlayerAtom);
+  const [player] = useAtom(thisPlayerAtom); // TODO get player from session storage
 
   useEffect(() => {
     if (!player) {
