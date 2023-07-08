@@ -20,47 +20,39 @@ const ghosts = [
 
 const store = getDefaultStore();
 
-export const doAction: MessageEventFunction<string> = (message): void => { // TODO divide into smaller functions
-  const parsed: ActionMessage = JSON.parse(message.data);
+export const doAction: MessageEventFunction<string> = (event): void => { // TODO divide into smaller functions
+  const message: ActionMessage = JSON.parse(event.data);
 
-  switch (parsed.Action as GameAction) {
+  switch (message.Action as GameAction) {
     case GameAction.rollDice:
-      store.set(diceAtom, parsed.Data as number[]);
+      setDice(message.Data);
       break;
     case GameAction.moveCharacter:
-      store.set(diceAtom, parsed.Data?.dice as number[]);
-      updateCharacters(parsed);
-      removeEatenPellets(parsed);
+      moveCharacter(message.Data);
       break;
     case GameAction.playerInfo:
-      const playerProps = parsed.Data as PlayerProps[];
-      console.log(playerProps);
-      store.set(playersAtom, playerProps.map(p => new Player(p)));
-      const pacMen = playerProps.filter(p => p.PacMan).map(p => new PacMan(p.PacMan!));
-      console.log(pacMen);
-      // TODO find spawn points
-      store.set(charactersAtom, [...pacMen, ...ghosts]);
+      playerInfo(message.Data);
       break;
     case GameAction.ready:
-      const isReady = parsed.Data.AllReady as boolean;
-      if (isReady) {
-        store.set(currentPlayerAtom, new Player(parsed.Data.Starter as PlayerProps));
-      }
-      store.set(playersAtom, (parsed.Data.Players as PlayerProps[]).map(p => new Player(p)));
+      ready(message.Data);
       break;
   }
 };
 
-function removeEatenPellets(parsed: ActionMessage): void {
-  const pellets = parsed.Data?.eatenPellets as Position[];
-
-  for (const pellet of pellets) {
-    testMap[pellet.y][pellet.x] = TileType.empty;
-  }
+function setDice(data?: number[]): void {
+  store.set(diceAtom, data);
 }
 
-function updateCharacters(parsed: ActionMessage): void {
-  const updatedCharacters = parsed.Data?.characters as CharacterProps[] | undefined;
+type MoveCharacterData = { dice: number[], characters: CharacterProps[], eatenPellets: Position[] };
+
+function moveCharacter(data?: MoveCharacterData): void {
+  store.set(diceAtom, data?.dice);
+  updateCharacters(data);
+  removeEatenPellets(data);
+}
+
+function updateCharacters(data?: MoveCharacterData): void {
+  const updatedCharacters = data?.characters;
 
   if (updatedCharacters) {
     const newList: Character[] = [];
@@ -68,5 +60,38 @@ function updateCharacters(parsed: ActionMessage): void {
       newList.push(new Character(character));
     }
     store.set(charactersAtom, newList);
+  }
+}
+
+function removeEatenPellets(data?: MoveCharacterData): void {
+  const pellets = data?.eatenPellets;
+
+  for (const pellet of pellets ?? []) {
+    testMap[pellet.y][pellet.x] = TileType.empty;
+  }
+}
+
+function playerInfo(data?: PlayerProps[]): void {
+  const playerProps = data ?? [];
+  console.log(playerProps);
+  store.set(playersAtom, playerProps.map(p => new Player(p)));
+  const pacMen = playerProps.filter(p => p.PacMan).map(p => new PacMan(p.PacMan!));
+  console.log(pacMen);
+  // TODO find spawn points
+  store.set(charactersAtom, [...pacMen, ...ghosts]);
+}
+
+type ReadyData =
+  | { AllReady: true, Starter: PlayerProps, Players: PlayerProps[] }
+  | { AllReady: false, Players: PlayerProps[] }
+  | string;
+
+function ready(data?: ReadyData): void {
+  if (data && typeof data !== "string") {
+    const isReady = data.AllReady;
+    if (isReady) {
+      store.set(currentPlayerAtom, new Player(data.Starter));
+    }
+    store.set(playersAtom, (data.Players).map(p => new Player(p)));
   }
 }
