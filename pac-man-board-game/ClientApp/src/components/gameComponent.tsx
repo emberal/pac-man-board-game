@@ -20,23 +20,11 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
   const [selectedDice, setSelectedDice] = useAtom(selectedDiceAtom);
   const [currentPlayer] = useAtom(currentPlayerAtom);
 
-  function handleDiceClick(selected: SelectedDice): void {
-    setSelectedDice(selected);
-  }
-
-  function rollDice(): void {
-    wsService.send({Action: GameAction.rollDice});
-  }
-
   function startGameLoop(): void {
-    if (currentPlayer !== player) return;
+    if (currentPlayer?.Name !== player.Name) return;
 
-    if (!wsService.isOpen()) {
-      setTimeout(startGameLoop, 50);
-      return;
-    }
     setSelectedDice(undefined);
-    rollDice();
+    wsService.send({Action: GameAction.rollDice});
   }
 
   function onCharacterMove(eatenPellets: Position[]): void {
@@ -56,7 +44,6 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
   }
 
   async function sendPlayer(): Promise<void> {
-    await wsService.waitForOpen();
     wsService.send({Action: GameAction.playerInfo, Data: player});
   }
 
@@ -64,7 +51,7 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
     wsService.onReceive = doAction;
     wsService.open();
 
-    void sendPlayer();
+    wsService.waitForOpen().then(() => void sendPlayer());
 
     return () => wsService.close();
   }, []);
@@ -82,7 +69,7 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
             <button onClick={startGameLoop}>Roll dice</button>
         }
       </div>
-      <AllDice values={dice} onclick={handleDiceClick} selectedDiceIndex={selectedDice?.index}/>
+      <AllDice values={dice} selectedDiceIndex={selectedDice?.index}/>
       {players?.map(p => <PlayerStats key={p.Name} player={p} isCurrentPlayer={currentPlayer === p}/>)}
       {characters &&
         <GameBoard className={"mx-auto my-2"}

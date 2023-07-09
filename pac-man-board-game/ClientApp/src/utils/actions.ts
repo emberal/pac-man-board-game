@@ -1,6 +1,6 @@
 import Player from "../game/player";
-import {Character, Ghost, PacMan} from "../game/character";
-import {testMap} from "../game/map";
+import {Character, CharacterType, Ghost, PacMan} from "../game/character";
+import {getCharacterSpawns, testMap} from "../game/map";
 import {TileType} from "../game/tileType";
 import {getDefaultStore} from "jotai";
 import {charactersAtom, currentPlayerAtom, diceAtom, playersAtom} from "./state";
@@ -13,15 +13,23 @@ export enum GameAction {
   ready,
 }
 
-const ghosts = [
-  new Ghost({Colour: Colour.Purple}),
-  new Ghost({Colour: Colour.Purple}),
+const ghostsProps: CharacterProps[] = [
+  {Colour: Colour.Purple},
+  {Colour: Colour.Purple},
 ];
+
+let spawns = getCharacterSpawns(testMap).filter(spawn => spawn.type === CharacterType.ghost);
+ghostsProps.forEach(ghost => {
+  ghost.SpawnPosition = spawns.pop()?.position;
+});
+
+const ghosts = ghostsProps.map(props => new Ghost(props));
 
 const store = getDefaultStore();
 
 export const doAction: MessageEventFunction<string> = (event): void => { // TODO divide into smaller functions
   const message: ActionMessage = JSON.parse(event.data);
+  console.debug("Received message:", message);
 
   switch (message.Action as GameAction) {
     case GameAction.rollDice:
@@ -73,13 +81,19 @@ function removeEatenPellets(data?: MoveCharacterData): void {
 
 function playerInfo(data?: PlayerProps[]): void {
   const playerProps = data ?? [];
-  console.log(playerProps);
   store.set(playersAtom, playerProps.map(p => new Player(p)));
-  const pacMen = playerProps.filter(p => p.PacMan).map(p => new PacMan(p.PacMan!));
-  console.log(pacMen);
-  // TODO find spawn points
+
+  spawns = getCharacterSpawns(testMap).filter(spawn => spawn.type === CharacterType.pacMan);
+  const pacMen = playerProps.filter(p => p.PacMan).map(p => {
+    if (!p.PacMan!.SpawnPosition) {
+      p.PacMan!.SpawnPosition = spawns.pop()?.position;
+    }
+    return new PacMan(p.PacMan!);
+  });
+
   store.set(charactersAtom, [...pacMen, ...ghosts]);
 }
+
 
 type ReadyData =
   | { AllReady: true, Starter: PlayerProps, Players: PlayerProps[] }
@@ -92,6 +106,6 @@ function ready(data?: ReadyData): void {
     if (isReady) {
       store.set(currentPlayerAtom, new Player(data.Starter));
     }
-    store.set(playersAtom, (data.Players).map(p => new Player(p)));
+    store.set(playersAtom, data.Players.map(p => new Player(p)));
   }
 }

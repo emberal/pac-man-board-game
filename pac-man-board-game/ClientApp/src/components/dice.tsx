@@ -1,4 +1,6 @@
 import React from "react";
+import {useSetAtom} from "jotai";
+import {selectedDiceAtom} from "../utils/state";
 
 interface AllDiceProps extends ComponentProps {
   values?: number[],
@@ -10,14 +12,13 @@ export const AllDice: Component<AllDiceProps> = (
   {
     className,
     values,
-    onclick,
     selectedDiceIndex
   }) => {
 
-  function handleClick(index: SelectedDice) {
-    if (onclick) {
-      onclick(index);
-    }
+  const setSelectedDice = useSetAtom(selectedDiceAtom);
+
+  function handleClick(dice: SelectedDice): void {
+    setSelectedDice(dice);
   }
 
   return (
