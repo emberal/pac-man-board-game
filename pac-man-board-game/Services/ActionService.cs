@@ -52,7 +52,7 @@ public class ActionService : IActionService // TODO tests
     public List<IPlayer> PlayerInfo(ActionMessage message)
     {
         _player = JsonSerializer.Deserialize<Player>(message.Data);
-        _group = _wsService.AddPlayer(_player); // TODO missing some data?
+        _group = _wsService.AddPlayer(_player);
 
         return _group.Players;
     }
