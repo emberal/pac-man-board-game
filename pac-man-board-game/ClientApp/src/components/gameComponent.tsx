@@ -6,19 +6,17 @@ import WebSocketService from "../websockets/WebSocketService";
 import {testMap} from "../game/map";
 import Player, {State} from "../game/player";
 import PlayerStats from "../components/playerStats";
-import {useAtom} from "jotai";
-import {charactersAtom, currentPlayerAtom, diceAtom, playersAtom, selectedDiceAtom} from "../utils/state";
+import {getDefaultStore, useAtom, useAtomValue} from "jotai";
+import {currentPlayerAtom, diceAtom, ghostsAtom, playersAtom, selectedDiceAtom} from "../utils/state";
 
 const wsService = new WebSocketService(import.meta.env.VITE_API);
 
 export const GameComponent: Component<{ player: Player }> = ({player}) => {
-  // TODO find spawn points
-  const [characters] = useAtom(charactersAtom);
-  const [players] = useAtom(playersAtom);
+  const players = useAtomValue(playersAtom);
 
-  const [dice] = useAtom(diceAtom);
+  const dice = useAtomValue(diceAtom);
   const [selectedDice, setSelectedDice] = useAtom(selectedDiceAtom);
-  const [currentPlayer] = useAtom(currentPlayerAtom);
+  const currentPlayer = useAtomValue(currentPlayerAtom);
 
   function startGameLoop(): void {
     if (currentPlayer?.Name !== player.Name) return;
@@ -35,9 +33,10 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
     const data: ActionMessage = {
       Action: GameAction.moveCharacter,
       Data: {
-        dice: dice?.length ?? 0 > 0 ? dice : null,
-        characters: characters,
-        eatenPellets: eatenPellets
+        Dice: dice?.length ?? 0 > 0 ? dice : null,
+        Players: players,
+        Ghosts: getDefaultStore().get(ghostsAtom),
+        EatenPellets: eatenPellets
       }
     };
     wsService.send(data);
@@ -70,13 +69,10 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
         }
       </div>
       <AllDice values={dice} selectedDiceIndex={selectedDice?.index}/>
-      {players?.map(p => <PlayerStats key={p.Name} player={p} isCurrentPlayer={currentPlayer === p}/>)}
-      {characters &&
-        <GameBoard className={"mx-auto my-2"}
-                   characters={characters}
-                   selectedDice={selectedDice}
-                   onMove={onCharacterMove} map={testMap}/>
-      }
+      {players?.map(p => <PlayerStats key={p.Name} player={p} isCurrentPlayer={currentPlayer?.Name === p.Name}/>)}
+      <GameBoard className={"mx-auto my-2"}
+                 selectedDice={selectedDice}
+                 onMove={onCharacterMove} map={testMap}/>
     </>
   );
 };

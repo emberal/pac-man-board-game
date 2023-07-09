@@ -1,9 +1,9 @@
 import Player from "../game/player";
-import {Character, CharacterType, Ghost, PacMan} from "../game/character";
+import {CharacterType, Ghost} from "../game/character";
 import {getCharacterSpawns, testMap} from "../game/map";
 import {TileType} from "../game/tileType";
 import {getDefaultStore} from "jotai";
-import {charactersAtom, currentPlayerAtom, diceAtom, playersAtom} from "./state";
+import {currentPlayerAtom, diceAtom, ghostsAtom, playersAtom} from "./state";
 import {Colour} from "../game/colour";
 
 export enum GameAction {
@@ -13,19 +13,20 @@ export enum GameAction {
   ready,
 }
 
+const store = getDefaultStore();
+
 const ghostsProps: CharacterProps[] = [
   {Colour: Colour.Purple},
   {Colour: Colour.Purple},
 ];
-
 let spawns = getCharacterSpawns(testMap).filter(spawn => spawn.type === CharacterType.ghost);
 ghostsProps.forEach(ghost => {
   ghost.SpawnPosition = spawns.pop()?.position;
-});
 
+});
 const ghosts = ghostsProps.map(props => new Ghost(props));
 
-const store = getDefaultStore();
+store.set(ghostsAtom, ghosts);
 
 export const doAction: MessageEventFunction<string> = (event): void => { // TODO divide into smaller functions
   const message: ActionMessage = JSON.parse(event.data);
@@ -51,28 +52,41 @@ function setDice(data?: number[]): void {
   store.set(diceAtom, data);
 }
 
-type MoveCharacterData = { dice: number[], characters: CharacterProps[], eatenPellets: Position[] };
+type MoveCharacterData = { Dice: number[], Players: PlayerProps[], Ghosts: CharacterProps[], EatenPellets: Position[] };
 
 function moveCharacter(data?: MoveCharacterData): void {
-  store.set(diceAtom, data?.dice);
-  updateCharacters(data);
+  store.set(diceAtom, data?.Dice);
+  updatePlayers(data);
+  updateGhosts(data);
   removeEatenPellets(data);
 }
 
-function updateCharacters(data?: MoveCharacterData): void {
-  const updatedCharacters = data?.characters;
+function updatePlayers(data?: MoveCharacterData): void {
+  const updatedPlayers = data?.Players;
 
-  if (updatedCharacters) {
-    const newList: Character[] = [];
-    for (const character of updatedCharacters) {
-      newList.push(new Character(character));
+  if (updatedPlayers) {
+    const newList: Player[] = [];
+    for (const player of updatedPlayers) {
+      newList.push(new Player(player));
     }
-    store.set(charactersAtom, newList);
+    store.set(playersAtom, newList);
+  }
+}
+
+function updateGhosts(data?: MoveCharacterData): void {
+  const updatedGhosts = data?.Ghosts;
+
+  if (updatedGhosts) {
+    const newList: Ghost[] = [];
+    for (const ghost of updatedGhosts) {
+      newList.push(new Ghost(ghost));
+    }
+    store.set(ghostsAtom, newList);
   }
 }
 
 function removeEatenPellets(data?: MoveCharacterData): void {
-  const pellets = data?.eatenPellets;
+  const pellets = data?.EatenPellets;
 
   for (const pellet of pellets ?? []) {
     testMap[pellet.y][pellet.x] = TileType.empty;
@@ -81,19 +95,14 @@ function removeEatenPellets(data?: MoveCharacterData): void {
 
 function playerInfo(data?: PlayerProps[]): void {
   const playerProps = data ?? [];
-  store.set(playersAtom, playerProps.map(p => new Player(p)));
-
   spawns = getCharacterSpawns(testMap).filter(spawn => spawn.type === CharacterType.pacMan);
-  const pacMen = playerProps.filter(p => p.PacMan).map(p => {
-    if (!p.PacMan!.SpawnPosition) {
-      p.PacMan!.SpawnPosition = spawns.pop()?.position;
+  store.set(playersAtom, playerProps.map(p => {
+    if (!p.PacMan.SpawnPosition) {
+      p.PacMan.SpawnPosition = spawns.pop()?.position;
     }
-    return new PacMan(p.PacMan!);
-  });
-
-  store.set(charactersAtom, [...pacMen, ...ghosts]);
+    return new Player(p);
+  }));
 }
-
 
 type ReadyData =
   | { AllReady: true, Starter: PlayerProps, Players: PlayerProps[] }
@@ -102,8 +111,7 @@ type ReadyData =
 
 function ready(data?: ReadyData): void {
   if (data && typeof data !== "string") {
-    const isReady = data.AllReady;
-    if (isReady) {
+    if (data.AllReady) {
       store.set(currentPlayerAtom, new Player(data.Starter));
     }
     store.set(playersAtom, data.Players.map(p => new Player(p)));

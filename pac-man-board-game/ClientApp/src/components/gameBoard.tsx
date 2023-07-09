@@ -3,9 +3,10 @@ import {Character, PacMan} from "../game/character";
 import findPossiblePositions from "../game/possibleMovesAlgorithm";
 import {GameTile} from "./gameTile";
 import {TileType} from "../game/tileType";
+import {useAtomValue} from "jotai";
+import {allCharactersAtom} from "../utils/state";
 
 interface BoardProps extends ComponentProps {
-  characters: Character[],
   selectedDice?: SelectedDice,
   onMove?: Action<Position[]>,
   map: GameMap
@@ -14,12 +15,12 @@ interface BoardProps extends ComponentProps {
 const Board: Component<BoardProps> = (
   {
     className,
-    characters,
     selectedDice,
     onMove,
     map
   }) => {
 
+  const characters = useAtomValue(allCharactersAtom);
   const [selectedCharacter, setSelectedCharacter] = useState<Character>();
   const [possiblePositions, setPossiblePositions] = useState<Path[]>([]); // TODO reset when other client moves a character
   const [hoveredPosition, setHoveredPosition] = useState<Path>();

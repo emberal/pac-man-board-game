@@ -11,12 +11,12 @@ public class GameGroup // TODO tests
     public IPlayer RandomPlayer => Players[_random.Next(Players.Count)];
     public event Func<ArraySegment<byte>, Task>? Connections;
 
-    public bool AddPlayer(IPlayer player)
+    public bool AddPlayer(IPlayer player) // TODO if name exists, use that player instead
     {
         if (Players.Count >= Rules.MaxPlayers) return false;
-        if (Players.Exists(p => p.Name == player.Name)) return false;
 
         player.State = State.WaitingForPlayers;
+        if (Players.Exists(p => p.Name == player.Name)) return true;
         Players.Add(player);
         return true;
     }

@@ -1,13 +1,15 @@
 import Player from "../game/player";
 import {atom} from "jotai";
-import {Character} from "../game/character";
 import {atomWithStorage, createJSONStorage} from "jotai/utils";
+import {Ghost} from "../game/character";
 
 const playerStorage = createJSONStorage<Player | undefined>(() => sessionStorage);
 
-// TODO merge character and player atoms, since the player is the owner of the character
-export const charactersAtom = atom<Character[] | undefined>(undefined);
+// TODO derived from playersAtom
 export const playersAtom = atom<Player[]>([]);
+export const playerCharactersAtom = atom(get => get(playersAtom).map(player => player.PacMan));
+export const ghostsAtom = atom<Ghost[]>([]);
+export const allCharactersAtom = atom(get => [...get(playerCharactersAtom), ...get(ghostsAtom)]);
 export const thisPlayerAtom = atomWithStorage<Player | undefined>("player", undefined, {
   ...playerStorage,
   getItem(key, initialValue): Player | undefined {
