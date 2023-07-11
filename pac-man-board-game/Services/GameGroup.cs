@@ -1,3 +1,4 @@
+using pacMan.Exceptions;
 using pacMan.Game;
 using pacMan.Game.Interfaces;
 
@@ -25,6 +26,8 @@ public class GameGroup // TODO tests
 
     public IEnumerable<IPlayer> SetReady(IPlayer player)
     {
+        if (!Players.Contains(player))
+            throw new PlayerNotFoundException("The player was not found in the game group.");
         player.State = State.Ready;
         return Players;
     }
