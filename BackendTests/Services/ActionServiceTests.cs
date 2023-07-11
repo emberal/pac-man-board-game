@@ -1,13 +1,34 @@
+using Microsoft.Extensions.Logging;
+using NSubstitute;
+using pacMan.Game;
+using pacMan.Interfaces;
+using pacMan.Services;
+
 namespace BackendTests.Services;
 
 public class ActionServiceTests
 {
+    private IActionService _service = null!;
+    private IWebSocketService _wssMock = null!;
+
+    [SetUp]
+    public void Setup()
+    {
+        _wssMock = Substitute.For<WebSocketService>(Substitute.For<ILogger<WebSocketService>>());
+        _service = new ActionService(Substitute.For<ILogger<ActionService>>(), _wssMock);
+    }
+
     #region RollDice()
 
     [Test]
     public void RollDice_ReturnsListOfIntegers()
     {
-        Assert.Fail();
+        var dices = _service.RollDice();
+        Assert.Multiple(() =>
+        {
+            Assert.That(dices, Has.Count.EqualTo(2));
+            Assert.That(dices, Has.All.InRange(1, 6));
+        });
     }
 
     #endregion
@@ -17,7 +38,10 @@ public class ActionServiceTests
     [Test]
     public void PlayerInfo_DataIsNull()
     {
-        Assert.Fail();
+        var message = new ActionMessage { Action = GameAction.PlayerInfo, Data = "null" };
+        Assert.Throws<NullReferenceException>(() => _service.PlayerInfo(message));
+        message.Data = null;
+        Assert.Throws<NullReferenceException>(() => _service.PlayerInfo(message));
     }
 
     [Test]
@@ -57,13 +81,13 @@ public class ActionServiceTests
     {
         Assert.Fail();
     }
-    
+
     [Test]
     public void Ready_SomeReady()
     {
         Assert.Fail();
     }
-    
+
     [Test]
     public void Ready_AllReady()
     {

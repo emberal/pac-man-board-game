@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.CSharp.RuntimeBinder;
 using pacMan.Game;
 using pacMan.Game.Interfaces;
 using pacMan.Game.Items;
@@ -51,8 +52,18 @@ public class ActionService : IActionService // TODO tests
 
     public List<IPlayer> PlayerInfo(ActionMessage message)
     {
-        _player = JsonSerializer.Deserialize<Player>(message.Data);
-        _group = _wsService.AddPlayer(_player);
+        try
+        {
+            _player = JsonSerializer.Deserialize<Player>(message.Data);
+            _group = _wsService.AddPlayer(_player);
+        }
+        catch (RuntimeBinderException e)
+        {
+            Console.WriteLine(e);
+            if (message.Data == null) throw new NullReferenceException();
+
+            throw;
+        }
 
         return _group.Players;
     }
