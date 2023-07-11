@@ -202,9 +202,24 @@ public class GameGroupTests
     public void SetAllInGame_SetsStateToInGame()
     {
         AddFullParty();
-        Assert.That(_gameGroup.Players, Has.All.Property(nameof(IPlayer.State)).Not.EqualTo(State.Ready));
-        _gameGroup.SetAllInGame();
-        Assert.That(_gameGroup.Players, Has.All.Property(nameof(IPlayer.State)).EqualTo(State.InGame));
+        _gameGroup.Players.ForEach(player => player.State = State.Ready);
+        Assert.That(_gameGroup.Players, Has.All.Property(nameof(IPlayer.State)).EqualTo(State.Ready));
+
+        var allInGame = _gameGroup.SetAllInGame();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(allInGame, Is.True);
+            Assert.That(_gameGroup.Players, Has.All.Property(nameof(IPlayer.State)).EqualTo(State.InGame));
+        });
+    }
+
+    [Test]
+    public void SetAllInGame_SetStateToInGame_WhenNotAllReady()
+    {
+        AddFullParty();
+        var allInGame = _gameGroup.SetAllInGame();
+        Assert.That(allInGame, Is.False);
     }
 
     [Test]

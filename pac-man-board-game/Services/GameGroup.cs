@@ -32,8 +32,11 @@ public class GameGroup // TODO tests
         return Players;
     }
 
-    public void SetAllInGame()
+    public bool SetAllInGame()
     {
+        if (Players.Any(player => player.State != State.Ready)) return false;
+
         foreach (var player in Players) player.State = State.InGame;
+        return true;
     }
 }
