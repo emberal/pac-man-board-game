@@ -1,6 +1,5 @@
 using System.Text.Json;
 using BackendTests.TestUtils;
-using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using pacMan.Game;
@@ -13,12 +12,23 @@ namespace BackendTests.Services;
 
 public class ActionServiceTests
 {
+    private readonly IPlayer _blackPlayer = Players.Create("black");
+    private readonly IPlayer _redPlayer = Players.Create("red");
+    private readonly IPlayer _whitePlayer = Players.Create("white");
+    private ActionMessage _blackMessage = null!;
+    private ActionMessage _redMessage = null!;
     private IActionService _service = null!;
+    private ActionMessage _whiteMessage = null!;
     private IWebSocketService _wssSub = null!;
 
     [SetUp]
     public void Setup()
     {
+        _whiteMessage = new ActionMessage
+            { Action = GameAction.PlayerInfo, Data = JsonSerializer.Serialize(_whitePlayer) };
+        _blackMessage = new ActionMessage
+            { Action = GameAction.PlayerInfo, Data = JsonSerializer.Serialize(_blackPlayer) };
+        _redMessage = new ActionMessage { Action = GameAction.PlayerInfo, Data = JsonSerializer.Serialize(_redPlayer) };
         _wssSub = Substitute.For<WebSocketService>(Substitute.For<ILogger<WebSocketService>>());
         _service = new ActionService(Substitute.For<ILogger<ActionService>>(), _wssSub);
     }
@@ -44,9 +54,9 @@ public class ActionServiceTests
     public void PlayerInfo_DataIsNull()
     {
         var message = new ActionMessage { Action = GameAction.PlayerInfo, Data = "null" };
-        Assert.Throws<NullReferenceException>(() => _service.PlayerInfo(message));
+        Assert.Throws<NullReferenceException>(() => _service.SetPlayerInfo(message));
         message.Data = null;
-        Assert.Throws<NullReferenceException>(() => _service.PlayerInfo(message));
+        Assert.Throws<NullReferenceException>(() => _service.SetPlayerInfo(message));
     }
 
     [Test]
@@ -55,23 +65,17 @@ public class ActionServiceTests
         var message = new ActionMessage
         {
             Action = GameAction.PlayerInfo,
-            Data = new Box { Colour = "white", Pellets = new List<Pellet>() }
+            Data = JsonSerializer.Serialize(new Box { Colour = "white", Pellets = new List<Pellet>() })
         };
-        Assert.Throws<RuntimeBinderException>(() => _service.PlayerInfo(message));
+        Assert.Throws<JsonException>(() => _service.SetPlayerInfo(message));
     }
 
     [Test]
     public void PlayerInfo_DataIsPlayer()
     {
-        var player = Players.Create("white");
-        var message = new ActionMessage
-        {
-            Action = GameAction.PlayerInfo,
-            Data = JsonSerializer.Serialize(player)
-        };
-        var players = _service.PlayerInfo(message);
+        var players = _service.SetPlayerInfo(_whiteMessage);
 
-        Assert.That(new List<IPlayer> { player }, Is.EqualTo(players));
+        Assert.That(new List<IPlayer> { _whitePlayer }, Is.EqualTo(players));
     }
 
     #endregion
@@ -81,13 +85,19 @@ public class ActionServiceTests
     [Test]
     public void DoAction_NegativeAction()
     {
-        Assert.Fail();
+        const string data = "Nothing happens";
+        var message = new ActionMessage { Action = (GameAction)(-1), Data = data };
+        _service.DoAction(message);
+        Assert.That(message.Data, Is.EqualTo(data));
     }
 
     [Test]
     public void DoAction_OutOfBoundsAction()
     {
-        Assert.Fail();
+        const string data = "Nothing happens";
+        var message = new ActionMessage { Action = (GameAction)100, Data = data };
+        _service.DoAction(message);
+        Assert.That(message.Data, Is.EqualTo(data));
     }
 
     #endregion
@@ -97,19 +107,54 @@ public class ActionServiceTests
     [Test]
     public void Ready_PlayerIsNull()
     {
-        Assert.Fail();
+        var result = _service.Ready();
+        Assert.That(result, Is.InstanceOf<string>());
     }
 
     [Test]
-    public void Ready_SomeReady()
+    public void Ready_NotAllReady()
     {
-        Assert.Fail();
+        _service.SetPlayerInfo(_whiteMessage);
+        _service.SetPlayerInfo(_blackMessage);
+
+        var result = _service.Ready();
+
+        Assert.That(result.GetType().GetProperty("Starter"), Is.Null);
+
+        _service.SetPlayerInfo(_redMessage);
+
+        result = _service.Ready();
+
+        Assert.That(result.GetType().GetProperty("Starter"), Is.Null);
     }
 
     [Test]
-    public void Ready_AllReady()
+    public void Ready_OneReady()
     {
-        Assert.Fail();
+        _service.SetPlayerInfo(_whiteMessage);
+        var result = _service.Ready();
+        // If selected the state is changed to InGame
+        _whitePlayer.State = State.InGame;
+        Assert.That(result.GetType().GetProperty("Starter")?.GetValue(result), Is.EqualTo(_whitePlayer));
+    }
+
+    [Test]
+    public void Ready_TwoReady()
+    {
+        _service.Group.AddPlayer(_blackPlayer);
+        _service.Group.AddPlayer(_whitePlayer);
+        _service.Player = _blackPlayer;
+
+        var result = _service.Ready();
+
+        Assert.That(result.GetType().GetProperty("Starter"), Is.Null);
+
+        _service.Player = _whitePlayer;
+
+        result = _service.Ready();
+
+        Assert.That(result.GetType().GetProperty("Starter")?.GetValue(result),
+            Is.EqualTo(_whitePlayer).Or.EqualTo(_blackPlayer));
     }
 
     #endregion
