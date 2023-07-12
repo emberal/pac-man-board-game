@@ -47,7 +47,7 @@ public class ActionService : IActionService
 
     public List<int> RollDice()
     {
-        var rolls = _diceCup.Roll();
+        var rolls = _diceCup.Roll;
         _logger.Log(LogLevel.Information, "Rolled [{}]", string.Join(", ", rolls));
 
         return rolls;
