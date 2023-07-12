@@ -4,7 +4,7 @@ using pacMan.Game.Interfaces;
 
 namespace pacMan.Services;
 
-public class GameGroup // TODO tests
+public class GameGroup
 {
     private readonly Random _random = new();
     public List<IPlayer> Players { get; } = new();

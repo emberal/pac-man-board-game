@@ -1,7 +1,7 @@
+using BackendTests.TestUtils;
 using pacMan.Exceptions;
 using pacMan.Game;
 using pacMan.Game.Interfaces;
-using pacMan.Game.Items;
 using pacMan.Services;
 using pacMan.Utils;
 
@@ -20,71 +20,12 @@ public class GameGroupTests
     public void Setup()
     {
         _gameGroup = new GameGroup();
-        const string redColour = "red";
-        _redPlayer = new Player
-        {
-            Name = "Red",
-            Colour = redColour,
-            PacMan = CreatePacMan(redColour),
-            Box = CreateBox(redColour)
-        };
-        const string blueColour = "blue";
-        _bluePlayer = new Player
-        {
-            Name = "Blue",
-            Colour = blueColour,
-            PacMan = CreatePacMan(blueColour),
-            Box = CreateBox(blueColour)
-        };
-        const string yellowColour = "yellow";
-        _yellowPlayer = new Player
-        {
-            Name = "Yellow",
-            Colour = yellowColour,
-            PacMan = CreatePacMan(yellowColour),
-            Box = CreateBox(yellowColour)
-        };
-        const string greenColour = "green";
-        _greenPlayer = new Player
-        {
-            Name = "Green",
-            Colour = greenColour,
-            PacMan = CreatePacMan(greenColour),
-            Box = CreateBox(greenColour)
-        };
-        const string purpleColour = "purple";
-        _purplePlayer = new Player
-        {
-            Name = "Purple",
-            Colour = purpleColour,
-            PacMan = CreatePacMan(purpleColour),
-            Box = CreateBox(purpleColour)
-        };
+        _redPlayer = Players.Create("red");
+        _bluePlayer = Players.Create("blue");
+        _yellowPlayer = Players.Create("yellow");
+        _greenPlayer = Players.Create("green");
+        _purplePlayer = Players.Create("purple");
     }
-
-    private static Character CreatePacMan(string colour) =>
-        new()
-        {
-            Colour = colour,
-            IsEatable = true,
-            Type = CharacterType.PacMan
-        };
-
-    private static Box CreateBox(string colour) =>
-        new()
-        {
-            Colour = colour,
-            Pellets = new List<Pellet>()
-        };
-
-    private static IPlayer Clone(IPlayer player) =>
-        new Player
-        {
-            Box = player.Box,
-            Colour = player.Colour,
-            Name = player.Name,
-            PacMan = player.PacMan
-        };
 
     private void AddFullParty()
     {
@@ -115,7 +56,7 @@ public class GameGroupTests
     [Test]
     public void AddPlayer_WhenNameExists()
     {
-        var redClone = Clone(_redPlayer);
+        var redClone = Players.Clone(_redPlayer);
         _gameGroup.AddPlayer(_redPlayer);
         var added = _gameGroup.AddPlayer(redClone);
         Assert.That(added, Is.True);

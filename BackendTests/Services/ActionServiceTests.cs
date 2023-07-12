@@ -1,6 +1,11 @@
+using System.Text.Json;
+using BackendTests.TestUtils;
+using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using pacMan.Game;
+using pacMan.Game.Interfaces;
+using pacMan.Game.Items;
 using pacMan.Interfaces;
 using pacMan.Services;
 
@@ -9,13 +14,13 @@ namespace BackendTests.Services;
 public class ActionServiceTests
 {
     private IActionService _service = null!;
-    private IWebSocketService _wssMock = null!;
+    private IWebSocketService _wssSub = null!;
 
     [SetUp]
     public void Setup()
     {
-        _wssMock = Substitute.For<WebSocketService>(Substitute.For<ILogger<WebSocketService>>());
-        _service = new ActionService(Substitute.For<ILogger<ActionService>>(), _wssMock);
+        _wssSub = Substitute.For<WebSocketService>(Substitute.For<ILogger<WebSocketService>>());
+        _service = new ActionService(Substitute.For<ILogger<ActionService>>(), _wssSub);
     }
 
     #region RollDice()
@@ -47,13 +52,26 @@ public class ActionServiceTests
     [Test]
     public void PlayerInfo_DataIsNotPlayer()
     {
-        Assert.Fail();
+        var message = new ActionMessage
+        {
+            Action = GameAction.PlayerInfo,
+            Data = new Box { Colour = "white", Pellets = new List<Pellet>() }
+        };
+        Assert.Throws<RuntimeBinderException>(() => _service.PlayerInfo(message));
     }
 
     [Test]
     public void PlayerInfo_DataIsPlayer()
     {
-        Assert.Fail();
+        var player = Players.Create("white");
+        var message = new ActionMessage
+        {
+            Action = GameAction.PlayerInfo,
+            Data = JsonSerializer.Serialize(player)
+        };
+        var players = _service.PlayerInfo(message);
+
+        Assert.That(new List<IPlayer> { player }, Is.EqualTo(players));
     }
 
     #endregion
