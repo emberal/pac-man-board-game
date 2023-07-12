@@ -1,15 +1,20 @@
+using System.Collections;
 using pacMan.Exceptions;
 using pacMan.Game;
 using pacMan.Game.Interfaces;
 
 namespace pacMan.Services;
 
-public class GameGroup
+public class GameGroup : IEnumerable<IPlayer>
 {
     private readonly Random _random = new();
     public List<IPlayer> Players { get; } = new();
 
     public IPlayer RandomPlayer => Players[_random.Next(Players.Count)];
+
+    public IEnumerator<IPlayer> GetEnumerator() => Players.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     public event Func<ArraySegment<byte>, Task>? Connections;
 
     public bool AddPlayer(IPlayer player) // TODO if name exists, use that player instead

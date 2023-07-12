@@ -141,8 +141,8 @@ public class ActionServiceTests
     [Test]
     public void Ready_TwoReady()
     {
-        _service.Group.AddPlayer(_blackPlayer);
-        _service.Group.AddPlayer(_whitePlayer);
+        var group = new GameGroup { Players = { _blackPlayer, _whitePlayer } };
+        _service.Group = group;
         _service.Player = _blackPlayer;
 
         var result = _service.Ready();

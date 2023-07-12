@@ -9,15 +9,15 @@ namespace pacMan.Services;
 
 public interface IActionService
 {
-    IPlayer Player { get; set; }
-    GameGroup Group { get; set; }
+    IPlayer Player { set; }
+    GameGroup Group { set; }
     void DoAction(ActionMessage message);
     List<int> RollDice();
     List<IPlayer> SetPlayerInfo(ActionMessage message);
     object Ready();
 }
 
-public class ActionService : IActionService // TODO tests
+public class ActionService : IActionService
 {
     private readonly IDiceCup _diceCup;
     private readonly ILogger<ActionService> _logger;
