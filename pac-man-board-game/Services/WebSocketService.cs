@@ -5,7 +5,7 @@ using pacMan.Utils;
 
 namespace pacMan.Services;
 
-public class WebSocketService : IWebSocketService // TODO add tests
+public class WebSocketService : IWebSocketService
 {
     private readonly ILogger<WebSocketService> _logger;
 
@@ -17,7 +17,9 @@ public class WebSocketService : IWebSocketService // TODO add tests
 
     public SynchronizedCollection<GameGroup> Games { get; } = new();
 
-    public event Func<ArraySegment<byte>, Task>? Connections;
+    public int CountConnected => Connections?.GetInvocationList().Length ?? 0;
+
+    public event Func<ArraySegment<byte>, Task>? Connections; // TODO remove and use GameGroup
 
     public async Task Send(WebSocket webSocket, ArraySegment<byte> segment)
     {
@@ -27,7 +29,7 @@ public class WebSocketService : IWebSocketService // TODO add tests
             true,
             CancellationToken.None);
 
-        _logger.Log(LogLevel.Trace, "Message sent to WebSocket");
+        _logger.Log(LogLevel.Debug, "Message sent to WebSocket");
     }
 
     public void SendToAll(ArraySegment<byte> segment)
@@ -50,10 +52,9 @@ public class WebSocketService : IWebSocketService // TODO add tests
             closeStatus,
             closeStatusDescription,
             CancellationToken.None);
+
         _logger.Log(LogLevel.Information, "WebSocket connection closed");
     }
-
-    public int CountConnected() => Connections?.GetInvocationList().Length ?? 0;
 
     public GameGroup AddPlayer(IPlayer player)
     {

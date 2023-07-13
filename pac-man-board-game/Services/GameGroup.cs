@@ -11,6 +11,7 @@ public class GameGroup : IEnumerable<IPlayer>
     public List<IPlayer> Players { get; } = new();
 
     public IPlayer RandomPlayer => Players[_random.Next(Players.Count)];
+    public int Count => Players.Count;
 
     public IEnumerator<IPlayer> GetEnumerator() => Players.GetEnumerator();
 
