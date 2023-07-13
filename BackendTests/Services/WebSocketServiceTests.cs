@@ -9,7 +9,7 @@ using pacMan.Utils;
 
 namespace BackendTests.Services;
 
-public class WebSocketServiceTests // TODO: Implement
+public class WebSocketServiceTests
 {
     private IWebSocketService _service = null!;
 
@@ -136,7 +136,7 @@ public class WebSocketServiceTests // TODO: Implement
     {
         var player = Players.Create("white");
         var group = _service.AddPlayer(player);
-        
+
         Assert.Multiple(() =>
         {
             Assert.That(group.Players, Has.Count.EqualTo(1));
@@ -148,11 +148,12 @@ public class WebSocketServiceTests // TODO: Implement
     [Test]
     public void AddPlayer_ToFullGroup()
     {
-        for (int i = 0; i < 4; i++)
+        for (var i = 0; i < 4; i++)
         {
             var player = Players.Create(i.ToString());
             _service.AddPlayer(player);
         }
+
         var player5 = Players.Create("white");
 
         var group = _service.AddPlayer(player5);

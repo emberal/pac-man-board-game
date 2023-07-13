@@ -51,13 +51,19 @@ public class ExtensionsTests
     [Test]
     public void GetString_NegativeLength()
     {
-        Assert.Throws(typeof(ArgumentOutOfRangeException), () => _bytes.GetString(-1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => _bytes.GetString(-1));
     }
 
     [Test]
     public void GetString_LengthGreaterThanByteArrayLength()
     {
-        Assert.Throws(typeof(ArgumentOutOfRangeException), () => _bytes.GetString(_bytes.Length + 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => _bytes.GetString(_bytes.Length + 1));
+    }
+
+    [Test]
+    public void GetString_LengthShorterThanByteArrayLength()
+    {
+        Assert.That(_bytes.GetString(_bytes.Length / 2), Is.EqualTo("Hello "));
     }
 
     #endregion

@@ -1,5 +1,3 @@
-using pacMan.Game.Interfaces;
-
 namespace pacMan.Game.Items;
 
 public class Box : IEquatable<Box>

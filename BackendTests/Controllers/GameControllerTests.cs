@@ -1,6 +1,4 @@
 namespace BackendTests.Controllers;
 
-public class GameControllerTests
-{
-    
-}
+public class GameControllerTests // TODO
+{ }

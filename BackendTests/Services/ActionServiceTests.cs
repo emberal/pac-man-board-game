@@ -3,7 +3,6 @@ using BackendTests.TestUtils;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using pacMan.Game;
-using pacMan.Game.Interfaces;
 using pacMan.Game.Items;
 using pacMan.Interfaces;
 using pacMan.Services;

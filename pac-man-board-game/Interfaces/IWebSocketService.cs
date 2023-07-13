@@ -1,5 +1,5 @@
 using System.Net.WebSockets;
-using pacMan.Game.Interfaces;
+using pacMan.Game.Items;
 using pacMan.Services;
 
 namespace pacMan.Interfaces;

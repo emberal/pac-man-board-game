@@ -1,7 +1,7 @@
 using BackendTests.TestUtils;
 using pacMan.Exceptions;
 using pacMan.Game;
-using pacMan.Game.Interfaces;
+using pacMan.Game.Items;
 using pacMan.Services;
 using pacMan.Utils;
 

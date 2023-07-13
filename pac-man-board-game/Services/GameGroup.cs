@@ -1,7 +1,7 @@
 using System.Collections;
 using pacMan.Exceptions;
 using pacMan.Game;
-using pacMan.Game.Interfaces;
+using pacMan.Game.Items;
 
 namespace pacMan.Services;
 
@@ -10,7 +10,7 @@ public class GameGroup : IEnumerable<IPlayer>
     private readonly Random _random = new();
     public List<IPlayer> Players { get; } = new();
 
-    public IPlayer RandomPlayer => Players[_random.Next(Players.Count)];
+    public IPlayer RandomPlayer => Players[_random.Next(Count)];
     public int Count => Players.Count;
 
     public IEnumerator<IPlayer> GetEnumerator() => Players.GetEnumerator();

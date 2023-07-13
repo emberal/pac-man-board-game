@@ -1,6 +1,9 @@
-using pacMan.Game.Interfaces;
-
 namespace pacMan.Game.Items;
+
+public interface IPellet
+{
+    bool IsPowerPellet { get; init; }
+}
 
 public class Pellet : IPellet, IEquatable<Pellet>
 {

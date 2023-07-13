@@ -1,10 +1,9 @@
 using pacMan.Game;
-using pacMan.Game.Interfaces;
 using pacMan.Game.Items;
 
 namespace BackendTests.TestUtils;
 
-public class Players
+internal static class Players
 {
     internal static IPlayer Create(string colour) =>
         new Player
