@@ -21,7 +21,7 @@ public class GameControllerTests
     [SetUp]
     public void Setup()
     {
-        _webSocketService = Substitute.For<IWebSocketService>();
+        _webSocketService = Substitute.For<WebSocketService>(Substitute.For<ILogger<WebSocketService>>());
         _actionService = Substitute.For<ActionService>(
             Substitute.For<ILogger<ActionService>>(), _webSocketService
         );
@@ -29,7 +29,7 @@ public class GameControllerTests
     }
 
     [Test]
-    public void Run()
+    public void Run_ReturnsSame()
     {
         var message = new ActionMessage { Action = (GameAction)(-1), Data = "{\"text\":\"Hello World!\"}" };
         var data = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
@@ -37,7 +37,7 @@ public class GameControllerTests
 
         var runMethod = _controller.GetType().GetMethod("Run", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        if (runMethod is null) Assert.Fail();
+        if (runMethod is null) Assert.Fail("Run method not found");
 
         var result = runMethod!.Invoke(_controller, new object[] { wssResult, data });
 
