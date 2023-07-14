@@ -100,7 +100,7 @@ const Board: Component<BoardProps> = (
                   possiblePath={possiblePositions.find(p => p.End.X === colIndex && p.End.Y === rowIndex)}
                   character={characters.find(c => c.isAt({X: colIndex, Y: rowIndex}))}
                   isSelected={selectedCharacter?.isAt({X: colIndex, Y: rowIndex})}
-                  showPath={hoveredPosition?.Path?.find(pos => pos.x === colIndex && pos.y === rowIndex) !== undefined}
+                  showPath={hoveredPosition?.Path?.find(pos => pos.X === colIndex && pos.Y === rowIndex) !== undefined}
                   handleMoveCharacter={handleMoveCharacter}
                   handleSelectCharacter={handleSelectCharacter}
                   handleStartShowPath={handleShowPath}

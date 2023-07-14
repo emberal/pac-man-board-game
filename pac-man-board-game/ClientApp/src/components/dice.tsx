@@ -1,21 +1,18 @@
 import React from "react";
-import {useSetAtom} from "jotai";
+import {useAtom} from "jotai";
 import {selectedDiceAtom} from "../utils/state";
 
 interface AllDiceProps extends ComponentProps {
   values?: number[],
-  onclick?: (dice: SelectedDice) => void,
-  selectedDiceIndex: number | undefined
 }
 
 export const AllDice: Component<AllDiceProps> = (
   {
     className,
     values,
-    selectedDiceIndex
   }) => {
 
-  const setSelectedDice = useSetAtom(selectedDiceAtom);
+  const [selectedDice, setSelectedDice] = useAtom(selectedDiceAtom);
 
   function handleClick(dice: SelectedDice): void {
     setSelectedDice(dice);
@@ -25,7 +22,7 @@ export const AllDice: Component<AllDiceProps> = (
     <div className={"flex gap-5 justify-center"}>
       {values?.map((value, index) =>
         <Dice key={index}
-              className={`${selectedDiceIndex === index ? "border-2 border-black" : ""} ${className}`}
+              className={`${selectedDice?.index === index ? "border-2 border-black" : ""} ${className}`}
               value={value}
               onClick={(value) => handleClick({index, value})}/>)}
     </div>

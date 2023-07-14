@@ -1,6 +1,8 @@
 import {Character, CharacterType} from "./character";
 import Box from "./box";
 import {Colour} from "./colour";
+import {getDefaultStore} from "jotai";
+import {currentPlayerAtom} from "../utils/state";
 
 export enum State {
   waitingForPlayers,
@@ -24,6 +26,11 @@ export default class Player {
       Type: CharacterType.pacMan
     });
     this.State = props.State ?? State.waitingForPlayers;
+  }
+
+  public isTurn(): boolean {
+    const store = getDefaultStore();
+    return store.get(currentPlayerAtom)?.Name === this.Name;
   }
 
   public stealFrom(other: Player): void {

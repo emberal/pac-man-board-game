@@ -47,7 +47,7 @@ public class GameGroup : IEnumerable<IPlayer>
 
     public IEnumerable<IPlayer> SetReady(IPlayer player)
     {
-        if (!Players.Contains(player))
+        if (!Players.Contains(player)) // TODO throws exception after game has started and refresh
             throw new PlayerNotFoundException("The player was not found in the game group.");
         player.State = State.Ready;
         return Players;

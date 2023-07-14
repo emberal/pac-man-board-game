@@ -4,15 +4,16 @@ import {doAction, GameAction} from "../utils/actions";
 import GameBoard from "./gameBoard";
 import WebSocketService from "../websockets/WebSocketService";
 import {getCharacterSpawns, testMap} from "../game/map";
-import Player, {State} from "../game/player";
+import Player from "../game/player";
 import PlayerStats from "../components/playerStats";
 import {getDefaultStore, useAtom, useAtomValue} from "jotai";
 import {currentPlayerAtom, diceAtom, ghostsAtom, playersAtom, selectedDiceAtom} from "../utils/state";
 import {CharacterType} from "../game/character";
+import GameButton from "./gameButton";
 
 const wsService = new WebSocketService(import.meta.env.VITE_API);
 
-export const GameComponent: Component<{ player: Player }> = ({player}) => {
+export const GameComponent: Component<{ player: Player }> = ({player}) => { // TODO players not moving
   const players = useAtomValue(playersAtom);
 
   const dice = useAtomValue(diceAtom);
@@ -44,7 +45,6 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
   }
 
   async function sendPlayer(): Promise<void> {
-    // TODO set spawn position and position
     wsService.send({
       Action: GameAction.playerInfo,
       Data: {
@@ -71,13 +71,9 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
   return (
     <>
       <div className={"flex-center"}>
-        {
-          currentPlayer === undefined || currentPlayer.State === State.waitingForPlayers ?
-            <button onClick={sendReady}>Ready</button> :
-            <button onClick={startGameLoop}>Roll dice</button>
-        }
+        <GameButton onReadyClick={sendReady} onRollDiceClick={startGameLoop}/>
       </div>
-      <AllDice values={dice} selectedDiceIndex={selectedDice?.index}/>
+      <AllDice values={dice}/>
       {players?.map(p => <PlayerStats key={p.Name} player={p} isCurrentPlayer={currentPlayer?.Name === p.Name}/>)}
       <GameBoard className={"mx-auto my-2"} onMove={onCharacterMove} map={testMap}/>
     </>
