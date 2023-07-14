@@ -30,10 +30,10 @@ export function getCharacterSpawns(map: GameMap): { type: CharacterType, positio
     for (let col = 0; col < map.length; col++) {
       // TODO find direction
       if (map[row][col] === 4) {
-        result.push({type: CharacterType.ghost, position: {At: {x: col, y: row}, Direction: Direction.up}});
+        result.push({type: CharacterType.ghost, position: {At: {X: col, Y: row}, Direction: Direction.up}});
       } else if (map[row][col] === 5) {
         result.push({
-          type: CharacterType.pacMan, position: {At: {x: col, y: row}, Direction: Direction.up}
+          type: CharacterType.pacMan, position: {At: {X: col, Y: row}, Direction: Direction.up}
         });
       }
     }

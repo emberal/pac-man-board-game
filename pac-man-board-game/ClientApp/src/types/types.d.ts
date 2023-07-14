@@ -20,7 +20,7 @@ type SelectedDice = {
   index: number
 };
 
-type Position = { x: number, y: number };
+type Position = { X: number, Y: number };
 
 type GameMap = number[][];
 

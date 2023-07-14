@@ -2,7 +2,7 @@ namespace pacMan.Game.Items;
 
 public class Box : IEquatable<Box>
 {
-    public required List<Pellet>? Pellets { get; init; } = new();
+    public List<Pellet>? Pellets { get; init; } = new();
     public required string Colour { get; init; }
 
     public int CountNormal => Pellets?.Count(pellet => !pellet.IsPowerPellet) ?? 0;

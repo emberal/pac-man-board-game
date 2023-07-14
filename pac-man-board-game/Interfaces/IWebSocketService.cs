@@ -1,4 +1,5 @@
 using System.Net.WebSockets;
+using pacMan.Game;
 using pacMan.Game.Items;
 using pacMan.Services;
 
@@ -13,5 +14,5 @@ public interface IWebSocketService
     void SendToAll(ArraySegment<byte> segment);
     Task<WebSocketReceiveResult> Receive(WebSocket webSocket, byte[] buffer);
     Task Close(WebSocket webSocket, WebSocketCloseStatus closeStatus, string? closeStatusDescription);
-    GameGroup AddPlayer(IPlayer player);
+    GameGroup AddPlayer(IPlayer player, Queue<DirectionalPosition> spawns);
 }

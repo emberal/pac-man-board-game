@@ -9,7 +9,7 @@ namespace pacMan.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class GameController : GenericController
+public class GameController : GenericController // TODO reconnect using player id
 {
     private readonly IActionService _actionService;
 

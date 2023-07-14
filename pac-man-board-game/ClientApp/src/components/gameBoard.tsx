@@ -4,10 +4,9 @@ import findPossiblePositions from "../game/possibleMovesAlgorithm";
 import {GameTile} from "./gameTile";
 import {TileType} from "../game/tileType";
 import {useAtomValue} from "jotai";
-import {allCharactersAtom} from "../utils/state";
+import {allCharactersAtom, selectedDiceAtom} from "../utils/state";
 
 interface BoardProps extends ComponentProps {
-  selectedDice?: SelectedDice,
   onMove?: Action<Position[]>,
   map: GameMap
 }
@@ -15,12 +14,12 @@ interface BoardProps extends ComponentProps {
 const Board: Component<BoardProps> = (
   {
     className,
-    selectedDice,
     onMove,
     map
   }) => {
 
   const characters = useAtomValue(allCharactersAtom);
+  const selectedDice = useAtomValue(selectedDiceAtom);
   const [selectedCharacter, setSelectedCharacter] = useState<Character>();
   const [possiblePositions, setPossiblePositions] = useState<Path[]>([]); // TODO reset when other client moves a character
   const [hoveredPosition, setHoveredPosition] = useState<Path>();
@@ -63,15 +62,15 @@ const Board: Component<BoardProps> = (
       const pacMan = selectedCharacter as PacMan;
 
       for (const tile of [...destination.Path ?? [], destination.End]) {
-        const currentTile = map[tile.y][tile.x];
+        const currentTile = map[tile.Y][tile.X];
 
         if (currentTile === TileType.pellet) {
           // pacMan.box.addPellet(new Pellet()); // TODO update to current player
-          map[tile.y][tile.x] = TileType.empty;
+          map[tile.Y][tile.X] = TileType.empty;
           positions.push(tile);
         } else if (currentTile === TileType.powerPellet) {
           // pacMan.box.addPellet(new Pellet(true));
-          map[tile.y][tile.x] = TileType.empty;
+          map[tile.Y][tile.X] = TileType.empty;
           positions.push(tile);
         }
       }
@@ -98,9 +97,9 @@ const Board: Component<BoardProps> = (
                 <GameTile
                   key={colIndex + rowIndex * colIndex}
                   type={tile}
-                  possiblePath={possiblePositions.find(p => p.End.x === colIndex && p.End.y === rowIndex)}
-                  character={characters.find(c => c.isAt({x: colIndex, y: rowIndex}))}
-                  isSelected={selectedCharacter?.isAt({x: colIndex, y: rowIndex})}
+                  possiblePath={possiblePositions.find(p => p.End.X === colIndex && p.End.Y === rowIndex)}
+                  character={characters.find(c => c.isAt({X: colIndex, Y: rowIndex}))}
+                  isSelected={selectedCharacter?.isAt({X: colIndex, Y: rowIndex})}
                   showPath={hoveredPosition?.Path?.find(pos => pos.x === colIndex && pos.y === rowIndex) !== undefined}
                   handleMoveCharacter={handleMoveCharacter}
                   handleSelectCharacter={handleSelectCharacter}

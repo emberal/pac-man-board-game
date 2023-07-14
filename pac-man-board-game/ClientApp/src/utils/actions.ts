@@ -89,7 +89,7 @@ function removeEatenPellets(data?: MoveCharacterData): void {
   const pellets = data?.EatenPellets;
 
   for (const pellet of pellets ?? []) {
-    testMap[pellet.y][pellet.x] = TileType.empty;
+    testMap[pellet.Y][pellet.X] = TileType.empty;
   }
 }
 

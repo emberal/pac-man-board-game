@@ -5,7 +5,7 @@ public interface IPlayer
     string Name { get; init; }
     Character PacMan { get; init; }
     string Colour { get; init; }
-    Box Box { get; init; }
+    Box? Box { get; init; }
     State State { get; set; }
 }
 
@@ -29,7 +29,7 @@ public class Player : IPlayer, IEquatable<Player>
     public required string Name { get; init; }
     public required Character PacMan { get; init; }
     public required string Colour { get; init; }
-    public required Box Box { get; init; }
+    public Box? Box { get; init; }
     public State State { get; set; } = State.WaitingForPlayers;
 
     public override bool Equals(object? obj)

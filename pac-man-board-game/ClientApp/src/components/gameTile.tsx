@@ -3,6 +3,7 @@ import {TileType} from "../game/tileType";
 import {Character, Dummy} from "../game/character";
 import {Direction} from "../game/direction";
 import {getCSSColour} from "../utils/colours";
+import {Colour} from "../game/colour";
 
 interface TileWithCharacterProps extends ComponentProps {
   possiblePath?: Path,
@@ -113,8 +114,8 @@ const Tile: Component<TileProps> = (
          onMouseEnter={onMouseEnter}
          onMouseLeave={onMouseLeave}>
       {children}
-      {type === TileType.pellet && <Circle colour={"yellow"}/>}
-      {type === TileType.powerPellet && <Circle colour={"red"}/>}
+      {type === TileType.pellet && <Circle colour={Colour.Yellow}/>}
+      {type === TileType.powerPellet && <Circle colour={Colour.Red}/>}
     </div>
   );
 };
@@ -146,7 +147,7 @@ const CharacterComponent: Component<CharacterComponentProps> = (
   }) => {
 
   function getSide() {
-    switch (character?.Position.Direction) {
+    switch (character?.Position?.Direction) {
       case Direction.up:
         return "right-1/4 top-0";
       case Direction.down:

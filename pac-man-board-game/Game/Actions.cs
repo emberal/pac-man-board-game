@@ -12,15 +12,10 @@ public enum GameAction
 
 public class ActionMessage<T>
 {
-    public GameAction Action { get; set; }
+    public GameAction Action { get; init; }
     public T? Data { get; set; }
 
-    public static ActionMessage FromJson(string json)
-    {
-        return JsonSerializer.Deserialize<ActionMessage>(json)!;
-    }
+    public static ActionMessage FromJson(string json) => JsonSerializer.Deserialize<ActionMessage>(json)!;
 }
 
-public class ActionMessage : ActionMessage<dynamic>
-{
-}
+public class ActionMessage : ActionMessage<dynamic> { }

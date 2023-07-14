@@ -57,7 +57,7 @@ export class Character {
   }
 
   public isAt(position: Position): boolean {
-    return this.Position !== null && this.Position.End.x === position.x && this.Position.End.y === position.y;
+    return this.Position !== null && this.Position.End.X === position.X && this.Position.End.Y === position.Y;
   }
 }
 
@@ -83,7 +83,7 @@ export class Dummy extends Character {
       Colour: Colour.Grey,
       Position: position,
       IsEatable: false,
-      SpawnPosition: {At: {x: 0, y: 0}, Direction: Direction.up},
+      SpawnPosition: {At: {X: 0, Y: 0}, Direction: Direction.up},
       Type: CharacterType.dummy,
     });
   }

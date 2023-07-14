@@ -108,23 +108,23 @@ function tryMove(board: GameMap, path: Path, direction: Direction, steps: number
     switch (direction) {
       case Direction.left:
         return {
-          x: path.End.x - 1,
-          y: path.End.y
+          X: path.End.X - 1,
+          Y: path.End.Y
         };
       case Direction.up:
         return {
-          x: path.End.x,
-          y: path.End.y - 1
+          X: path.End.X,
+          Y: path.End.Y - 1
         };
       case Direction.right:
         return {
-          x: path.End.x + 1,
-          y: path.End.y
+          X: path.End.X + 1,
+          Y: path.End.Y
         };
       case Direction.down:
         return {
-          x: path.End.x,
-          y: path.End.y + 1
+          X: path.End.X,
+          Y: path.End.Y + 1
         };
     }
   }
@@ -150,8 +150,8 @@ function addTeleportationTiles(board: GameMap, currentPath: Path, steps: number,
   const possiblePositions = findTeleportationTiles(board);
   const paths: Path[] = [];
   for (const pos of possiblePositions) {
-    if (pos.End.x !== interval(0, board.length - 1, currentPath.End.x) ||
-      pos.End.y !== interval(0, board.length - 1, currentPath.End.y)) {
+    if (pos.End.X !== interval(0, board.length - 1, currentPath.End.X) ||
+      pos.End.Y !== interval(0, board.length - 1, currentPath.End.Y)) {
 
       pos.Path = currentPath.Path;
       paths.push(...findPossibleRecursive(board, pos, steps, character, characters));
@@ -193,7 +193,7 @@ function findTeleportationTiles(board: GameMap): Path[] {
  */
 function pushPath(board: GameMap, possiblePositions: Path[], x: number, y: number): void {
   if (board[x][y] !== TileType.wall) {
-    possiblePositions.push({End: {x, y}, Direction: findDirection(x, y, board.length)});
+    possiblePositions.push({End: {X: x, Y: y}, Direction: findDirection(x, y, board.length)});
   }
 }
 
@@ -224,7 +224,7 @@ function findDirection(x: number, y: number, boardSize: number): Direction {
  */
 function isOutsideBoard(currentPos: Path, boardSize: number): boolean {
   const pos = currentPos.End;
-  return pos.x < 0 || pos.x >= boardSize || pos.y < 0 || pos.y >= boardSize;
+  return pos.X < 0 || pos.X >= boardSize || pos.Y < 0 || pos.Y >= boardSize;
 }
 
 /**
@@ -234,7 +234,7 @@ function isOutsideBoard(currentPos: Path, boardSize: number): boolean {
  */
 function isWall(board: GameMap, currentPos: Path): boolean {
   const pos = currentPos.End;
-  return board[pos.y][pos.x] === TileType.wall; // Shouldn't work, but it does
+  return board[pos.Y][pos.X] === TileType.wall; // Shouldn't work, but it does
 }
 
 /**
@@ -244,7 +244,7 @@ function isWall(board: GameMap, currentPos: Path): boolean {
  */
 function isSpawn(board: GameMap, currentPos: Path) {
   const pos = currentPos.End;
-  return board[pos.y][pos.x] === TileType.pacmanSpawn || board[pos.y][pos.x] === TileType.ghostSpawn;
+  return board[pos.Y][pos.X] === TileType.pacmanSpawn || board[pos.Y][pos.X] === TileType.ghostSpawn;
 }
 
 /**
@@ -255,6 +255,6 @@ function isSpawn(board: GameMap, currentPos: Path) {
 function isOwnSpawn(currentPos: Path, character: Character): boolean {
   const pos = currentPos.End;
   const charPos = character.SpawnPosition!.At;
-  return charPos.x === pos.x && charPos.y === pos.y;
+  return charPos.X === pos.X && charPos.Y === pos.Y;
 }
 

@@ -29,7 +29,7 @@ public class ActionService : IActionService
         _wsService = wsService;
     }
 
-    public GameGroup Group { get; set; } = new();
+    public GameGroup? Group { get; set; }
 
     public IPlayer? Player { get; set; }
 
@@ -56,14 +56,16 @@ public class ActionService : IActionService
     {
         try
         {
-            // Receieved JsonElement from frontend
-            Player = JsonSerializer.Deserialize<Player>(message.Data);
-            Group = _wsService.AddPlayer(Player);
+            // Receieving JsonElement from frontend
+            PlayerInfoData data = JsonSerializer.Deserialize<PlayerInfoData>(message.Data);
+            Player = data.Player;
+
+            Group = _wsService.AddPlayer(Player, data.Spawns);
         }
         catch (RuntimeBinderException e)
         {
             Console.WriteLine(e);
-            if (message.Data == null) throw new NullReferenceException();
+            if (message.Data is null) throw new NullReferenceException();
 
             throw;
         }
@@ -74,7 +76,7 @@ public class ActionService : IActionService
     public object Ready()
     {
         object data;
-        if (Player != null)
+        if (Player != null && Group != null)
         {
             var players = Group.SetReady(Player).ToArray();
             if (players.All(p => p.State == State.Ready))
@@ -95,4 +97,10 @@ public class ActionService : IActionService
 
         return data;
     }
+}
+
+public class PlayerInfoData
+{
+    public required Player Player { get; set; }
+    public required Queue<DirectionalPosition> Spawns { get; set; }
 }

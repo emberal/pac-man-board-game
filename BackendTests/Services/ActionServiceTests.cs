@@ -11,26 +11,48 @@ namespace BackendTests.Services;
 
 public class ActionServiceTests
 {
-    private readonly IPlayer _blackPlayer = Players.Create("black");
-    private readonly IPlayer _redPlayer = Players.Create("red");
-    private readonly IPlayer _whitePlayer = Players.Create("white");
+    private readonly Player _blackPlayer = (Player)Players.Create("black");
+    private readonly Player _redPlayer = (Player)Players.Create("red");
+
+    private readonly Player _whitePlayer = (Player)Players.Create("white");
     private ActionMessage _blackMessage = null!;
     private ActionMessage _redMessage = null!;
     private IActionService _service = null!;
+
+    private Queue<DirectionalPosition> _spawns = null!;
+
     private ActionMessage _whiteMessage = null!;
     private IWebSocketService _wssSub = null!;
 
     [SetUp]
     public void Setup()
     {
+        _spawns = CreateQueue();
         _whiteMessage = new ActionMessage
-            { Action = GameAction.PlayerInfo, Data = JsonSerializer.Serialize(_whitePlayer) };
+        {
+            Action = GameAction.PlayerInfo,
+            Data = JsonSerializer.Serialize(new { Player = _whitePlayer, Spawns = CreateQueue() })
+        };
         _blackMessage = new ActionMessage
-            { Action = GameAction.PlayerInfo, Data = JsonSerializer.Serialize(_blackPlayer) };
-        _redMessage = new ActionMessage { Action = GameAction.PlayerInfo, Data = JsonSerializer.Serialize(_redPlayer) };
+        {
+            Action = GameAction.PlayerInfo,
+            Data = JsonSerializer.Serialize(new { Player = _blackPlayer, Spawns = CreateQueue() })
+        };
+        _redMessage = new ActionMessage
+        {
+            Action = GameAction.PlayerInfo,
+            Data = JsonSerializer.Serialize(new { Player = _redPlayer, Spawns = CreateQueue() })
+        };
         _wssSub = Substitute.For<WebSocketService>(Substitute.For<ILogger<WebSocketService>>());
         _service = new ActionService(Substitute.For<ILogger<ActionService>>(), _wssSub);
     }
+
+    private static Queue<DirectionalPosition> CreateQueue() =>
+        new(new[]
+        {
+            new DirectionalPosition { At = new Position { X = 3, Y = 3 }, Direction = Direction.Up },
+            new() { At = new Position { X = 7, Y = 7 }, Direction = Direction.Down }
+        });
 
     #region RollDice()
 
@@ -74,6 +96,9 @@ public class ActionServiceTests
     {
         var players = _service.SetPlayerInfo(_whiteMessage);
 
+        var pos = _spawns.Dequeue();
+        _whitePlayer.PacMan.Position = pos;
+        _whitePlayer.PacMan.SpawnPosition = pos;
         Assert.That(new List<IPlayer> { _whitePlayer }, Is.EqualTo(players));
     }
 
@@ -140,7 +165,7 @@ public class ActionServiceTests
     [Test]
     public void Ready_TwoReady()
     {
-        var group = new GameGroup { Players = { _blackPlayer, _whitePlayer } };
+        var group = new GameGroup(new Queue<DirectionalPosition>()) { Players = { _blackPlayer, _whitePlayer } };
         _service.Group = group;
         _service.Player = _blackPlayer;
 

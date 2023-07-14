@@ -11,12 +11,25 @@ namespace BackendTests.Services;
 
 public class WebSocketServiceTests
 {
+    private readonly DirectionalPosition _spawn3By3Up = new()
+        { At = new Position { X = 3, Y = 3 }, Direction = Direction.Up };
+
     private IWebSocketService _service = null!;
+
+    private Queue<DirectionalPosition> _spawns = null!;
+
 
     [SetUp]
     public void SetUp()
     {
         _service = new WebSocketService(Substitute.For<ILogger<WebSocketService>>());
+        _spawns = new Queue<DirectionalPosition>(new[]
+        {
+            _spawn3By3Up,
+            new DirectionalPosition { At = new Position { X = 7, Y = 7 }, Direction = Direction.Down },
+            new DirectionalPosition { At = new Position { X = 7, Y = 7 }, Direction = Direction.Down },
+            new DirectionalPosition { At = new Position { X = 7, Y = 7 }, Direction = Direction.Down }
+        });
     }
 
     #region Send(Websocket, ArraySegment<byte>)
@@ -135,7 +148,7 @@ public class WebSocketServiceTests
     public void AddPlayer_ToEmptyGroup()
     {
         var player = Players.Create("white");
-        var group = _service.AddPlayer(player);
+        var group = _service.AddPlayer(player, _spawns);
 
         Assert.Multiple(() =>
         {
@@ -151,12 +164,12 @@ public class WebSocketServiceTests
         for (var i = 0; i < 4; i++)
         {
             var player = Players.Create(i.ToString());
-            _service.AddPlayer(player);
+            _service.AddPlayer(player, _spawns);
         }
 
         var player5 = Players.Create("white");
 
-        var group = _service.AddPlayer(player5);
+        var group = _service.AddPlayer(player5, new Queue<DirectionalPosition>(new[] { _spawn3By3Up }));
 
         Assert.Multiple(() =>
         {

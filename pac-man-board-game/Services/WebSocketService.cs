@@ -1,4 +1,5 @@
 using System.Net.WebSockets;
+using pacMan.Game;
 using pacMan.Game.Items;
 using pacMan.Interfaces;
 using pacMan.Utils;
@@ -56,7 +57,7 @@ public class WebSocketService : IWebSocketService
         _logger.Log(LogLevel.Information, "WebSocket connection closed");
     }
 
-    public GameGroup AddPlayer(IPlayer player)
+    public GameGroup AddPlayer(IPlayer player, Queue<DirectionalPosition> spawns)
     {
         var index = 0;
         try
@@ -65,7 +66,7 @@ public class WebSocketService : IWebSocketService
         }
         catch (ArgumentOutOfRangeException)
         {
-            var game = new GameGroup();
+            var game = new GameGroup(spawns);
             game.AddPlayer(player);
             Games.Add(game);
         }

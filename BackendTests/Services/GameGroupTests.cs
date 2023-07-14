@@ -9,17 +9,34 @@ namespace BackendTests.Services;
 
 public class GameGroupTests
 {
+    private readonly DirectionalPosition _spawn3By3Up = new()
+        { At = new Position { X = 3, Y = 3 }, Direction = Direction.Up };
+
+    private readonly DirectionalPosition _spawn7By7Down = new()
+        { At = new Position { X = 7, Y = 7 }, Direction = Direction.Down };
+
+    private readonly DirectionalPosition _spawn7By7Left = new()
+        { At = new Position { X = 7, Y = 7 }, Direction = Direction.Left };
+
+    private readonly DirectionalPosition _spawn7By7Right = new()
+        { At = new Position { X = 7, Y = 7 }, Direction = Direction.Right };
+
     private IPlayer _bluePlayer = null!;
     private GameGroup _gameGroup = null!;
     private IPlayer _greenPlayer = null!;
     private IPlayer _purplePlayer = null!;
     private IPlayer _redPlayer = null!;
+
+    private Queue<DirectionalPosition> _spawns = null!;
     private IPlayer _yellowPlayer = null!;
 
     [SetUp]
     public void Setup()
     {
-        _gameGroup = new GameGroup();
+        _spawns = new Queue<DirectionalPosition>(
+            new[] { _spawn3By3Up, _spawn7By7Left, _spawn7By7Down, _spawn7By7Right });
+
+        _gameGroup = new GameGroup(_spawns);
         _redPlayer = Players.Create("red");
         _bluePlayer = Players.Create("blue");
         _yellowPlayer = Players.Create("yellow");
@@ -68,6 +85,14 @@ public class GameGroupTests
         _redPlayer.State = State.InGame;
         _gameGroup.AddPlayer(_redPlayer);
         Assert.That(_redPlayer.State, Is.EqualTo(State.WaitingForPlayers));
+    }
+
+    [Test]
+    public void AddPlayer_AddSpawnPosition()
+    {
+        _gameGroup.AddPlayer(_redPlayer);
+        Assert.That(_redPlayer.PacMan.SpawnPosition, Is.Not.Null);
+        Assert.That(_redPlayer.PacMan.SpawnPosition, Is.EqualTo(_spawn3By3Up));
     }
 
     #endregion

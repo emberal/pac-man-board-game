@@ -8,14 +8,20 @@ namespace pacMan.Services;
 public class GameGroup : IEnumerable<IPlayer>
 {
     private readonly Random _random = new();
+
+    public GameGroup(Queue<DirectionalPosition> spawns) => Spawns = spawns;
+
     public List<IPlayer> Players { get; } = new();
+    private Queue<DirectionalPosition> Spawns { get; }
 
     public IPlayer RandomPlayer => Players[_random.Next(Count)];
+
     public int Count => Players.Count;
 
     public IEnumerator<IPlayer> GetEnumerator() => Players.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
     public event Func<ArraySegment<byte>, Task>? Connections;
 
     public bool AddPlayer(IPlayer player) // TODO if name exists, use that player instead
@@ -25,7 +31,16 @@ public class GameGroup : IEnumerable<IPlayer>
         player.State = State.WaitingForPlayers;
         if (Players.Exists(p => p.Name == player.Name)) return true;
         Players.Add(player);
+        if (player.PacMan.SpawnPosition is null) SetSpawn(player);
         return true;
+    }
+
+    private void SetSpawn(IPlayer player)
+    {
+        if (player.PacMan.SpawnPosition is not null) return;
+        var spawn = Spawns.Dequeue();
+        player.PacMan.SpawnPosition = spawn;
+        player.PacMan.Position = spawn;
     }
 
     public void SendToAll(ArraySegment<byte> segment) => Connections?.Invoke(segment);
