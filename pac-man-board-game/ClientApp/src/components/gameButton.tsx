@@ -15,12 +15,12 @@ const GameButton: Component<GameButtonProps> = (
   }) => {
   const currentPlayer = useAtomValue(currentPlayerAtom);
   const thisPlayer = useAtomValue(thisPlayerAtom);
-  
+
   if (currentPlayer === undefined || currentPlayer.State === State.waitingForPlayers) {
     return <button onClick={onReadyClick}>Ready</button>;
   }
   if (!thisPlayer?.isTurn()) {
-    return <button>Please wait</button>;
+    return <button disabled>Please wait</button>;
   }
   return <button onClick={onRollDiceClick}>Roll dice</button>;
 };
