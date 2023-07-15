@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import {TileType} from "../game/tileType";
 import {Character, Dummy} from "../game/character";
 import {Direction} from "../game/direction";
-import {getBgCSSColour} from "../utils/colours";
 import {Colour} from "../game/colour";
 
 interface TileWithCharacterProps extends ComponentProps {
@@ -51,7 +50,8 @@ export const GameTile: Component<TileWithCharacterProps> = (
 
 const Circle: Component<{ colour?: Colour } & ComponentProps> = ({colour = Colour.White, className}) => (
   <div className={`flex-center w-full h-full ${className}`}>
-    <div className={`w-1/2 h-1/2 rounded-full ${getBgCSSColour(colour)}`}/>
+    <div className={`w-1/2 h-1/2 rounded-full`}
+         style={{backgroundColor: colour}}/>
   </div>
 );
 
