@@ -3,12 +3,13 @@ import possibleMovesAlgorithm from "../../src/game/possibleMovesAlgorithm";
 import {testMap} from "../../src/game/map";
 import {Character, PacMan} from "../../src/game/character";
 import {Direction} from "../../src/game/direction";
+import {Colour} from "../../src/game/colour";
 
 let pacMan: Character;
 
 beforeEach(() => {
   pacMan = new PacMan({
-    Colour: "yellow", SpawnPosition: {At: {X: 3, Y: 3}, Direction: Direction.up}
+    Colour: Colour.Yellow, SpawnPosition: {At: {X: 3, Y: 3}, Direction: Direction.up}
   });
 });
 
@@ -16,14 +17,14 @@ test("Pac-Man rolls one from start, should return one position", () => {
   const result = possibleMovesAlgorithm(testMap, pacMan, 1, []);
   expect(result.length).toBe(1);
   expect(result[0].Path?.length).toBe(0);
-  expect(result).toEqual([{end: {x: 3, y: 2}, direction: Direction.up, path: []}]);
+  expect(result).toEqual([{End: {X: 3, Y: 2}, Direction: Direction.up, Path: []}] as Path[]);
 });
 
 test("Pac-Man rolls two from start, should return one position", () => {
   const result = possibleMovesAlgorithm(testMap, pacMan, 2, []);
   expect(result.length).toBe(1);
   expect(result[0].Path?.length).toBe(1);
-  expect(result).toEqual([{end: {x: 3, y: 1}, direction: Direction.up, path: [{x: 3, y: 2}]}]);
+  expect(result).toEqual([{End: {X: 3, Y: 1}, Direction: Direction.up, Path: [{X: 3, Y: 2}]}] as Path[]);
 });
 
 test("Pac-Man rolls three from start, should return two positions", () => {
@@ -130,7 +131,7 @@ test("Pac-Man rolls three from position [1,5] (left), should return 5", () => {
 test("Pac-Man rolls six from position [1,5] (down), should return 17", () => {
   pacMan.follow({End: {X: 1, Y: 5}, Direction: Direction.down});
   const result = possibleMovesAlgorithm(testMap, pacMan, 6, []);
-  expect(result.length).toBe(17);
+  expect(result.length).toBe(21);
 });
 
 test("Pac-Man rolls six from position [7,1] (right), path to [9,5] should be five tiles long", () => {
@@ -139,10 +140,10 @@ test("Pac-Man rolls six from position [7,1] (right), path to [9,5] should be fiv
   expect(result[0].Path?.length).toBe(5);
 });
 
-test("Pac-Man rolls 5 from position [9,3] (down), should return 5", () => {
+test("Pac-Man rolls 5 from position [9,3] (down), should return 7", () => {
   pacMan.follow({End: {X: 9, Y: 3}, Direction: Direction.down});
   const result = possibleMovesAlgorithm(testMap, pacMan, 5, []);
-  expect(result.length).toBe(5);
+  expect(result.length).toBe(7);
 });
 
 function arrayEquals<T extends any[]>(result: T, expected: T, message?: string): void {

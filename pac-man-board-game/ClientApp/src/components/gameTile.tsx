@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {TileType} from "../game/tileType";
 import {Character, Dummy} from "../game/character";
 import {Direction} from "../game/direction";
-import {getCSSColour} from "../utils/colours";
+import {getBgCSSColour} from "../utils/colours";
 import {Colour} from "../game/colour";
 
 interface TileWithCharacterProps extends ComponentProps {
@@ -36,12 +36,12 @@ export const GameTile: Component<TileWithCharacterProps> = (
         onMouseLeave={handleStopShowPath}>
     <>
       {character &&
-        <div className={"flex-center wh-full"}>
-          <CharacterComponent
-            character={character}
-            onClick={handleSelectCharacter}
-            className={isSelected ? "animate-bounce" : ""}/>
-        </div>
+          <div className={"flex-center wh-full"}>
+              <CharacterComponent
+                  character={character}
+                  onClick={handleSelectCharacter}
+                  className={isSelected ? "animate-bounce" : ""}/>
+          </div>
       }
       {showPath && <Circle/>}
       <AddDummy path={possiblePath}/>
@@ -49,13 +49,9 @@ export const GameTile: Component<TileWithCharacterProps> = (
   </Tile>
 );
 
-interface CircleProps extends ComponentProps {
-  colour?: Colour,
-}
-
-const Circle: Component<CircleProps> = ({colour = "white"}) => (
-  <div className={"flex-center w-full h-full"}>
-    <div className={`w-1/2 h-1/2 rounded-full ${getCSSColour(colour)}`}/>
+const Circle: Component<{ colour?: Colour } & ComponentProps> = ({colour = Colour.White, className}) => (
+  <div className={`flex-center w-full h-full ${className}`}>
+    <div className={`w-1/2 h-1/2 rounded-full ${getBgCSSColour(colour)}`}/>
   </div>
 );
 
@@ -120,16 +116,12 @@ const Tile: Component<TileProps> = (
   );
 };
 
-interface AddDummyProps extends ComponentProps {
-  path?: Path;
-}
-
-const AddDummy: Component<AddDummyProps> = ({path}) => (
+const AddDummy: Component<{ path?: Path } & ComponentProps> = ({path}) => (
   <>
     {path &&
-      <div className={"flex-center wh-full"}>
-        <CharacterComponent character={new Dummy(path)}/>
-      </div>
+        <div className={"flex-center wh-full"}>
+            <CharacterComponent character={new Dummy(path)}/>
+        </div>
     }
   </>
 );

@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {Character, PacMan} from "../game/character";
+import {Character} from "../game/character";
 import findPossiblePositions from "../game/possibleMovesAlgorithm";
 import {GameTile} from "./gameTile";
 import {TileType} from "../game/tileType";
 import {useAtomValue} from "jotai";
-import {allCharactersAtom, selectedDiceAtom} from "../utils/state";
+import {allCharactersAtom, currentPlayerAtom, selectedDiceAtom} from "../utils/state";
+import Pellet from "../game/pellet";
 
 interface BoardProps extends ComponentProps {
   onMove?: Action<Position[]>,
@@ -18,6 +19,7 @@ const Board: Component<BoardProps> = (
     map
   }) => {
 
+  const currentPlayer = useAtomValue(currentPlayerAtom);
   const characters = useAtomValue(allCharactersAtom);
   const selectedDice = useAtomValue(selectedDiceAtom);
   const [selectedCharacter, setSelectedCharacter] = useState<Character>();
@@ -52,26 +54,27 @@ const Board: Component<BoardProps> = (
     const takenChar = characters.find(c => c.isPacMan() && c.isAt(destination.End));
     if (takenChar) {
       takenChar.moveToSpawn();
-      // TODO steal from player
+      // TODO steal from other player
     }
   }
 
   function pickUpPellets(destination: Path): Position[] {
     const positions: Position[] = [];
-    if (selectedCharacter instanceof PacMan) {
-      const pacMan = selectedCharacter as PacMan;
+    if (selectedCharacter?.isPacMan()) {
 
       for (const tile of [...destination.Path ?? [], destination.End]) {
         const currentTile = map[tile.Y][tile.X];
 
+        function updateTileAndPlayerBox(isPowerPellet = false): void {
+          currentPlayer?.addPellet(new Pellet(isPowerPellet));
+          map[tile.Y][tile.X] = TileType.empty;
+          positions.push(tile);
+        }
+
         if (currentTile === TileType.pellet) {
-          // pacMan.box.addPellet(new Pellet()); // TODO update to current player
-          map[tile.Y][tile.X] = TileType.empty;
-          positions.push(tile);
+          updateTileAndPlayerBox();
         } else if (currentTile === TileType.powerPellet) {
-          // pacMan.box.addPellet(new Pellet(true));
-          map[tile.Y][tile.X] = TileType.empty;
-          positions.push(tile);
+          updateTileAndPlayerBox(true);
         }
       }
     }

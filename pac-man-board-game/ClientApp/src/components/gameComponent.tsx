@@ -7,21 +7,23 @@ import {getCharacterSpawns, testMap} from "../game/map";
 import Player from "../game/player";
 import PlayerStats from "../components/playerStats";
 import {getDefaultStore, useAtom, useAtomValue} from "jotai";
-import {currentPlayerAtom, diceAtom, ghostsAtom, playersAtom, selectedDiceAtom} from "../utils/state";
+import {diceAtom, ghostsAtom, playersAtom, selectedDiceAtom} from "../utils/state";
 import {CharacterType} from "../game/character";
 import GameButton from "./gameButton";
 
 const wsService = new WebSocketService(import.meta.env.VITE_API);
 
-export const GameComponent: Component<{ player: Player }> = ({player}) => { // TODO players not moving
+// TODO do not allow players to move other players' characters
+// TODO do not allow players to roll dice multiple times
+
+export const GameComponent: Component<{ player: Player }> = ({player}) => {
   const players = useAtomValue(playersAtom);
 
   const dice = useAtomValue(diceAtom);
   const [selectedDice, setSelectedDice] = useAtom(selectedDiceAtom);
-  const currentPlayer = useAtomValue(currentPlayerAtom);
 
-  function startGameLoop(): void {
-    if (currentPlayer?.Name !== player.Name) return;
+  function rollDice(): void {
+    if (!player.isTurn()) return;
 
     setSelectedDice(undefined);
     wsService.send({Action: GameAction.rollDice});
@@ -71,10 +73,12 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => { // T
   return (
     <>
       <div className={"flex-center"}>
-        <GameButton onReadyClick={sendReady} onRollDiceClick={startGameLoop}/>
+        <GameButton onReadyClick={sendReady} onRollDiceClick={rollDice}/>
       </div>
       <AllDice values={dice}/>
-      {players?.map(p => <PlayerStats key={p.Name} player={p} isCurrentPlayer={currentPlayer?.Name === p.Name}/>)}
+      <div className={"flex justify-center"}>
+        {players?.map(p => <PlayerStats key={p.Name} player={p}/>)}
+      </div>
       <GameBoard className={"mx-auto my-2"} onMove={onCharacterMove} map={testMap}/>
     </>
   );

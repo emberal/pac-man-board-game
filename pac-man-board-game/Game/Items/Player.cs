@@ -13,7 +13,8 @@ public enum State
 {
     WaitingForPlayers,
     Ready,
-    InGame
+    InGame,
+    Disconnected
 }
 
 public class Player : IPlayer, IEquatable<Player>

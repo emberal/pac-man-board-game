@@ -65,10 +65,7 @@ function updatePlayers(data?: MoveCharacterData): void {
   const updatedPlayers = data?.Players;
 
   if (updatedPlayers) {
-    const newList: Player[] = [];
-    for (const player of updatedPlayers) {
-      newList.push(new Player(player));
-    }
+    const newList: Player[] = updatedPlayers.map(p => new Player(p));
     store.set(playersAtom, newList);
   }
 }
@@ -77,10 +74,7 @@ function updateGhosts(data?: MoveCharacterData): void {
   const updatedGhosts = data?.Ghosts;
 
   if (updatedGhosts) {
-    const newList: Ghost[] = [];
-    for (const ghost of updatedGhosts) {
-      newList.push(new Ghost(ghost));
-    }
+    const newList: Ghost[] = updatedGhosts.map(g => new Ghost(g));
     store.set(ghostsAtom, newList);
   }
 }
@@ -96,12 +90,7 @@ function removeEatenPellets(data?: MoveCharacterData): void {
 function playerInfo(data?: PlayerProps[]): void {
   const playerProps = data ?? [];
   spawns = getCharacterSpawns(testMap).filter(spawn => spawn.type === CharacterType.pacMan);
-  store.set(playersAtom, playerProps.map(p => {
-    if (!p.PacMan.SpawnPosition) {
-      p.PacMan.SpawnPosition = spawns.pop()?.position;
-    }
-    return new Player(p);
-  }));
+  store.set(playersAtom, playerProps.map(p => new Player(p)));
 }
 
 type ReadyData =
@@ -111,9 +100,10 @@ type ReadyData =
 
 function ready(data?: ReadyData): void {
   if (data && typeof data !== "string") {
+    const players = data.Players.map(p => new Player(p));
+    store.set(playersAtom, players);
     if (data.AllReady) {
-      store.set(currentPlayerAtom, new Player(data.Starter));
+      store.set(currentPlayerAtom, players.find(p => p.Name === data.Starter.Name));
     }
-    store.set(playersAtom, data.Players.map(p => new Player(p)));
   }
 }

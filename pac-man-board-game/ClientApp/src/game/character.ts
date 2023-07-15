@@ -26,10 +26,15 @@ export class Character {
     this.IsEatable = IsEatable;
     this.SpawnPosition = SpawnPosition;
 
-    this.Position = Position ?? SpawnPosition ? {
-      End: SpawnPosition!.At,
-      Direction: SpawnPosition!.Direction
-    } : null;
+    if (Position) {
+      this.Position = Position;
+    } else {
+      this.Position = SpawnPosition ? {
+        End: SpawnPosition!.At,
+        Direction: SpawnPosition!.Direction
+      } : null;
+    }
+
     this.Type = Type;
   }
 

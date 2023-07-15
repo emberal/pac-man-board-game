@@ -5,7 +5,7 @@ using pacMan.Game.Items;
 
 namespace pacMan.Services;
 
-public class GameGroup : IEnumerable<IPlayer>
+public class GameGroup : IEnumerable<IPlayer> // TODO handle disconnects and reconnects
 {
     private readonly Random _random = new();
 

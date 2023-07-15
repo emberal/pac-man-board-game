@@ -5,7 +5,6 @@ import {Ghost} from "../game/character";
 
 const playerStorage = createJSONStorage<Player | undefined>(() => sessionStorage);
 
-// TODO derived from playersAtom
 export const playersAtom = atom<Player[]>([]);
 export const playerCharactersAtom = atom(get => get(playersAtom).map(player => player.PacMan));
 export const ghostsAtom = atom<Ghost[]>([]);
