@@ -159,7 +159,7 @@ public class ActionServiceTests
         var result = _service.Ready();
         // If selected the state is changed to InGame
         _whitePlayer.State = State.InGame;
-        Assert.That(result.GetType().GetProperty("Starter")?.GetValue(result), Is.EqualTo(_whitePlayer));
+        Assert.That(result.GetType().GetProperty("Starter")?.GetValue(result), Is.EqualTo(_whitePlayer.Name));
     }
 
     [Test]
@@ -178,7 +178,7 @@ public class ActionServiceTests
         result = _service.Ready();
 
         Assert.That(result.GetType().GetProperty("Starter")?.GetValue(result),
-            Is.EqualTo(_whitePlayer).Or.EqualTo(_blackPlayer));
+            Is.EqualTo(_whitePlayer.Name).Or.EqualTo(_blackPlayer.Name));
     }
 
     #endregion

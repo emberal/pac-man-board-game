@@ -13,8 +13,8 @@ import GameButton from "./gameButton";
 
 const wsService = new WebSocketService(import.meta.env.VITE_API);
 
-// TODO do not allow players to move other players' characters
 // TODO do not allow players to roll dice multiple times
+// TODO fix tailwind colours from getBgCssColour
 
 export const GameComponent: Component<{ player: Player }> = ({player}) => {
   const players = useAtomValue(playersAtom);

@@ -27,6 +27,9 @@ const Board: Component<BoardProps> = (
   const [hoveredPosition, setHoveredPosition] = useState<Path>();
 
   function handleSelectCharacter(character: Character): void {
+    if (character.isPacMan() && currentPlayer?.PacMan.Colour !== character.Colour) {
+      return;
+    }
     setSelectedCharacter(character);
   }
 

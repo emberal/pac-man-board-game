@@ -3,7 +3,7 @@ import {CharacterType, Ghost} from "../game/character";
 import {getCharacterSpawns, testMap} from "../game/map";
 import {TileType} from "../game/tileType";
 import {getDefaultStore} from "jotai";
-import {currentPlayerAtom, diceAtom, ghostsAtom, playersAtom} from "./state";
+import {currentPlayerNameAtom, diceAtom, ghostsAtom, playersAtom} from "./state";
 import {Colour} from "../game/colour";
 
 export enum GameAction {
@@ -94,7 +94,7 @@ function playerInfo(data?: PlayerProps[]): void {
 }
 
 type ReadyData =
-  | { AllReady: true, Starter: PlayerProps, Players: PlayerProps[] }
+  | { AllReady: true, Starter: string, Players: PlayerProps[] }
   | { AllReady: false, Players: PlayerProps[] }
   | string;
 
@@ -103,7 +103,7 @@ function ready(data?: ReadyData): void {
     const players = data.Players.map(p => new Player(p));
     store.set(playersAtom, players);
     if (data.AllReady) {
-      store.set(currentPlayerAtom, players.find(p => p.Name === data.Starter.Name));
+      store.set(currentPlayerNameAtom, data.Starter);
     }
   }
 }

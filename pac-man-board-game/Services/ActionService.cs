@@ -83,7 +83,7 @@ public class ActionService : IActionService
             {
                 // TODO roll to start
                 Group.SetAllInGame();
-                data = new { AllReady = true, Players = players, Starter = Group.RandomPlayer };
+                data = new { AllReady = true, Players = players, Starter = Group.RandomPlayer.Name };
             }
             else
             {
