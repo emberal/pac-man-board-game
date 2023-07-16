@@ -57,8 +57,16 @@ const Board: Component<BoardProps> = (
     const takenChar = characters.find(c => c.isPacMan() && c.isAt(destination.End));
     if (takenChar) {
       takenChar.moveToSpawn();
-      // TODO steal from other player
+      stealFromPlayer();
     }
+  }
+
+  // TODO steal from other player
+  function stealFromPlayer(): void {
+    // TODO select player to steal from
+    // TODO modal to select player
+    // const victim
+    // currentPlayer?.stealFrom(victim)
   }
 
   function pickUpPellets(destination: Path): Position[] {

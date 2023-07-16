@@ -15,6 +15,7 @@ public interface IActionService
     List<IPlayer> SetPlayerInfo(ActionMessage message);
     object Ready();
     string FindNextPlayer();
+    void Disconnect();
 }
 
 public class ActionService : IActionService
@@ -96,6 +97,11 @@ public class ActionService : IActionService
     }
 
     public string FindNextPlayer() => Group?.NextPlayer().Name ?? "Error: No group found";
+
+    public void Disconnect()
+    {
+        if (Player != null) Player.State = State.Disconnected;
+    }
 }
 
 public struct PlayerInfoData

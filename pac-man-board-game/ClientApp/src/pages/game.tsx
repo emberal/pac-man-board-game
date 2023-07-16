@@ -2,6 +2,7 @@ import React, {useEffect} from "react";
 import {GameComponent} from "../components/gameComponent";
 import {useAtomValue} from "jotai";
 import {thisPlayerAtom} from "../utils/state";
+import {testMap} from "../game/map";
 
 const Game: Component = () => {
   const player = useAtomValue(thisPlayerAtom);
@@ -15,7 +16,7 @@ const Game: Component = () => {
   }, [player]);
 
   if (player) {
-    return <GameComponent player={player}/>;
+    return <GameComponent player={player} map={testMap}/>;
   } else {
     return null;
   }

@@ -66,8 +66,10 @@ public abstract class GenericController : ControllerBase
             Logger.Log(LogLevel.Error, "{}", e.Message);
         }
 
-        WsService.Connections -= WsServiceOnFire;
+        Disconnect();
     }
 
     protected abstract ArraySegment<byte> Run(WebSocketReceiveResult result, byte[] data);
+
+    protected virtual void Disconnect() => WsService.Connections -= WsServiceOnFire;
 }

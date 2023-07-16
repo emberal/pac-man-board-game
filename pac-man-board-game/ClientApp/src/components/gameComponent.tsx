@@ -3,28 +3,33 @@ import {AllDice} from "./dice";
 import {doAction, GameAction} from "../utils/actions";
 import GameBoard from "./gameBoard";
 import WebSocketService from "../websockets/WebSocketService";
-import {getCharacterSpawns, testMap} from "../game/map";
+import {getCharacterSpawns} from "../game/map";
 import Player from "../game/player";
 import PlayerStats from "../components/playerStats";
-import {getDefaultStore, useAtom, useAtomValue, useSetAtom} from "jotai";
+import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {diceAtom, ghostsAtom, playersAtom, rollDiceButtonAtom, selectedDiceAtom} from "../utils/state";
 import {CharacterType} from "../game/character";
 import GameButton from "./gameButton";
 
 const wsService = new WebSocketService(import.meta.env.VITE_API);
 
+// TODO ghost should be able to take pacmen
+
 // TODO don't start game until at least 2 players have joined
 // TODO join game lobby
+// TODO sign up player page
+// TODO sign in page
 // TODO steal from other players
 // TODO show box with collected pellets
 // TODO layout
 
-export const GameComponent: Component<{ player: Player }> = ({player}) => {
-  const players = useAtomValue(playersAtom);
+export const GameComponent: Component<{ player: Player, map: GameMap }> = ({player, map}) => {
 
+  const players = useAtomValue(playersAtom);
   const dice = useAtomValue(diceAtom);
   const [selectedDice, setSelectedDice] = useAtom(selectedDiceAtom);
   const setActiveRollDiceButton = useSetAtom(rollDiceButtonAtom);
+  const ghosts = useAtomValue(ghostsAtom);
 
   function rollDice(): void {
     if (!player.isTurn()) return;
@@ -44,7 +49,7 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
       Data: {
         Dice: dice?.length ?? 0 > 0 ? dice : null,
         Players: players,
-        Ghosts: getDefaultStore().get(ghostsAtom),
+        Ghosts: ghosts,
         EatenPellets: eatenPellets
       }
     };
@@ -59,7 +64,7 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
     wsService.send({
       Action: GameAction.playerInfo,
       Data: {
-        Player: player, Spawns: getCharacterSpawns(testMap)
+        Player: player, Spawns: getCharacterSpawns(map)
           .filter(s => s.type === CharacterType.pacMan)
           .map(s => s.position)
       }
@@ -70,7 +75,7 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
     wsService.send({Action: GameAction.ready});
   }
 
-  function endTurn() {
+  function endTurn(): void {
     wsService.send({Action: GameAction.nextPlayer});
   }
 
@@ -92,7 +97,7 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
       <div className={"flex justify-center"}>
         {players?.map(p => <PlayerStats key={p.Name} player={p}/>)}
       </div>
-      <GameBoard className={"mx-auto my-2"} onMove={onCharacterMove} map={testMap}/>
+      <GameBoard className={"mx-auto my-2"} onMove={onCharacterMove} map={map}/>
     </>
   );
 };

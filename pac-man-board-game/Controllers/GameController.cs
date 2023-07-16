@@ -30,4 +30,10 @@ public class GameController : GenericController // TODO reconnect using player i
         _actionService.DoAction(action);
         return action.ToArraySegment();
     }
+
+    protected override void Disconnect()
+    {
+        base.Disconnect();
+        _actionService.Disconnect();
+    }
 }
