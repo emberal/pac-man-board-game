@@ -14,19 +14,14 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
-        path: ./ClientApp
-        node-version: ${{ matrix.node-version }}
+        node-version: 18
         cache: 'npm'
+        cache-dependency-path: ./ClientApp/package-lock.json
     - name: Install
       working-directory: ./ClientApp
       run: npm ci
