@@ -1,15 +1,19 @@
 import {beforeEach, expect, test} from "vitest";
 import possibleMovesAlgorithm from "../../src/game/possibleMovesAlgorithm";
 import {testMap} from "../../src/game/map";
-import {Character, PacMan} from "../../src/game/character";
+import {Ghost, PacMan} from "../../src/game/character";
 import {Direction} from "../../src/game/direction";
 import {Colour} from "../../src/game/colour";
 
-let pacMan: Character;
+let pacMan: PacMan;
+let ghost: Ghost;
 
 beforeEach(() => {
   pacMan = new PacMan({
     Colour: Colour.Yellow, SpawnPosition: {At: {X: 3, Y: 3}, Direction: Direction.up}
+  });
+  ghost = new Ghost({
+    Colour: Colour.Red, SpawnPosition: {At: {X: 3, Y: 3}, Direction: Direction.up}
   });
 });
 
@@ -144,6 +148,42 @@ test("Pac-Man rolls 5 from position [9,3] (down), should return 7", () => {
   pacMan.follow({End: {X: 9, Y: 3}, Direction: Direction.down});
   const result = possibleMovesAlgorithm(testMap, pacMan, 5, []);
   expect(result.length).toBe(7);
+});
+
+test("Ghost can take Pac-Man, stops exactly on Pac-Man unless Pac-Man is at spawn", () => {
+  ghost.follow({End: {X: 3, Y: 5}, Direction: Direction.up});
+  const result = possibleMovesAlgorithm(testMap, ghost, 2, [ghost, pacMan]);
+  expect(result.length).toBe(2);
+  arrayEquals(result, [
+    {End: {X: 1, Y: 5}, Direction: Direction.left, Path: [{X: 2, Y: 5}]},
+    {End: {X: 5, Y: 5}, Direction: Direction.right, Path: [{X: 4, Y: 5}]},
+  ])
+});
+
+test("Ghost can take Pac-Man, steps reach Pac-Man exactly", () => {
+  ghost.follow({End: {X: 7, Y: 3}, Direction: Direction.up});
+  pacMan.follow({End: {X: 5, Y: 1}, Direction: Direction.right});
+  const result = possibleMovesAlgorithm(testMap, ghost, 4, [ghost, pacMan]);
+  expect(result.length).toBe(2);
+  arrayEquals(result, [
+    {End: {X: 5, Y: 1}, Direction: Direction.left, Path: [{X: 7, Y: 2}, {X: 7, Y: 1}, {X: 6, Y: 1}]},
+    {End: {X: 9, Y: 1}, Direction: Direction.right, Path: [{X: 7, Y: 2}, {X: 7, Y: 1}, {X: 8, Y: 1}]},
+  ])
+});
+
+test("Ghost can take Pac-Man, steps overshoot Pac-Man", () => {
+  ghost.follow({End: {X: 7, Y: 3}, Direction: Direction.up});
+  pacMan.follow({End: {X: 5, Y: 1}, Direction: Direction.right});
+  const result = possibleMovesAlgorithm(testMap, ghost, 6, [ghost, pacMan]);
+  expect(result.length).toBe(2);
+  arrayEquals(result, [
+    {End: {X: 5, Y: 1}, Direction: Direction.left, Path: [{X: 7, Y: 2}, {X: 7, Y: 1}, {X: 6, Y: 1}]},
+    {
+      End: {X: 9, Y: 3},
+      Direction: Direction.down,
+      Path: [{X: 7, Y: 2}, {X: 7, Y: 1}, {X: 8, Y: 1}, {X: 9, Y: 1}, {X: 9, Y: 2}]
+    },
+  ])
 });
 
 function arrayEquals<T extends any[]>(result: T, expected: T, message?: string): void {

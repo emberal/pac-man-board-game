@@ -9,7 +9,7 @@ import {Direction, getDirections} from "./direction";
  * @param board The board the character is on
  * @param character The current position of the character
  * @param steps The number of steps the character can move
- * @param characters
+ * @param characters All the characters on the board
  * @returns An array of paths the character can move to
  */
 export default function findPossiblePositions(board: GameMap, character: Character, steps: number, characters: Character[]): Path[] {
@@ -41,8 +41,6 @@ function findPossibleRecursive(board: GameMap, currentPath: Path, steps: number,
           paths.push(currentPath);
         }
 
-      } else if (ghostHitsPacMan(character, currentPath, characters)) {
-        paths.push(currentPath);
       } else {
 
         addToPath(currentPath);
@@ -52,9 +50,18 @@ function findPossibleRecursive(board: GameMap, currentPath: Path, steps: number,
           paths.push(...tryMove(board, currentPath, direction, steps, character, characters));
         }
       }
+    } else {
+      const pacMan = ghostHitsPacMan(character, currentPath, characters);
+      if (pacMan instanceof Character && !isCharactersSpawn(currentPath, pacMan)) {
+        paths.push(currentPath);
+      }
     }
   }
   return paths;
+}
+
+function isCharactersSpawn(currentPath: Path, character: Character): boolean {
+  return character.SpawnPosition?.At.X === currentPath.End.X && character.SpawnPosition.At.Y === currentPath.End.Y;
 }
 
 /**
@@ -64,8 +71,8 @@ function findPossibleRecursive(board: GameMap, currentPath: Path, steps: number,
  * @param characters All the characters on the board
  * @returns True if the character is a ghost and hits Pac-Man
  */
-function ghostHitsPacMan(character: Character, currentPath: Path, characters: Character[]): boolean {
-  return character.isGhost() && characters.find(c => c.isPacMan() && c.isAt(currentPath.End)) !== undefined;
+function ghostHitsPacMan(character: Character, currentPath: Path, characters: Character[]): Character | undefined | false {
+  return character.isGhost() && characters.find(c => c.isPacMan() && c.isAt(currentPath.End));
 }
 
 /**
