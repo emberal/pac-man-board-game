@@ -52,6 +52,16 @@ public class GameGroupTests
         _gameGroup.AddPlayer(_greenPlayer);
     }
 
+    #region NextPlayer()
+
+    [Test]
+    public void NextPlayer_WhenEmpty()
+    {
+        Assert.Throws<InvalidOperationException>(() => _gameGroup.NextPlayer());
+    }
+
+    #endregion
+
     #region AddPlayer(IPlayer player)
 
     [Test]
@@ -95,6 +105,19 @@ public class GameGroupTests
         Assert.That(_redPlayer.PacMan.SpawnPosition, Is.EqualTo(_spawn3By3Up));
     }
 
+    [Test]
+    public void AddPlayer_WhenGameHasStarted()
+    {
+        _gameGroup.AddPlayer(_redPlayer);
+        _gameGroup.AddPlayer(_bluePlayer);
+
+        _gameGroup.SetReady(_redPlayer);
+        _gameGroup.SetReady(_bluePlayer);
+        _gameGroup.SetAllInGame();
+        
+        Assert.That(_gameGroup.AddPlayer(_greenPlayer), Is.False);
+    }
+    
     #endregion
 
     #region Sendtoall(ArraySegment<byte> segment)
@@ -205,7 +228,7 @@ public class GameGroupTests
         AddFullParty();
         Assert.That(_gameGroup.IsGameStarted, Is.False);
     }
-    
+
     [Test]
     public void IsGameStarted_AllInGame()
     {

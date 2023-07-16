@@ -14,6 +14,7 @@ public interface IActionService
     List<int> RollDice();
     List<IPlayer> SetPlayerInfo(ActionMessage message);
     object Ready();
+    string FindNextPlayer();
 }
 
 public class ActionService : IActionService
@@ -84,7 +85,7 @@ public class ActionService : IActionService
             Group.Shuffle();
             var allReady = players.All(p => p.State == State.Ready);
             if (allReady) Group.SetAllInGame();
-            data = new { AllReady = allReady, Players = players };
+            data = new ReadyData { AllReady = allReady, Players = players };
         }
         else
         {
@@ -94,11 +95,17 @@ public class ActionService : IActionService
         return data;
     }
 
-    public string FindNextPlayer() => Group?.NextPlayer.Name ?? "Error: No group found";
+    public string FindNextPlayer() => Group?.NextPlayer().Name ?? "Error: No group found";
 }
 
-public class PlayerInfoData
+public struct PlayerInfoData
 {
     public required Player Player { get; set; }
     public required Queue<DirectionalPosition> Spawns { get; set; }
+}
+
+public struct ReadyData
+{
+    public required bool AllReady { get; set; }
+    public required IEnumerable<IPlayer> Players { get; set; }
 }

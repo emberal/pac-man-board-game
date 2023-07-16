@@ -51,7 +51,9 @@ public class ActionServiceTests
         new(new[]
         {
             new DirectionalPosition { At = new Position { X = 3, Y = 3 }, Direction = Direction.Up },
-            new() { At = new Position { X = 7, Y = 7 }, Direction = Direction.Down }
+            new() { At = new Position { X = 7, Y = 7 }, Direction = Direction.Down },
+            new() { At = new Position { X = 5, Y = 5 }, Direction = Direction.Left },
+            new() { At = new Position { X = 9, Y = 9 }, Direction = Direction.Right }
         });
 
     #region RollDice()
@@ -75,7 +77,7 @@ public class ActionServiceTests
     public void PlayerInfo_DataIsNull()
     {
         var message = new ActionMessage { Action = GameAction.PlayerInfo, Data = "null" };
-        Assert.Throws<NullReferenceException>(() => _service.SetPlayerInfo(message));
+        Assert.Throws<JsonException>(() => _service.SetPlayerInfo(message));
         message.Data = null;
         Assert.Throws<NullReferenceException>(() => _service.SetPlayerInfo(message));
     }
@@ -142,14 +144,18 @@ public class ActionServiceTests
         _service.SetPlayerInfo(_blackMessage);
 
         var result = _service.Ready();
-
-        Assert.That(result.GetType().GetProperty("Starter"), Is.Null);
+        if (result is ReadyData r1)
+            Assert.That(r1.AllReady, Is.False);
+        else
+            Assert.Fail("Result should be ReadyData");
 
         _service.SetPlayerInfo(_redMessage);
 
         result = _service.Ready();
-
-        Assert.That(result.GetType().GetProperty("Starter"), Is.Null);
+        if (result is ReadyData r2)
+            Assert.That(r2.AllReady, Is.False);
+        else
+            Assert.Fail("Result should be ReadyData");
     }
 
     [Test]
@@ -159,7 +165,8 @@ public class ActionServiceTests
         var result = _service.Ready();
         // If selected the state is changed to InGame
         _whitePlayer.State = State.InGame;
-        Assert.That(result.GetType().GetProperty("Starter")?.GetValue(result), Is.EqualTo(_whitePlayer.Name));
+        var players = result.GetType().GetProperty("Players")?.GetValue(result) as IEnumerable<IPlayer>;
+        Assert.That(players?.First().Name, Is.EqualTo(_whitePlayer.Name));
     }
 
     [Test]
@@ -171,14 +178,14 @@ public class ActionServiceTests
 
         var result = _service.Ready();
 
-        Assert.That(result.GetType().GetProperty("Starter"), Is.Null);
+        Assert.That(result.GetType().GetProperty("AllReady")?.GetValue(result), Is.EqualTo(false));
 
         _service.Player = _whitePlayer;
 
         result = _service.Ready();
 
-        Assert.That(result.GetType().GetProperty("Starter")?.GetValue(result),
-            Is.EqualTo(_whitePlayer.Name).Or.EqualTo(_blackPlayer.Name));
+        var players = result.GetType().GetProperty("Players")?.GetValue(result) as IEnumerable<IPlayer>;
+        Assert.That(players?.First().Name, Is.EqualTo(_blackPlayer.Name).Or.EqualTo(_whitePlayer.Name));
     }
 
     #endregion
@@ -186,15 +193,38 @@ public class ActionServiceTests
     #region FindNextPlayer()
 
     [Test]
-    public void FindNexPlayer_OnePlayer()
+    public void FindNextPlayer_NoPlayers()
     {
-        Assert.Fail();
+        _service.Group = new GameGroup(new Queue<DirectionalPosition>());
+        Assert.Throws<InvalidOperationException>(() => _service.FindNextPlayer());
     }
-    
+
     [Test]
-    public void FindNexPlayer_TwoPlayers()
+    public void FindNextPlayer_OnePlayer()
     {
-        Assert.Fail();
+        _service.Group =
+            new GameGroup(new Queue<DirectionalPosition>(
+                    new[] { new DirectionalPosition { At = new Position { X = 3, Y = 3 }, Direction = Direction.Up } }))
+                { Players = { _whitePlayer } };
+
+        var name = _service.FindNextPlayer();
+        Assert.That(name, Is.EqualTo(_whitePlayer.Name));
+    }
+
+    [Test]
+    public void FindNextPlayer_TwoPlayers()
+    {
+        _service.Group = new GameGroup(new Queue<DirectionalPosition>(
+            new[]
+            {
+                new DirectionalPosition { At = new Position { X = 3, Y = 3 }, Direction = Direction.Up },
+                new DirectionalPosition { At = new Position { X = 7, Y = 7 }, Direction = Direction.Down }
+            })) { Players = { _whitePlayer, _blackPlayer } };
+
+        var first = _service.FindNextPlayer();
+        Assert.That(first, Is.EqualTo(_blackPlayer.Name));
+        var second = _service.FindNextPlayer();
+        Assert.That(second, Is.EqualTo(_whitePlayer.Name));
     }
 
     #endregion

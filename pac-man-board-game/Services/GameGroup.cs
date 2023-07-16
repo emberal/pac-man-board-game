@@ -17,20 +17,24 @@ public class GameGroup : IEnumerable<IPlayer> // TODO handle disconnects and rec
 
     public int Count => Players.Count;
 
-    public IPlayer NextPlayer
-    {
-        get
-        {
-            _currentPlayerIndex = (_currentPlayerIndex + 1) % Count;
-            return Players[_currentPlayerIndex];
-        }
-    }
-
     public bool IsGameStarted => Count > 0 && Players.All(player => player.State is State.InGame or State.Disconnected);
 
     public IEnumerator<IPlayer> GetEnumerator() => Players.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public IPlayer NextPlayer()
+    {
+        try
+        {
+            _currentPlayerIndex = (_currentPlayerIndex + 1) % Count;
+        }
+        catch (DivideByZeroException)
+        {
+            throw new InvalidOperationException("There are no players in the game group.");
+        }
+        return Players[_currentPlayerIndex];
+    }
 
     public void Shuffle() => Players.Sort((_, _) => _random.Next(-1, 2));
 
