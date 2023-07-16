@@ -14,7 +14,7 @@ jobs:
   
     defaults:
       run:
-        working-directory: ./ClientApp
+        working-directory: ClientApp
 
     runs-on: ubuntu-latest
 
@@ -27,11 +27,8 @@ jobs:
         cache: 'npm'
         cache-dependency-path: '**/package-lock.json'
     - name: Install
-      working-directory: ./ClientApp
       run: npm ci
     - name: Build
-      working-directory: ./ClientApp
       run: npm run build --if-present
     - name: Tests
-      working-directory: ./ClientApp
       run: npm test
