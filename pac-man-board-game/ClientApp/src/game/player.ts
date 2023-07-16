@@ -2,7 +2,7 @@ import {Character, CharacterType} from "./character";
 import Box from "./box";
 import {Colour} from "./colour";
 import {getDefaultStore} from "jotai";
-import {currentPlayerAtom} from "../utils/state";
+import {currentPlayerNameAtom} from "../utils/state";
 import Pellet from "./pellet";
 
 export enum State {
@@ -31,7 +31,7 @@ export default class Player {
 
   public isTurn(): boolean {
     const store = getDefaultStore();
-    return store.get(currentPlayerAtom)?.Name === this.Name;
+    return store.get(currentPlayerNameAtom) === this.Name;
   }
 
   public addPellet(pellet: Pellet): void {

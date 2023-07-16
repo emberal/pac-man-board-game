@@ -182,4 +182,20 @@ public class ActionServiceTests
     }
 
     #endregion
+
+    #region FindNextPlayer()
+
+    [Test]
+    public void FindNexPlayer_OnePlayer()
+    {
+        Assert.Fail();
+    }
+    
+    [Test]
+    public void FindNexPlayer_TwoPlayers()
+    {
+        Assert.Fail();
+    }
+
+    #endregion
 }

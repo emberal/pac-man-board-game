@@ -196,4 +196,23 @@ public class GameGroupTests
     }
 
     #endregion
+
+    #region IsGameStarted()
+
+    [Test]
+    public void IsGameStarted_AllWaiting()
+    {
+        AddFullParty();
+        Assert.That(_gameGroup.IsGameStarted, Is.False);
+    }
+    
+    [Test]
+    public void IsGameStarted_AllInGame()
+    {
+        AddFullParty();
+        _gameGroup.Players.ForEach(player => player.State = State.InGame);
+        Assert.That(_gameGroup.IsGameStarted, Is.True);
+    }
+
+    #endregion
 }

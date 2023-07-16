@@ -153,7 +153,7 @@ public class WebSocketServiceTests
         Assert.Multiple(() =>
         {
             Assert.That(group.Players, Has.Count.EqualTo(1));
-            Assert.That(group.RandomPlayer, Is.EqualTo(player));
+            Assert.That(group.NextPlayer, Is.EqualTo(player));
             Assert.That(_service.Games, Has.Count.EqualTo(1));
         });
     }
@@ -174,7 +174,7 @@ public class WebSocketServiceTests
         Assert.Multiple(() =>
         {
             Assert.That(group.Players, Has.Count.EqualTo(1));
-            Assert.That(group.RandomPlayer, Is.EqualTo(player5));
+            Assert.That(group.NextPlayer, Is.EqualTo(player5));
             Assert.That(_service.Games, Has.Count.EqualTo(2));
             Assert.That(_service.Games.First(), Has.Count.EqualTo(Rules.MaxPlayers));
         });

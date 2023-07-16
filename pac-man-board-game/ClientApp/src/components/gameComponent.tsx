@@ -6,27 +6,32 @@ import WebSocketService from "../websockets/WebSocketService";
 import {getCharacterSpawns, testMap} from "../game/map";
 import Player from "../game/player";
 import PlayerStats from "../components/playerStats";
-import {getDefaultStore, useAtom, useAtomValue} from "jotai";
-import {diceAtom, ghostsAtom, playersAtom, selectedDiceAtom} from "../utils/state";
+import {getDefaultStore, useAtom, useAtomValue, useSetAtom} from "jotai";
+import {diceAtom, ghostsAtom, playersAtom, rollDiceButtonAtom, selectedDiceAtom} from "../utils/state";
 import {CharacterType} from "../game/character";
 import GameButton from "./gameButton";
 
 const wsService = new WebSocketService(import.meta.env.VITE_API);
 
-// TODO do not allow players to roll dice multiple times
-// TODO fix tailwind colours from getBgCssColour
+// TODO don't start game until at least 2 players have joined
+// TODO join game lobby
+// TODO steal from other players
+// TODO show box with collected pellets
+// TODO layout
 
 export const GameComponent: Component<{ player: Player }> = ({player}) => {
   const players = useAtomValue(playersAtom);
 
   const dice = useAtomValue(diceAtom);
   const [selectedDice, setSelectedDice] = useAtom(selectedDiceAtom);
+  const setActiveRollDiceButton = useSetAtom(rollDiceButtonAtom);
 
   function rollDice(): void {
     if (!player.isTurn()) return;
 
     setSelectedDice(undefined);
     wsService.send({Action: GameAction.rollDice});
+    setActiveRollDiceButton(false);
   }
 
   function onCharacterMove(eatenPellets: Position[]): void {
@@ -44,9 +49,13 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
       }
     };
     wsService.send(data);
+
+    if (dice?.length === 0) {
+      endTurn();
+    }
   }
 
-  async function sendPlayer(): Promise<void> {
+  function sendPlayer(): void {
     wsService.send({
       Action: GameAction.playerInfo,
       Data: {
@@ -61,11 +70,15 @@ export const GameComponent: Component<{ player: Player }> = ({player}) => {
     wsService.send({Action: GameAction.ready});
   }
 
+  function endTurn() {
+    wsService.send({Action: GameAction.nextPlayer});
+  }
+
   useEffect(() => {
     wsService.onReceive = doAction;
     wsService.open();
 
-    wsService.waitForOpen().then(() => void sendPlayer());
+    wsService.waitForOpen().then(() => sendPlayer());
 
     return () => wsService.close();
   }, []);

@@ -3,7 +3,7 @@ import {CharacterType, Ghost} from "../game/character";
 import {getCharacterSpawns, testMap} from "../game/map";
 import {TileType} from "../game/tileType";
 import {getDefaultStore} from "jotai";
-import {currentPlayerNameAtom, diceAtom, ghostsAtom, playersAtom} from "./state";
+import {currentPlayerNameAtom, diceAtom, ghostsAtom, playersAtom, rollDiceButtonAtom} from "./state";
 import {Colour} from "../game/colour";
 
 export enum GameAction {
@@ -11,6 +11,7 @@ export enum GameAction {
   moveCharacter,
   playerInfo,
   ready,
+  nextPlayer,
 }
 
 const store = getDefaultStore();
@@ -44,6 +45,9 @@ export const doAction: MessageEventFunction<string> = (event): void => { // TODO
       break;
     case GameAction.ready:
       ready(message.Data);
+      break;
+    case GameAction.nextPlayer:
+      nextPlayer(message.Data);
       break;
   }
 };
@@ -93,17 +97,21 @@ function playerInfo(data?: PlayerProps[]): void {
   store.set(playersAtom, playerProps.map(p => new Player(p)));
 }
 
-type ReadyData =
-  | { AllReady: true, Starter: string, Players: PlayerProps[] }
-  | { AllReady: false, Players: PlayerProps[] }
-  | string;
+type ReadyData = { AllReady: boolean, Players: PlayerProps[] } | string;
 
 function ready(data?: ReadyData): void {
   if (data && typeof data !== "string") {
     const players = data.Players.map(p => new Player(p));
     store.set(playersAtom, players);
     if (data.AllReady) {
-      store.set(currentPlayerNameAtom, data.Starter);
+      store.set(currentPlayerNameAtom, data.Players[0].Name);
     }
+  } else {
+    console.error("Error:", data);
   }
+}
+
+function nextPlayer(currentPlayerName?: string): void {
+  store.set(currentPlayerNameAtom, currentPlayerName);
+  store.set(rollDiceButtonAtom, true);
 }

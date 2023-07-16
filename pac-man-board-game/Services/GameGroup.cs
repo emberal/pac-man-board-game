@@ -8,25 +8,37 @@ namespace pacMan.Services;
 public class GameGroup : IEnumerable<IPlayer> // TODO handle disconnects and reconnects
 {
     private readonly Random _random = new();
+    private int _currentPlayerIndex;
 
     public GameGroup(Queue<DirectionalPosition> spawns) => Spawns = spawns;
 
     public List<IPlayer> Players { get; } = new();
     private Queue<DirectionalPosition> Spawns { get; }
 
-    public IPlayer RandomPlayer => Players[_random.Next(Count)];
-
     public int Count => Players.Count;
+
+    public IPlayer NextPlayer
+    {
+        get
+        {
+            _currentPlayerIndex = (_currentPlayerIndex + 1) % Count;
+            return Players[_currentPlayerIndex];
+        }
+    }
+
+    public bool IsGameStarted => Count > 0 && Players.All(player => player.State is State.InGame or State.Disconnected);
 
     public IEnumerator<IPlayer> GetEnumerator() => Players.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+    public void Shuffle() => Players.Sort((_, _) => _random.Next(-1, 2));
+
     public event Func<ArraySegment<byte>, Task>? Connections;
 
-    public bool AddPlayer(IPlayer player) // TODO if name exists, use that player instead
+    public bool AddPlayer(IPlayer player)
     {
-        if (Players.Count >= Rules.MaxPlayers) return false;
+        if (Players.Count >= Rules.MaxPlayers || IsGameStarted) return false;
 
         player.State = State.WaitingForPlayers;
         if (Players.Exists(p => p.Name == player.Name)) return true;

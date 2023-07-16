@@ -40,6 +40,7 @@ public class ActionService : IActionService
             GameAction.RollDice => RollDice(),
             GameAction.PlayerInfo => SetPlayerInfo(message),
             GameAction.Ready => Ready(),
+            GameAction.NextPlayer => FindNextPlayer(),
             _ => message.Data
         };
     }
@@ -79,16 +80,11 @@ public class ActionService : IActionService
         if (Player != null && Group != null)
         {
             var players = Group.SetReady(Player).ToArray();
-            if (players.All(p => p.State == State.Ready))
-            {
-                // TODO roll to start
-                Group.SetAllInGame();
-                data = new { AllReady = true, Players = players, Starter = Group.RandomPlayer.Name };
-            }
-            else
-            {
-                data = new { AllReady = false, Players = players };
-            }
+            // TODO roll to start
+            Group.Shuffle();
+            var allReady = players.All(p => p.State == State.Ready);
+            if (allReady) Group.SetAllInGame();
+            data = new { AllReady = allReady, Players = players };
         }
         else
         {
@@ -97,6 +93,8 @@ public class ActionService : IActionService
 
         return data;
     }
+
+    public string FindNextPlayer() => Group?.NextPlayer.Name ?? "Error: No group found";
 }
 
 public class PlayerInfoData

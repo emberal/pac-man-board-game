@@ -7,7 +7,8 @@ public enum GameAction
     RollDice,
     MoveCharacter,
     PlayerInfo,
-    Ready
+    Ready,
+    NextPlayer
 }
 
 public class ActionMessage<T>
