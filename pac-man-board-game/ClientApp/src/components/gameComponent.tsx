@@ -14,9 +14,9 @@ import GameButton from "./gameButton";
 const wsService = new WebSocketService(import.meta.env.VITE_API);
 
 // TODO bug, when taking player on last dice, the currentPlayer changes and the wrong character get to steal
+// TODO bug, first player can sometimes roll dice twice (maybe only on firefox)
 
-// TODO move stats above dice
-// TODO don't start game until at least 2 players have joined
+// TODO add debug menu on dev, for testing and cheating
 // TODO join game lobby
 // TODO sign up player page
 // TODO sign in page
@@ -90,13 +90,13 @@ export const GameComponent: Component<{ player: Player, map: GameMap }> = ({play
 
   return (
     <>
+      <div className={"flex justify-center"}>
+        {players?.map(p => <PlayerStats key={p.Name} player={p}/>)}
+      </div>
       <div className={"flex-center"}>
         <GameButton onReadyClick={sendReady} onRollDiceClick={rollDice}/>
       </div>
       <AllDice values={dice}/>
-      <div className={"flex justify-center"}>
-        {players?.map(p => <PlayerStats key={p.Name} player={p}/>)}
-      </div>
       <GameBoard className={"mx-auto my-2"} onMove={onCharacterMove} map={map}/>
     </>
   );

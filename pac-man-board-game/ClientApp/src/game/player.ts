@@ -4,6 +4,7 @@ import {Colour} from "./colour";
 import {getDefaultStore} from "jotai";
 import {currentPlayerNameAtom, playersAtom} from "../utils/state";
 import Pellet from "./pellet";
+import rules from "./rules";
 
 export enum State {
   waitingForPlayers,
@@ -39,7 +40,7 @@ export default class Player {
   }
 
   public stealFrom(other: Player): void {
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < rules.maxStealPellets; i++) {
       const pellet = other.Box.Pellets.pop();
       if (pellet)
         this.Box.addPellet(pellet);
