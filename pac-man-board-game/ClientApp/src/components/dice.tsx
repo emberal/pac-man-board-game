@@ -1,6 +1,7 @@
 import React from "react";
-import {useAtom} from "jotai";
-import {selectedDiceAtom} from "../utils/state";
+import {useAtom, useAtomValue} from "jotai";
+import {selectedDiceAtom, thisPlayerAtom} from "../utils/state";
+import {Button} from "./Button";
 
 interface AllDiceProps extends ComponentProps {
   values?: number[],
@@ -41,6 +42,8 @@ export const Dice: Component<DiceProps> = (
     onClick,
   }) => {
 
+  const thisPlayer = useAtomValue(thisPlayerAtom);
+
   function handleClick() {
     if (onClick && value) {
       onClick(value);
@@ -48,8 +51,10 @@ export const Dice: Component<DiceProps> = (
   }
 
   return (
-    <button className={`text-2xl bg-gray-400 px-4 m-1 ${className}`} onClick={handleClick}>
+    <Button className={`text-2xl bg-gray-400 px-4 m-1 ${className}`}
+            disabled={!thisPlayer?.isTurn()}
+            onClick={handleClick}>
       {value?.toString()}
-    </button>
+    </Button>
   );
 };

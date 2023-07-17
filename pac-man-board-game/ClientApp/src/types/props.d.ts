@@ -10,7 +10,13 @@ interface ComponentProps {
 }
 
 interface ChildProps extends ComponentProps {
-  children?: React.JSX.Element,
+  children?: React.JSX.Element | string,
+}
+
+interface ButtonProps extends ChildProps {
+  onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
+  disabled?: boolean,
+  type?: "button" | "submit" | "reset",
 }
 
 interface InputProps extends ComponentProps {

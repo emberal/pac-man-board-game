@@ -13,13 +13,13 @@ import GameButton from "./gameButton";
 
 const wsService = new WebSocketService(import.meta.env.VITE_API);
 
-// TODO ghost should be able to take pacmen
+// TODO bug, when taking player on last dice, the currentPlayer changes and the wrong character get to steal
 
+// TODO move stats above dice
 // TODO don't start game until at least 2 players have joined
 // TODO join game lobby
 // TODO sign up player page
 // TODO sign in page
-// TODO steal from other players
 // TODO show box with collected pellets
 // TODO layout
 

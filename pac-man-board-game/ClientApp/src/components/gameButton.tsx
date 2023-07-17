@@ -2,6 +2,7 @@ import React, {MouseEventHandler} from "react";
 import {State} from "../game/player";
 import {currentPlayerAtom, rollDiceButtonAtom, thisPlayerAtom} from "../utils/state";
 import {useAtomValue} from "jotai";
+import {Button} from "./Button";
 
 interface GameButtonProps extends ComponentProps {
   onReadyClick?: MouseEventHandler,
@@ -19,12 +20,12 @@ const GameButton: Component<GameButtonProps> = (
   const activeRollDiceButton = useAtomValue(rollDiceButtonAtom);
 
   if (currentPlayer === undefined || currentPlayer.State === State.waitingForPlayers) {
-    return <button onClick={onReadyClick}>Ready</button>;
+    return <Button onClick={onReadyClick}>Ready</Button>;
   }
   if (!thisPlayer?.isTurn()) { // TODO also show when waiting for other players
-    return <button disabled>Please wait</button>;
+    return <Button disabled>Please wait</Button>;
   }
-  return <button onClick={onRollDiceClick} disabled={!activeRollDiceButton}>Roll dice</button>;
+  return <Button onClick={onRollDiceClick} disabled={!activeRollDiceButton}>Roll dice</Button>;
 };
 
 export default GameButton;
