@@ -1,4 +1,4 @@
-using pacMan.Game.Items;
+using pacMan.GameStuff.Items;
 
 namespace BackendTests.Game.Items;
 
@@ -11,7 +11,7 @@ public class DiceCupTests
         var roll = diceCup.Roll;
         Assert.That(roll, Has.Count.EqualTo(2));
     }
-    
+
     [Test]
     public void Roll_ReturnsNumbersInRange1To6()
     {

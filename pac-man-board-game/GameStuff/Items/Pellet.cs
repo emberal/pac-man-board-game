@@ -1,4 +1,4 @@
-namespace pacMan.Game.Items;
+namespace pacMan.GameStuff.Items;
 
 public interface IPellet
 {

@@ -1,4 +1,4 @@
-using pacMan.Game.Items;
+using pacMan.GameStuff.Items;
 
 namespace BackendTests.Game.Items;
 

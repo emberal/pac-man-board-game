@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace pacMan.Game;
+namespace pacMan.GameStuff;
 
 public enum GameAction
 {

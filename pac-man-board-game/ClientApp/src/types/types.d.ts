@@ -35,7 +35,7 @@ type Path = {
   Direction: import("../game/direction").Direction
 }
 
-type GameGroup = {
+type Game = {
   readonly id: string,
   readonly count: number,
   readonly isGameStarted: boolean,

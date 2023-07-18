@@ -1,4 +1,4 @@
-namespace pacMan.Game;
+namespace pacMan.GameStuff;
 
 public class MovePath : IEquatable<MovePath>
 {

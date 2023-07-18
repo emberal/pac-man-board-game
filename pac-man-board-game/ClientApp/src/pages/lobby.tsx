@@ -4,7 +4,7 @@ import {Button} from "../components/Button";
 
 const fetchAtom = atom(async () => {
   const response = await fetch(import.meta.env.VITE_API_HTTP + "/allGames");
-  return await response.json() as GameGroup[];
+  return await response.json() as Game[];
 });
 
 const LobbyPage: Component = () => (

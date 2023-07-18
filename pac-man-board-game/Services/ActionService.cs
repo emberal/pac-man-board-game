@@ -1,14 +1,14 @@
 using System.Text.Json;
 using Microsoft.CSharp.RuntimeBinder;
-using pacMan.Game;
-using pacMan.Game.Items;
+using pacMan.GameStuff;
+using pacMan.GameStuff.Items;
 
 namespace pacMan.Services;
 
 public interface IActionService
 {
     IPlayer Player { set; }
-    GameGroup Group { set; }
+    Game Group { set; }
     void DoAction(ActionMessage message);
     List<int> RollDice();
     List<IPlayer> SetPlayerInfo(ActionMessage message);
@@ -30,7 +30,7 @@ public class ActionService : IActionService
         _gameService = gameService;
     }
 
-    public GameGroup? Group { get; set; }
+    public Game? Group { get; set; }
 
     public IPlayer? Player { get; set; }
 

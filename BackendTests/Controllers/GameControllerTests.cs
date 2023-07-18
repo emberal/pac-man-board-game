@@ -5,7 +5,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using pacMan.Controllers;
-using pacMan.Game;
+using pacMan.GameStuff;
 using pacMan.Services;
 using pacMan.Utils;
 

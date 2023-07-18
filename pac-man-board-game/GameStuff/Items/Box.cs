@@ -1,4 +1,4 @@
-namespace pacMan.Game.Items;
+namespace pacMan.GameStuff.Items;
 
 public class Box : IEquatable<Box>
 {

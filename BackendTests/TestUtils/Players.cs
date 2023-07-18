@@ -1,5 +1,5 @@
-using pacMan.Game;
-using pacMan.Game.Items;
+using pacMan.GameStuff;
+using pacMan.GameStuff.Items;
 
 namespace BackendTests.TestUtils;
 

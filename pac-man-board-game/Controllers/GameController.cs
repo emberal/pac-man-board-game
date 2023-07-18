@@ -1,6 +1,6 @@
 using System.Net.WebSockets;
 using Microsoft.AspNetCore.Mvc;
-using pacMan.Game;
+using pacMan.GameStuff;
 using pacMan.Services;
 using pacMan.Utils;
 
@@ -11,19 +11,23 @@ namespace pacMan.Controllers;
 public class GameController : GenericController // TODO reconnect using player id
 {
     private readonly IActionService _actionService;
+    private readonly GameService _gameService;
 
     public GameController(ILogger<GameController> logger, GameService gameService, IActionService actionService) :
-        base(logger, gameService) =>
+        base(logger, gameService)
+    {
+        _gameService = gameService;
         _actionService = actionService;
+    }
 
     [HttpGet("connect")]
     public override async Task Accept() => await base.Accept();
 
     [HttpGet("allGames")]
-    public IEnumerable<GameGroup> GetAllGames()
+    public IEnumerable<Game> GetAllGames()
     {
         Logger.Log(LogLevel.Information, "Returning all games");
-        return GameService.Games;
+        return _gameService.Games;
     }
 
 
@@ -38,9 +42,23 @@ public class GameController : GenericController // TODO reconnect using player i
         return action.ToArraySegment();
     }
 
+    protected override void Send(ArraySegment<byte> segment) => _gameService.SendToAll(segment);
+
+    protected override Task Echo()
+    {
+        _gameService.Connections += WsServiceOnFire;
+        return base.Echo();
+    }
+
     protected override void Disconnect()
     {
-        base.Disconnect();
+        _gameService.Connections -= WsServiceOnFire;
         _actionService.Disconnect();
+    }
+
+    private async Task WsServiceOnFire(ArraySegment<byte> segment)
+    {
+        if (WebSocket == null) return;
+        await GameService.Send(WebSocket, segment);
     }
 }

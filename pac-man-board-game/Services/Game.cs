@@ -1,16 +1,16 @@
 using System.Text.Json.Serialization;
 using pacMan.Exceptions;
-using pacMan.Game;
-using pacMan.Game.Items;
+using pacMan.GameStuff;
+using pacMan.GameStuff.Items;
 
 namespace pacMan.Services;
 
-public class GameGroup // TODO handle disconnects and reconnects
+public class Game // TODO handle disconnects and reconnects
 {
     private readonly Random _random = new();
     private int _currentPlayerIndex;
 
-    public GameGroup(Queue<DirectionalPosition> spawns) => Spawns = spawns;
+    public Game(Queue<DirectionalPosition> spawns) => Spawns = spawns;
 
     [JsonInclude] public Guid Id { get; } = Guid.NewGuid();
 

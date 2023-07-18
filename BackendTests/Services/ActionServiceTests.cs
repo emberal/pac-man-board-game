@@ -2,8 +2,8 @@ using System.Text.Json;
 using BackendTests.TestUtils;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using pacMan.Game;
-using pacMan.Game.Items;
+using pacMan.GameStuff;
+using pacMan.GameStuff.Items;
 using pacMan.Services;
 
 namespace BackendTests.Services;
@@ -171,7 +171,8 @@ public class ActionServiceTests
     [Test]
     public void Ready_TwoReady()
     {
-        var group = new GameGroup(new Queue<DirectionalPosition>()) { Players = { _blackPlayer, _whitePlayer } };
+        var group = new pacMan.Services.Game(new Queue<DirectionalPosition>())
+            { Players = { _blackPlayer, _whitePlayer } };
         _service.Group = group;
         _service.Player = _blackPlayer;
 
@@ -194,7 +195,7 @@ public class ActionServiceTests
     [Test]
     public void FindNextPlayer_NoPlayers()
     {
-        _service.Group = new GameGroup(new Queue<DirectionalPosition>());
+        _service.Group = new pacMan.Services.Game(new Queue<DirectionalPosition>());
         Assert.Throws<InvalidOperationException>(() => _service.FindNextPlayer());
     }
 
@@ -202,7 +203,7 @@ public class ActionServiceTests
     public void FindNextPlayer_OnePlayer()
     {
         _service.Group =
-            new GameGroup(new Queue<DirectionalPosition>(
+            new pacMan.Services.Game(new Queue<DirectionalPosition>(
                     new[] { new DirectionalPosition { At = new Position { X = 3, Y = 3 }, Direction = Direction.Up } }))
                 { Players = { _whitePlayer } };
 
@@ -213,7 +214,7 @@ public class ActionServiceTests
     [Test]
     public void FindNextPlayer_TwoPlayers()
     {
-        _service.Group = new GameGroup(new Queue<DirectionalPosition>(
+        _service.Group = new pacMan.Services.Game(new Queue<DirectionalPosition>(
             new[]
             {
                 new DirectionalPosition { At = new Position { X = 3, Y = 3 }, Direction = Direction.Up },
