@@ -44,9 +44,15 @@ public class Game // TODO handle disconnects and reconnects
     public bool AddPlayer(IPlayer player)
     {
         if (Players.Count >= Rules.MaxPlayers || IsGameStarted) return false;
+        /* TODO remove above and uncomment below
+          if (Players.Count >= Rules.MaxPlayers)
+            throw new GameNotPlayableException("Game is full");
+        if (IsGameStarted)
+            throw new GameNotPlayableException("Game has already started");
+         */
 
         player.State = State.WaitingForPlayers;
-        if (Players.Exists(p => p.Name == player.Name)) return true;
+        if (Players.Exists(p => p.Name == player.Name)) return true; // TODO change to false
         Players.Add(player);
         if (player.PacMan.SpawnPosition is null) SetSpawn(player);
         return true;

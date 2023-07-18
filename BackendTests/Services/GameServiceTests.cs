@@ -28,6 +28,32 @@ public class GameServiceTests
         });
     }
 
+    #region CreateAndJoin(IPlayer player, Queue<DirectionalPosition> spawns)
+
+    [Test]
+    public void CreateAndJoin_WhenEmpty()
+    {
+        var player = Players.Create("white");
+        var group = _service.CreateAndJoin(player, _spawns);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(group.Players, Has.Count.EqualTo(1));
+            Assert.That(group.NextPlayer, Is.EqualTo(player));
+            Assert.That(_service.Games, Has.Count.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public void CreateAndJoin_SpawnsAreNotEqualToMaxPlayers()
+    {
+        var player = Players.Create("white");
+        _spawns.Dequeue();
+        Assert.Throws<ArgumentException>(() => _service.CreateAndJoin(player, _spawns));
+    }
+
+    #endregion
+
     #region JoinbyId(Guid id)
 
     [Test]
@@ -38,7 +64,7 @@ public class GameServiceTests
 
         Assert.Throws<GameNotFoundException>(() => _service.JoinById(Guid.NewGuid(), player));
     }
-    
+
     [Test]
     public void JoinById_WhenIdExists()
     {
