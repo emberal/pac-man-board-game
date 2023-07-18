@@ -6,7 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<IWebSocketService, WebSocketService>()
+builder.Services
+    .AddSingleton<IWebSocketService, WebSocketService>()
+    .AddSingleton<GameService>()
     .AddTransient<IActionService, ActionService>();
 
 var app = builder.Build();

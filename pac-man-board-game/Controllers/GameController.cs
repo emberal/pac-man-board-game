@@ -1,7 +1,6 @@
 using System.Net.WebSockets;
 using Microsoft.AspNetCore.Mvc;
 using pacMan.Game;
-using pacMan.Interfaces;
 using pacMan.Services;
 using pacMan.Utils;
 
@@ -13,8 +12,8 @@ public class GameController : GenericController // TODO reconnect using player i
 {
     private readonly IActionService _actionService;
 
-    public GameController(ILogger<GameController> logger, IWebSocketService wsService, IActionService actionService) :
-        base(logger, wsService) =>
+    public GameController(ILogger<GameController> logger, GameService gameService, IActionService actionService) :
+        base(logger, gameService) =>
         _actionService = actionService;
 
     [HttpGet("connect")]
@@ -24,7 +23,7 @@ public class GameController : GenericController // TODO reconnect using player i
     public IEnumerable<GameGroup> GetAllGames()
     {
         Logger.Log(LogLevel.Information, "Returning all games");
-        return WsService.Games;
+        return GameService.Games;
     }
 
 

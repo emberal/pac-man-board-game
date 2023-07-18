@@ -3,7 +3,6 @@ using BackendTests.TestUtils;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using pacMan.Game;
-using pacMan.Interfaces;
 using pacMan.Services;
 using pacMan.Utils;
 
@@ -14,7 +13,7 @@ public class WebSocketServiceTests
     private readonly DirectionalPosition _spawn3By3Up = new()
         { At = new Position { X = 3, Y = 3 }, Direction = Direction.Up };
 
-    private IWebSocketService _service = null!;
+    private GameService _service = null!;
 
     private Queue<DirectionalPosition> _spawns = null!;
 
@@ -22,7 +21,7 @@ public class WebSocketServiceTests
     [SetUp]
     public void SetUp()
     {
-        _service = new WebSocketService(Substitute.For<ILogger<WebSocketService>>());
+        _service = new GameService(Substitute.For<ILogger<GameService>>());
         _spawns = new Queue<DirectionalPosition>(new[]
         {
             _spawn3By3Up,
@@ -40,7 +39,7 @@ public class WebSocketServiceTests
         var segment = "test".ToArraySegment();
         using var webSocket = Substitute.For<WebSocket>();
 
-        _service.Send(webSocket, segment);
+        _service.Send(webSocket, segment).Wait();
 
         webSocket.ReceivedWithAnyArgs().SendAsync(default, default, default, default);
     }

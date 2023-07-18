@@ -1,6 +1,4 @@
 using System.Net.WebSockets;
-using pacMan.Game;
-using pacMan.Game.Items;
 using pacMan.Interfaces;
 using pacMan.Utils;
 
@@ -8,19 +6,13 @@ namespace pacMan.Services;
 
 public class WebSocketService : IWebSocketService
 {
-    private readonly ILogger<WebSocketService> _logger;
+    protected readonly ILogger<WebSocketService> Logger;
 
     public WebSocketService(ILogger<WebSocketService> logger)
     {
-        _logger = logger;
+        Logger = logger;
         logger.Log(LogLevel.Debug, "WebSocket Service created");
     }
-
-    public SynchronizedCollection<GameGroup> Games { get; } = new();
-
-    public int CountConnected => Connections?.GetInvocationList().Length ?? 0;
-
-    public event Func<ArraySegment<byte>, Task>? Connections; // TODO remove and use GameGroup
 
     public async Task Send(WebSocket webSocket, ArraySegment<byte> segment)
     {
@@ -30,18 +22,13 @@ public class WebSocketService : IWebSocketService
             true,
             CancellationToken.None);
 
-        _logger.Log(LogLevel.Debug, "Message sent to WebSocket");
-    }
-
-    public void SendToAll(ArraySegment<byte> segment)
-    {
-        Connections?.Invoke(segment);
+        Logger.Log(LogLevel.Debug, "Message sent to WebSocket");
     }
 
     public async Task<WebSocketReceiveResult> Receive(WebSocket webSocket, byte[] buffer)
     {
         var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-        _logger.Log(LogLevel.Debug,
+        Logger.Log(LogLevel.Debug,
             "Message \"{}\" received from WebSocket",
             buffer.GetString(result.Count));
         return result;
@@ -54,23 +41,6 @@ public class WebSocketService : IWebSocketService
             closeStatusDescription,
             CancellationToken.None);
 
-        _logger.Log(LogLevel.Information, "WebSocket connection closed");
-    }
-
-    public GameGroup AddPlayer(IPlayer player, Queue<DirectionalPosition> spawns)
-    {
-        var index = 0;
-        try
-        {
-            while (!Games[index].AddPlayer(player)) index++;
-        }
-        catch (ArgumentOutOfRangeException)
-        {
-            var game = new GameGroup(spawns);
-            game.AddPlayer(player);
-            Games.Add(game);
-        }
-
-        return Games[index];
+        Logger.Log(LogLevel.Information, "WebSocket connection closed");
     }
 }

@@ -2,7 +2,6 @@ using System.Text.Json;
 using Microsoft.CSharp.RuntimeBinder;
 using pacMan.Game;
 using pacMan.Game.Items;
-using pacMan.Interfaces;
 
 namespace pacMan.Services;
 
@@ -21,14 +20,14 @@ public interface IActionService
 public class ActionService : IActionService
 {
     private readonly IDiceCup _diceCup;
+    private readonly GameService _gameService;
     private readonly ILogger<ActionService> _logger;
-    private readonly IWebSocketService _wsService;
 
-    public ActionService(ILogger<ActionService> logger, IWebSocketService wsService)
+    public ActionService(ILogger<ActionService> logger, GameService gameService)
     {
         _logger = logger;
         _diceCup = new DiceCup();
-        _wsService = wsService;
+        _gameService = gameService;
     }
 
     public GameGroup? Group { get; set; }
@@ -63,7 +62,7 @@ public class ActionService : IActionService
             PlayerInfoData data = JsonSerializer.Deserialize<PlayerInfoData>(message.Data);
             Player = data.Player;
 
-            Group = _wsService.AddPlayer(Player, data.Spawns);
+            Group = _gameService.AddPlayer(Player, data.Spawns);
         }
         catch (RuntimeBinderException e)
         {
@@ -112,6 +111,6 @@ public struct PlayerInfoData
 
 public struct ReadyData
 {
-    public required bool AllReady { get; set; }
+    public required bool AllReady { get; init; }
     public required IEnumerable<IPlayer> Players { get; set; }
 }

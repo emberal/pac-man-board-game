@@ -1,6 +1,6 @@
 using System.Net.WebSockets;
 using Microsoft.AspNetCore.Mvc;
-using pacMan.Interfaces;
+using pacMan.Services;
 
 namespace pacMan.Controllers;
 
@@ -8,9 +8,7 @@ namespace pacMan.Controllers;
 [Route("api/[controller]")]
 public class WsController : GenericController
 {
-    public WsController(ILogger<WsController> logger, IWebSocketService wsService) : base(logger, wsService)
-    {
-    }
+    public WsController(ILogger<WsController> logger, GameService gameService) : base(logger, gameService) { }
 
     [HttpGet]
     public override async Task Accept() => await base.Accept();

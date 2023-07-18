@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using pacMan.Game;
 using pacMan.Game.Items;
-using pacMan.Interfaces;
 using pacMan.Services;
 
 namespace BackendTests.Services;
@@ -16,13 +15,13 @@ public class ActionServiceTests
 
     private readonly Player _whitePlayer = (Player)Players.Create("white");
     private ActionMessage _blackMessage = null!;
+    private GameService _gameService = null!;
     private ActionMessage _redMessage = null!;
     private IActionService _service = null!;
 
     private Queue<DirectionalPosition> _spawns = null!;
 
     private ActionMessage _whiteMessage = null!;
-    private IWebSocketService _wssSub = null!;
 
     [SetUp]
     public void Setup()
@@ -43,8 +42,8 @@ public class ActionServiceTests
             Action = GameAction.PlayerInfo,
             Data = JsonSerializer.Serialize(new { Player = _redPlayer, Spawns = CreateQueue() })
         };
-        _wssSub = Substitute.For<WebSocketService>(Substitute.For<ILogger<WebSocketService>>());
-        _service = new ActionService(Substitute.For<ILogger<ActionService>>(), _wssSub);
+        _gameService = Substitute.For<GameService>(Substitute.For<ILogger<GameService>>());
+        _service = new ActionService(Substitute.For<ILogger<ActionService>>(), _gameService);
     }
 
     private static Queue<DirectionalPosition> CreateQueue() =>

@@ -1,20 +1,20 @@
 using System.Net.WebSockets;
 using Microsoft.AspNetCore.Mvc;
-using pacMan.Interfaces;
+using pacMan.Services;
 
 namespace pacMan.Controllers;
 
-public abstract class GenericController : ControllerBase
+public abstract class GenericController : ControllerBase // TODO only use WebSocketService in this class
 {
     private const int BufferSize = 1024 * 4;
+    protected readonly GameService GameService;
     protected readonly ILogger<GenericController> Logger;
-    protected readonly IWebSocketService WsService;
     private WebSocket? _webSocket;
 
-    protected GenericController(ILogger<GenericController> logger, IWebSocketService wsService)
+    protected GenericController(ILogger<GenericController> logger, GameService gameService)
     {
         Logger = logger;
-        WsService = wsService;
+        GameService = gameService;
         Logger.Log(LogLevel.Debug, "WebSocket Controller created");
     }
 
@@ -25,7 +25,7 @@ public abstract class GenericController : ControllerBase
             using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
             Logger.Log(LogLevel.Information, "WebSocket connection established to {}", HttpContext.Connection.Id);
             _webSocket = webSocket;
-            WsService.Connections += WsServiceOnFire;
+            GameService.Connections += WsServiceOnFire;
             await Echo();
         }
         else
@@ -37,7 +37,7 @@ public abstract class GenericController : ControllerBase
     private async Task WsServiceOnFire(ArraySegment<byte> segment)
     {
         if (_webSocket == null) return;
-        await WsService.Send(_webSocket, segment);
+        await GameService.Send(_webSocket, segment);
     }
 
 
@@ -50,16 +50,16 @@ public abstract class GenericController : ControllerBase
             do
             {
                 var buffer = new byte[BufferSize];
-                result = await WsService.Receive(_webSocket, buffer);
+                result = await GameService.Receive(_webSocket, buffer);
 
                 if (result.CloseStatus.HasValue) break;
 
                 var segment = Run(result, buffer);
 
-                WsService.SendToAll(segment);
+                GameService.SendToAll(segment);
             } while (true);
 
-            await WsService.Close(_webSocket, result.CloseStatus.Value, result.CloseStatusDescription);
+            await GameService.Close(_webSocket, result.CloseStatus.Value, result.CloseStatusDescription);
         }
         catch (WebSocketException e)
         {
@@ -71,5 +71,5 @@ public abstract class GenericController : ControllerBase
 
     protected abstract ArraySegment<byte> Run(WebSocketReceiveResult result, byte[] data);
 
-    protected virtual void Disconnect() => WsService.Connections -= WsServiceOnFire;
+    protected virtual void Disconnect() => GameService.Connections -= WsServiceOnFire;
 }
