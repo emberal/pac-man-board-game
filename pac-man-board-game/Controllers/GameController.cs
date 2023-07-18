@@ -17,8 +17,16 @@ public class GameController : GenericController // TODO reconnect using player i
         base(logger, wsService) =>
         _actionService = actionService;
 
-    [HttpGet]
+    [HttpGet("connect")]
     public override async Task Accept() => await base.Accept();
+
+    [HttpGet("allGames")]
+    public IEnumerable<GameGroup> GetAllGames()
+    {
+        Logger.Log(LogLevel.Information, "Returning all games");
+        return WsService.Games;
+    }
+
 
     protected override ArraySegment<byte> Run(WebSocketReceiveResult result, byte[] data)
     {

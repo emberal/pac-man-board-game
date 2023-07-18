@@ -1,27 +1,27 @@
-using System.Collections;
+using System.Text.Json.Serialization;
 using pacMan.Exceptions;
 using pacMan.Game;
 using pacMan.Game.Items;
 
 namespace pacMan.Services;
 
-public class GameGroup : IEnumerable<IPlayer> // TODO handle disconnects and reconnects
+public class GameGroup // TODO handle disconnects and reconnects
 {
     private readonly Random _random = new();
     private int _currentPlayerIndex;
 
     public GameGroup(Queue<DirectionalPosition> spawns) => Spawns = spawns;
 
-    public List<IPlayer> Players { get; } = new();
-    private Queue<DirectionalPosition> Spawns { get; }
+    [JsonInclude] public Guid Id { get; } = Guid.NewGuid();
 
-    public int Count => Players.Count;
+    [JsonIgnore] public List<IPlayer> Players { get; } = new();
 
+    [JsonIgnore] private Queue<DirectionalPosition> Spawns { get; }
+
+    [JsonInclude] public int Count => Players.Count;
+
+    [JsonInclude]
     public bool IsGameStarted => Count > 0 && Players.All(player => player.State is State.InGame or State.Disconnected);
-
-    public IEnumerator<IPlayer> GetEnumerator() => Players.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public IPlayer NextPlayer()
     {
@@ -33,6 +33,7 @@ public class GameGroup : IEnumerable<IPlayer> // TODO handle disconnects and rec
         {
             throw new InvalidOperationException("There are no players in the game group.");
         }
+
         return Players[_currentPlayerIndex];
     }
 

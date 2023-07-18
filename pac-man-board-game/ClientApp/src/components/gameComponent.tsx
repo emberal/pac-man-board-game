@@ -11,7 +11,7 @@ import {diceAtom, ghostsAtom, playersAtom, rollDiceButtonAtom, selectedDiceAtom}
 import {CharacterType} from "../game/character";
 import GameButton from "./gameButton";
 
-const wsService = new WebSocketService(import.meta.env.VITE_API);
+const wsService = new WebSocketService(import.meta.env.VITE_API_WS);
 
 // TODO bug, when taking player on last dice, the currentPlayer changes and the wrong character get to steal
 // TODO bug, first player can sometimes roll dice twice (maybe only on firefox)
