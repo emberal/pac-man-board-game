@@ -11,15 +11,15 @@ export default class Box {
   }
 
   get powerPellet(): Pellet | undefined {
-    return this.Pellets.find(pellet => pellet.isPowerPellet);
+    return this.Pellets.find(pellet => pellet.IsPowerPellet);
   }
 
   get count(): number {
-    return this.Pellets.filter(pellet => !pellet.isPowerPellet).length;
+    return this.Pellets.filter(pellet => !pellet.IsPowerPellet).length;
   }
 
   get countPowerPellets(): number {
-    return this.Pellets.filter(pellet => pellet.isPowerPellet).length;
+    return this.Pellets.filter(pellet => pellet.IsPowerPellet).length;
   }
 
   public addPellet(pellet: Pellet): void {

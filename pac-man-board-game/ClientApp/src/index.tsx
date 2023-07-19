@@ -7,13 +7,13 @@ import reportWebVitals from './reportWebVitals';
 
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
-// @ts-ignore
+if (rootElement === null) throw new Error("Root element is null");
 const root = createRoot(rootElement);
 
 root.render(
-    <BrowserRouter basename={baseUrl ?? undefined}>
-        <App/>
-    </BrowserRouter>);
+  <BrowserRouter basename={baseUrl ?? undefined}>
+    <App/>
+  </BrowserRouter>);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

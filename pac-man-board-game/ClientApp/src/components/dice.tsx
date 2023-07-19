@@ -1,13 +1,9 @@
-import React from "react";
+import React, {FC} from "react";
 import {useAtom, useAtomValue} from "jotai";
 import {selectedDiceAtom, thisPlayerAtom} from "../utils/state";
-import {Button} from "./Button";
+import {Button} from "./button";
 
-interface AllDiceProps extends ComponentProps {
-  values?: number[],
-}
-
-export const AllDice: Component<AllDiceProps> = (
+export const AllDice: FC<{ values?: number[] } & ComponentProps> = (
   {
     className,
     values,
@@ -35,7 +31,7 @@ interface DiceProps extends ComponentProps {
   onClick?: (value: number) => void,
 }
 
-export const Dice: Component<DiceProps> = (
+export const Dice: FC<DiceProps> = (
   {
     className,
     value,

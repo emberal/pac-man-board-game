@@ -1,9 +1,9 @@
-import React from "react";
+import React, {FC} from "react";
 import Player, {State} from "../game/player";
 import {useAtomValue} from "jotai";
 import {currentPlayerNameAtom} from "../utils/state";
 
-const PlayerStats: Component<{ player: Player } & ComponentProps> = (
+const PlayerStats: FC<{ player: Player } & ComponentProps> = (
   {
     player,
     className,

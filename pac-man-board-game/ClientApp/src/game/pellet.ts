@@ -1,7 +1,7 @@
 export default class Pellet {
-  public readonly isPowerPellet: boolean;
+  public readonly IsPowerPellet: boolean;
 
   public constructor(isPowerPellet = false) {
-    this.isPowerPellet = isPowerPellet;
+    this.IsPowerPellet = isPowerPellet;
   }
 }

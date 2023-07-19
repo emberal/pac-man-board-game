@@ -1,8 +1,8 @@
-import React, {MouseEventHandler} from "react";
+import React, {FC, MouseEventHandler} from "react";
 import {State} from "../game/player";
 import {currentPlayerAtom, playersAtom, rollDiceButtonAtom, thisPlayerAtom} from "../utils/state";
 import {useAtomValue} from "jotai";
-import {Button} from "./Button";
+import {Button} from "./button";
 import rules from "../game/rules";
 
 interface GameButtonProps extends ComponentProps {
@@ -10,7 +10,7 @@ interface GameButtonProps extends ComponentProps {
   onRollDiceClick?: MouseEventHandler
 }
 
-const GameButton: Component<GameButtonProps> = (
+const GameButton: FC<GameButtonProps> = (
   {
     onReadyClick,
     onRollDiceClick,

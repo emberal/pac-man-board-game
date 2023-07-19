@@ -1,5 +1,3 @@
-type Component<T = ComponentProps> = (props: T) => React.JSX.Element | null;
-
 type FRComponent<T = ComponentProps, HTML extends HTMLElement = HTMLElement> = React.ForwardRefExoticComponent<React.PropsWithoutRef<T> & React.RefAttributes<HTML>>;
 
 interface ComponentProps {

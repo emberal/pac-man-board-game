@@ -1,4 +1,4 @@
-import React, {Fragment, useEffect, useState} from "react";
+import React, {FC, Fragment, useEffect, useState} from "react";
 import {Character} from "../game/character";
 import findPossiblePositions from "../game/possibleMovesAlgorithm";
 import {GameTile} from "./gameTile";
@@ -15,7 +15,7 @@ interface BoardProps extends ComponentProps {
 
 const modalOpenAtom: PrimitiveAtom<boolean> = atom(false);
 
-const Board: Component<BoardProps> = (
+const Board: FC<BoardProps> = (
   {
     className,
     onMove,
@@ -130,7 +130,7 @@ const Board: Component<BoardProps> = (
 
 export default Board;
 
-const SelectPlayerModal: Component = () => {
+const SelectPlayerModal: FC = () => {
   const [isOpen, setIsOpen] = useAtom(modalOpenAtom);
   const currentPlayer = useAtomValue(currentPlayerAtom);
   const allPlayers = useAtomValue(playersAtom).filter(p => p !== currentPlayer);

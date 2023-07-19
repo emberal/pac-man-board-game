@@ -1,7 +1,7 @@
-import React from "react";
+import React, {FC} from "react";
 import {Link} from "react-router-dom";
 
-const NavMenu: Component = () => {
+const NavMenu: FC = () => {
 
   const [collapsed, setCollapsed] = React.useState(true);
 

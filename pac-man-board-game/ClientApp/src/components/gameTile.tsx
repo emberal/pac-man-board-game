@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {FC, useEffect, useState} from "react";
 import {TileType} from "../game/tileType";
 import {Character, Dummy} from "../game/character";
 import {Direction} from "../game/direction";
@@ -16,7 +16,7 @@ interface TileWithCharacterProps extends ComponentProps {
   showPath?: boolean
 }
 
-export const GameTile: Component<TileWithCharacterProps> = (
+export const GameTile: FC<TileWithCharacterProps> = (
   {
     possiblePath,
     character,
@@ -48,7 +48,7 @@ export const GameTile: Component<TileWithCharacterProps> = (
   </Tile>
 );
 
-const Circle: Component<{ colour?: Colour } & ComponentProps> = ({colour = Colour.White, className}) => (
+const Circle: FC<{ colour?: Colour } & ComponentProps> = ({colour = Colour.White, className}) => (
   <div className={`flex-center w-full h-full ${className}`}>
     <div className={`w-1/2 h-1/2 rounded-full`}
          style={{backgroundColor: colour}}/>
@@ -65,7 +65,7 @@ interface TileProps extends ChildProps {
   characterClass?: string,
 }
 
-const Tile: Component<TileProps> = (
+const Tile: FC<TileProps> = (
   {
     type = TileType.empty,
     onClick,
@@ -116,7 +116,7 @@ const Tile: Component<TileProps> = (
   );
 };
 
-const AddDummy: Component<{ path?: Path } & ComponentProps> = ({path}) => (
+const AddDummy: FC<{ path?: Path } & ComponentProps> = ({path}) => (
   <>
     {path &&
         <div className={"flex-center wh-full"}>
@@ -131,7 +131,7 @@ interface CharacterComponentProps extends ComponentProps {
   onClick?: Action<Character>,
 }
 
-const CharacterComponent: Component<CharacterComponentProps> = (
+const CharacterComponent: FC<CharacterComponentProps> = (
   {
     character,
     onClick,

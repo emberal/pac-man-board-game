@@ -1,7 +1,7 @@
-import React from "react";
+import React, {FC} from "react";
 import NavMenu from "./navMenu";
 
-const Layout: Component<ChildProps> = ({children}) => (
+const Layout: FC<ChildProps> = ({children}) => (
   <div>
     <NavMenu/>
     <main>

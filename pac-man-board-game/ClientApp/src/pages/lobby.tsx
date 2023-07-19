@@ -1,6 +1,6 @@
 import React, {FC, Suspense} from "react";
 import {atom, useAtomValue} from "jotai";
-import {Button} from "../components/Button";
+import {Button} from "../components/button";
 import {thisPlayerAtom} from "../utils/state";
 
 const fetchAtom = atom(async () => {
@@ -16,7 +16,7 @@ const LobbyPage: FC = () => ( // TODO check if player is defined in storage, if 
 
 export default LobbyPage;
 
-const GameTable: Component = ({className}) => {
+const GameTable: FC<ComponentProps> = ({className}) => {
 
   const data = useAtomValue(fetchAtom);
   const thisPlayer = useAtomValue(thisPlayerAtom);

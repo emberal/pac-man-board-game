@@ -1,6 +1,6 @@
-import React from "react";
+import React, {FC} from "react";
 
-export const Button: Component<ButtonProps> = (
+export const Button: FC<ButtonProps> = (
   {
     className,
     onClick,

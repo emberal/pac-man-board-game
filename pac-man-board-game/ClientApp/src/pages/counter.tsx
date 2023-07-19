@@ -1,9 +1,9 @@
-import React from "react";
+import React, {FC} from "react";
 import WebSocketService from "../websockets/WebSocketService";
 
 const ws = new WebSocketService("wss://localhost:3000/api/ws");
 
-export const Counter: Component = () => {
+export const Counter: FC = () => {
 
   const [currentCount, setCurrentCount] = React.useState(0);
 

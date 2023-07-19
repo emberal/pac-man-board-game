@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {FC, useEffect} from "react";
 import {AllDice} from "./dice";
 import {doAction, GameAction} from "../utils/actions";
 import GameBoard from "./gameBoard";
@@ -25,7 +25,7 @@ const wsService = new WebSocketService(import.meta.env.VITE_API_WS);
 // TODO show box with collected pellets
 // TODO layout
 
-export const GameComponent: Component<{ player: Player, map: GameMap }> = ({player, map}) => {
+export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map}) => {
 
   const players = useAtomValue(playersAtom);
   const dice = useAtomValue(diceAtom);

@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React, {FC, useRef} from "react";
 import Player from "../game/player";
 import Input from "../components/input";
 import Dropdown from "../components/dropdown";
@@ -7,7 +7,7 @@ import {useNavigate} from "react-router-dom";
 import {useSetAtom} from "jotai";
 import {thisPlayerAtom} from "../utils/state";
 
-const Home: Component = () => {
+const Home: FC = () => {
 
   const input = useRef<HTMLInputElement>(null);
   const dropdown = useRef<HTMLSelectElement>(null);
