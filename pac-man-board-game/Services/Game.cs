@@ -56,7 +56,7 @@ public class Game // TODO handle disconnects and reconnects
          */
 
         player.State = State.WaitingForPlayers;
-        if (Players.Exists(p => p.UserName == player.UserName)) return true; // TODO change to false
+        if (Players.Exists(p => p.Username == player.Username)) return true; // TODO change to false
         Players.Add(player);
         if (player.PacMan.SpawnPosition is null) SetSpawn(player);
         return true;

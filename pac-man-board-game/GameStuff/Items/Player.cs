@@ -2,7 +2,7 @@ namespace pacMan.GameStuff.Items;
 
 public interface IPlayer
 {
-    string UserName { get; init; }
+    string Username { get; init; }
     Character PacMan { get; init; }
     string Colour { get; init; }
     Box? Box { get; init; }
@@ -23,10 +23,10 @@ public class Player : IPlayer, IEquatable<Player>
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
-        return UserName == other.UserName;
+        return Username == other.Username;
     }
 
-    public required string UserName { get; init; }
+    public required string Username { get; init; }
     public required Character PacMan { get; init; }
     public required string Colour { get; init; }
     public Box? Box { get; init; }
@@ -39,5 +39,5 @@ public class Player : IPlayer, IEquatable<Player>
         return obj.GetType() == GetType() && Equals((Player)obj);
     }
 
-    public override int GetHashCode() => UserName.GetHashCode();
+    public override int GetHashCode() => Username.GetHashCode();
 }

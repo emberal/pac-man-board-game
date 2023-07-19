@@ -104,7 +104,7 @@ function ready(data?: ReadyData): void {
     const players = data.Players.map(p => new Player(p));
     store.set(playersAtom, players);
     if (data.AllReady) {
-      store.set(currentPlayerNameAtom, data.Players[0].UserName);
+      store.set(currentPlayerNameAtom, data.Players[0].Username);
     }
   } else {
     console.error("Error:", data);

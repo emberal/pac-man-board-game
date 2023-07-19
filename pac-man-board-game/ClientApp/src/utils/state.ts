@@ -47,7 +47,7 @@ export const currentPlayerNameAtom = atom<string | undefined>(undefined);
  */
 export const currentPlayerAtom = atom<Player | undefined>(get => {
   const currentPlayerName = get(currentPlayerNameAtom);
-  return get(playersAtom).find(player => player.UserName === currentPlayerName);
+  return get(playersAtom).find(player => player.Username === currentPlayerName);
 });
 /**
  * Whether the roll dice button should be enabled.

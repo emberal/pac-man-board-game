@@ -13,7 +13,7 @@ const PlayerStats: FC<{ player: Player } & ComponentProps> = (
   return (
     <div key={player.Colour}
          className={`w-fit m-2 ${player.State === State.disconnected ? "text-gray-500" : ""} ${className}`} id={id}>
-      <p className={player.UserName === currentPlayerName ? "underline" : ""}>Player: {player.UserName}</p>
+      <p className={player.Username === currentPlayerName ? "underline" : ""}>Player: {player.Username}</p>
       <p>Colour: {player.Colour}</p>
       {player.State === State.inGame || player.State === State.disconnected ?
         <>

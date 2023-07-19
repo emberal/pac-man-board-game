@@ -37,7 +37,7 @@ interface BoxProps {
 }
 
 interface PlayerProps {
-  readonly UserName: string,
+  readonly Username: string,
   readonly PacMan?: CharacterProps,
   readonly Colour: import("../game/colour").Colour,
   readonly Box?: BoxProps,

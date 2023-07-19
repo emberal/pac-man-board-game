@@ -62,8 +62,8 @@ public class ActionService : IActionService
 
         Game? group;
         IPlayer? player;
-        if ((group = _gameService.FindGameByUsername(Player.UserName)) != null &&
-            (player = group.Players.Find(p => p.UserName == Player.UserName))?.State == State.Disconnected)
+        if ((group = _gameService.FindGameByUsername(Player.Username)) != null &&
+            (player = group.Players.Find(p => p.Username == Player.Username))?.State == State.Disconnected)
         {
             player.State = group.IsGameStarted ? State.InGame : State.WaitingForPlayers;
             Player = player;
@@ -98,7 +98,7 @@ public class ActionService : IActionService
         return data;
     }
 
-    public string FindNextPlayer() => Game?.NextPlayer().UserName ?? "Error: No group found";
+    public string FindNextPlayer() => Game?.NextPlayer().Username ?? "Error: No group found";
 
     public void Disconnect()
     {

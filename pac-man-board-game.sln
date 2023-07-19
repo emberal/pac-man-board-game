@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pac-man-board-game", "pac-m
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackendTests", "BackendTests\BackendTests.csproj", "{35336347-32EB-4764-A28E-3F8FF6CA54C4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessLayer", "DataAccessLayer\DataAccessLayer.csproj", "{D426C483-CCBE-43FE-B712-E8002879D0A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{35336347-32EB-4764-A28E-3F8FF6CA54C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35336347-32EB-4764-A28E-3F8FF6CA54C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35336347-32EB-4764-A28E-3F8FF6CA54C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D426C483-CCBE-43FE-B712-E8002879D0A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D426C483-CCBE-43FE-B712-E8002879D0A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D426C483-CCBE-43FE-B712-E8002879D0A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D426C483-CCBE-43FE-B712-E8002879D0A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

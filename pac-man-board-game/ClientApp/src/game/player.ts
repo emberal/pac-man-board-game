@@ -14,14 +14,14 @@ export enum State {
 }
 
 export default class Player {
-  public readonly UserName: string;
+  public readonly Username: string;
   public readonly PacMan: Character;
   public readonly Colour: Colour;
   public readonly Box: Box;
   public State: State;
 
   constructor(props: PlayerProps) {
-    this.UserName = props.UserName;
+    this.Username = props.Username;
     this.Colour = props.Colour;
     this.Box = new Box(props.Box ?? {Colour: props.Colour});
     this.PacMan = new Character(props.PacMan ?? {
@@ -33,7 +33,7 @@ export default class Player {
 
   public isTurn(): boolean {
     const store = getDefaultStore();
-    return store.get(currentPlayerNameAtom) === this.UserName;
+    return store.get(currentPlayerNameAtom) === this.Username;
   }
 
   public addPellet(pellet: Pellet): void {

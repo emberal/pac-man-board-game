@@ -83,6 +83,6 @@ public class GameService : WebSocketService
 
     public Game? FindGameByUsername(string username)
     {
-        return Games.FirstOrDefault(game => game.Players.Exists(player => player.UserName == username));
+        return Games.FirstOrDefault(game => game.Players.Exists(player => player.Username == username));
     }
 }

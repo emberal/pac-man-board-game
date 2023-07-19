@@ -93,7 +93,7 @@ export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map
   return (
     <>
       <div className={"flex justify-center"}>
-        {players?.map(p => <PlayerStats key={p.UserName} player={p}/>)}
+        {players?.map(p => <PlayerStats key={p.Username} player={p}/>)}
       </div>
       <div className={"flex-center"}>
         <GameButton onReadyClick={sendReady} onRollDiceClick={rollDice}/>

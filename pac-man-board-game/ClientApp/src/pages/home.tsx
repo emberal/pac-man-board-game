@@ -17,7 +17,7 @@ const Home: FC = () => {
   function formHandler(): void {
     if (!input.current || !dropdown.current) return;
     const player = new Player({
-      UserName: input.current.value,
+      Username: input.current.value,
       Colour: dropdown.current.value as Colour,
     });
     setPlayer(player);

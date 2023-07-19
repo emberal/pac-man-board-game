@@ -181,8 +181,8 @@ const SelectPlayerModal: FC = () => {
 
                   {
                     allPlayers.map(player =>
-                      <div key={player.UserName} className={"border-b pb-1"}>
-                        <span className={"mx-2"}>{player.UserName} has {player.Box.count} pellets</span>
+                      <div key={player.Username} className={"border-b pb-1"}>
+                        <span className={"mx-2"}>{player.Username} has {player.Box.count} pellets</span>
                         <button className={"text-blue-500 enabled:cursor-pointer disabled:text-gray-500"}
                                 style={{background: "none"}}
                                 disabled={player.Box.count === 0}
