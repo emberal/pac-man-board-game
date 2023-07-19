@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Microsoft.CSharp.RuntimeBinder;
 using pacMan.GameStuff;
 using pacMan.GameStuff.Items;
 
@@ -11,7 +10,8 @@ public interface IActionService
     Game Group { set; }
     void DoAction(ActionMessage message);
     List<int> RollDice();
-    List<IPlayer> SetPlayerInfo(ActionMessage message);
+    List<IPlayer> SetPlayerInfo(JsonElement? jsonElement);
+    object? HandleMoveCharacter(JsonElement? jsonElement); // TODO test
     object Ready();
     string FindNextPlayer();
     void Disconnect();
@@ -37,9 +37,10 @@ public class ActionService : IActionService
         message.Data = message.Action switch
         {
             GameAction.RollDice => RollDice(),
-            GameAction.PlayerInfo => SetPlayerInfo(message),
+            GameAction.PlayerInfo => SetPlayerInfo(message.Data),
             GameAction.Ready => Ready(),
             GameAction.NextPlayer => FindNextPlayer(),
+            GameAction.MoveCharacter => HandleMoveCharacter(message.Data),
             _ => message.Data
         };
     }
@@ -53,35 +54,24 @@ public class ActionService : IActionService
         return rolls;
     }
 
-    public List<IPlayer> SetPlayerInfo(ActionMessage message)
+    public List<IPlayer> SetPlayerInfo(JsonElement? jsonElement)
     {
-        try
-        {
-            // Receieving JsonElement from frontend
-            PlayerInfoData data = JsonSerializer.Deserialize<PlayerInfoData>(message.Data);
-            Player = data.Player;
+        var data = jsonElement?.Deserialize<PlayerInfoData>() ?? throw new NullReferenceException("Data is null");
+        Player = data.Player;
 
-            Game? group;
-            IPlayer? player;
-            if ((group = _gameService.FindGameByUsername(Player.UserName)) != null &&
-                (player = group.Players.Find(p => p.UserName == Player.UserName))?.State == State.Disconnected)
-            {
-                player.State = group.IsGameStarted ? State.InGame : State.WaitingForPlayers;
-                Player = player;
-                Group = group;
-                // TODO send missing data: Dices, CurrentPlayer, Ghosts
-            }
-            else
-            {
-                Group = _gameService.AddPlayer(Player, data.Spawns);
-            }
+        Game? group;
+        IPlayer? player;
+        if ((group = _gameService.FindGameByUsername(Player.UserName)) != null &&
+            (player = group.Players.Find(p => p.UserName == Player.UserName))?.State == State.Disconnected)
+        {
+            player.State = group.IsGameStarted ? State.InGame : State.WaitingForPlayers;
+            Player = player;
+            Group = group;
+            // TODO send missing data: Dices, CurrentPlayer, Ghosts
         }
-        catch (RuntimeBinderException e)
+        else
         {
-            Console.WriteLine(e);
-            if (message.Data is null) throw new NullReferenceException();
-
-            throw;
+            Group = _gameService.AddPlayer(Player, data.Spawns);
         }
 
         return Group.Players;
@@ -112,6 +102,15 @@ public class ActionService : IActionService
     public void Disconnect()
     {
         if (Player != null) Player.State = State.Disconnected;
+    }
+
+    public object? HandleMoveCharacter(JsonElement? jsonElement)
+    {
+        if (Group != null && jsonElement.HasValue)
+            Group.Ghosts = jsonElement.Value.GetProperty("Ghosts").Deserialize<List<Character>>() ??
+                           throw new JsonException("Ghosts is null");
+
+        return jsonElement;
     }
 }
 

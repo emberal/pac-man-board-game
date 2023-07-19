@@ -16,6 +16,8 @@ public class Game // TODO handle disconnects and reconnects
 
     [JsonIgnore] public List<IPlayer> Players { get; } = new();
 
+    [JsonIgnore] public List<Character> Ghosts { get; set; } = new();
+
     [JsonIgnore] private Queue<DirectionalPosition> Spawns { get; }
 
     [JsonIgnore] public DiceCup DiceCup { get; } = new();

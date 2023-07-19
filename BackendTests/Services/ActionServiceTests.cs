@@ -30,21 +30,26 @@ public class ActionServiceTests
         _whiteMessage = new ActionMessage
         {
             Action = GameAction.PlayerInfo,
-            Data = JsonSerializer.Serialize(new { Player = _whitePlayer, Spawns = CreateQueue() })
+            Data = SerializeData(_whitePlayer)
         };
         _blackMessage = new ActionMessage
         {
             Action = GameAction.PlayerInfo,
-            Data = JsonSerializer.Serialize(new { Player = _blackPlayer, Spawns = CreateQueue() })
+            Data = SerializeData(_blackPlayer)
         };
         _redMessage = new ActionMessage
         {
             Action = GameAction.PlayerInfo,
-            Data = JsonSerializer.Serialize(new { Player = _redPlayer, Spawns = CreateQueue() })
+            Data = SerializeData(_redPlayer)
         };
         _gameService = Substitute.For<GameService>(Substitute.For<ILogger<GameService>>());
         _service = new ActionService(Substitute.For<ILogger<ActionService>>(), _gameService);
     }
+
+    private static JsonElement SerializeData(Player player) =>
+        JsonDocument.Parse(JsonSerializer.Serialize(
+            new PlayerInfoData { Player = player, Spawns = CreateQueue() })
+        ).RootElement;
 
     private static Queue<DirectionalPosition> CreateQueue() =>
         new(new[]
@@ -77,26 +82,29 @@ public class ActionServiceTests
     public void PlayerInfo_DataIsNull()
     {
         var message = new ActionMessage { Action = GameAction.PlayerInfo, Data = "null" };
-        Assert.Throws<JsonException>(() => _service.SetPlayerInfo(message));
+        var serialized = JsonDocument.Parse(JsonSerializer.Serialize(message.Data));
+        Assert.Throws<JsonException>(() => _service.SetPlayerInfo(serialized.RootElement));
         message.Data = null;
-        Assert.Throws<NullReferenceException>(() => _service.SetPlayerInfo(message));
+        Assert.Throws<NullReferenceException>(() => _service.SetPlayerInfo(message.Data));
     }
 
     [Test]
     public void PlayerInfo_DataIsNotPlayer()
     {
+        var serialized =
+            JsonDocument.Parse(JsonSerializer.Serialize(new Box { Colour = "white", Pellets = new List<Pellet>() }));
         var message = new ActionMessage
         {
             Action = GameAction.PlayerInfo,
-            Data = JsonSerializer.Serialize(new Box { Colour = "white", Pellets = new List<Pellet>() })
+            Data = serialized.RootElement
         };
-        Assert.Throws<JsonException>(() => _service.SetPlayerInfo(message));
+        Assert.Throws<JsonException>(() => _service.SetPlayerInfo(message.Data));
     }
 
     [Test]
     public void PlayerInfo_DataIsPlayer()
     {
-        var players = _service.SetPlayerInfo(_whiteMessage);
+        var players = _service.SetPlayerInfo(_whiteMessage.Data);
 
         var pos = _spawns.Dequeue();
         _whitePlayer.PacMan.Position = pos;
@@ -140,8 +148,8 @@ public class ActionServiceTests
     [Test]
     public void Ready_NotAllReady()
     {
-        _service.SetPlayerInfo(_whiteMessage);
-        _service.SetPlayerInfo(_blackMessage);
+        _service.SetPlayerInfo(_whiteMessage.Data);
+        _service.SetPlayerInfo(_blackMessage.Data);
 
         var result = _service.Ready();
         if (result is ReadyData r1)
@@ -149,7 +157,7 @@ public class ActionServiceTests
         else
             Assert.Fail("Result should be ReadyData");
 
-        _service.SetPlayerInfo(_redMessage);
+        _service.SetPlayerInfo(_redMessage.Data);
 
         result = _service.Ready();
         if (result is ReadyData r2)
@@ -161,7 +169,7 @@ public class ActionServiceTests
     [Test]
     public void Ready_OneReady()
     {
-        _service.SetPlayerInfo(_whiteMessage);
+        _service.SetPlayerInfo(_whiteMessage.Data);
         var result = _service.Ready();
         // If selected the state is changed to InGame
         _whitePlayer.State = State.InGame;
