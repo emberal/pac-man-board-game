@@ -65,7 +65,7 @@ public class ActionServiceTests
     [Test]
     public void RollDice_ReturnsListOfIntegers()
     {
-        _service.Group = new pacMan.Services.Game(new Queue<DirectionalPosition>());
+        _service.Game = new pacMan.Services.Game(new Queue<DirectionalPosition>());
         var dices = _service.RollDice();
         Assert.Multiple(() =>
         {
@@ -182,7 +182,7 @@ public class ActionServiceTests
     {
         var group = new pacMan.Services.Game(new Queue<DirectionalPosition>())
             { Players = { _blackPlayer, _whitePlayer } };
-        _service.Group = group;
+        _service.Game = group;
         _service.Player = _blackPlayer;
 
         var result = _service.Ready();
@@ -204,14 +204,14 @@ public class ActionServiceTests
     [Test]
     public void FindNextPlayer_NoPlayers()
     {
-        _service.Group = new pacMan.Services.Game(new Queue<DirectionalPosition>());
+        _service.Game = new pacMan.Services.Game(new Queue<DirectionalPosition>());
         Assert.Throws<InvalidOperationException>(() => _service.FindNextPlayer());
     }
 
     [Test]
     public void FindNextPlayer_OnePlayer()
     {
-        _service.Group =
+        _service.Game =
             new pacMan.Services.Game(new Queue<DirectionalPosition>(
                     new[] { new DirectionalPosition { At = new Position { X = 3, Y = 3 }, Direction = Direction.Up } }))
                 { Players = { _whitePlayer } };
@@ -223,7 +223,7 @@ public class ActionServiceTests
     [Test]
     public void FindNextPlayer_TwoPlayers()
     {
-        _service.Group = new pacMan.Services.Game(new Queue<DirectionalPosition>(
+        _service.Game = new pacMan.Services.Game(new Queue<DirectionalPosition>(
             new[]
             {
                 new DirectionalPosition { At = new Position { X = 3, Y = 3 }, Direction = Direction.Up },

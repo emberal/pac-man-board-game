@@ -1,6 +1,8 @@
 using System.Net.WebSockets;
 using Microsoft.AspNetCore.Mvc;
+using pacMan.Exceptions;
 using pacMan.GameStuff;
+using pacMan.GameStuff.Items;
 using pacMan.Services;
 using pacMan.Utils;
 
@@ -23,11 +25,45 @@ public class GameController : GenericController // TODO reconnect using player i
     [HttpGet("connect")]
     public override async Task Accept() => await base.Accept();
 
-    [HttpGet("allGames")]
+    [HttpGet("all")]
     public IEnumerable<Game> GetAllGames()
     {
-        Logger.Log(LogLevel.Information, "Returning all games");
+        Logger.Log(LogLevel.Debug, "Returning all games");
         return _gameService.Games;
+    }
+
+    [HttpPost("join/{gameId}")]
+    public IActionResult JoinGame(Guid gameId, [FromBody] Player player) // TODO what if player is in a game already?
+    {
+        Logger.Log(LogLevel.Debug, "Joining game {}", gameId);
+        try
+        {
+            _gameService.JoinById(gameId, player);
+            return Ok("Game joined successfully");
+        }
+        catch (GameNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpPost("createGame")]
+    public IActionResult CreateGame([FromBody] PlayerInfoData data)
+    {
+        Logger.Log(LogLevel.Debug, "Creating game");
+        try
+        {
+            var game = _gameService.CreateAndJoin(data.Player, data.Spawns);
+            return Created($"/{game.Id}", game);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message); // TODO not necessary?
+        }
     }
 
 
@@ -47,6 +83,7 @@ public class GameController : GenericController // TODO reconnect using player i
     protected override Task Echo()
     {
         _gameService.Connections += WsServiceOnFire;
+        // _actionService.Game.Connections += WsServiceOnFire;
         return base.Echo();
     }
 

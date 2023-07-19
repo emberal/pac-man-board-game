@@ -18,6 +18,7 @@ const NavMenu: Component = () => {
           <ul className="navbar-nav flex-grow">
             <Link className="text-dark" to="/">Home</Link>
             <Link className="text-dark" to="/counter">Counter</Link>
+            <Link to={"/lobby"}>Lobby</Link>
           </ul>
         </div>
       </nav>

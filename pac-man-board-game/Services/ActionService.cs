@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using pacMan.GameStuff;
 using pacMan.GameStuff.Items;
 
@@ -7,7 +8,7 @@ namespace pacMan.Services;
 public interface IActionService
 {
     IPlayer Player { set; }
-    Game Group { set; }
+    Game Game { set; }
     void DoAction(ActionMessage message);
     List<int> RollDice();
     List<IPlayer> SetPlayerInfo(JsonElement? jsonElement);
@@ -28,7 +29,7 @@ public class ActionService : IActionService
         _gameService = gameService;
     }
 
-    public Game? Group { get; set; }
+    public Game? Game { get; set; }
 
     public IPlayer? Player { get; set; }
 
@@ -47,8 +48,8 @@ public class ActionService : IActionService
 
     public List<int> RollDice()
     {
-        Group?.DiceCup.Roll();
-        var rolls = Group?.DiceCup.Values ?? new List<int>();
+        Game?.DiceCup.Roll();
+        var rolls = Game?.DiceCup.Values ?? new List<int>();
         _logger.Log(LogLevel.Information, "Rolled [{}]", string.Join(", ", rolls));
 
         return rolls;
@@ -66,27 +67,27 @@ public class ActionService : IActionService
         {
             player.State = group.IsGameStarted ? State.InGame : State.WaitingForPlayers;
             Player = player;
-            Group = group;
+            Game = group;
             // TODO send missing data: Dices, CurrentPlayer, Ghosts
         }
         else
         {
-            Group = _gameService.AddPlayer(Player, data.Spawns);
+            Game = _gameService.AddPlayer(Player, data.Spawns);
         }
 
-        return Group.Players;
+        return Game.Players;
     }
 
     public object Ready()
     {
         object data;
-        if (Player != null && Group != null)
+        if (Player != null && Game != null)
         {
-            var players = Group.SetReady(Player).ToArray();
+            var players = Game.SetReady(Player).ToArray();
             // TODO roll to start
-            Group.Shuffle();
+            Game.Shuffle();
             var allReady = players.All(p => p.State == State.Ready);
-            if (allReady) Group.SetAllInGame();
+            if (allReady) Game.SetAllInGame();
             data = new ReadyData { AllReady = allReady, Players = players };
         }
         else
@@ -97,7 +98,7 @@ public class ActionService : IActionService
         return data;
     }
 
-    public string FindNextPlayer() => Group?.NextPlayer().UserName ?? "Error: No group found";
+    public string FindNextPlayer() => Game?.NextPlayer().UserName ?? "Error: No group found";
 
     public void Disconnect()
     {
@@ -106,9 +107,9 @@ public class ActionService : IActionService
 
     public object? HandleMoveCharacter(JsonElement? jsonElement)
     {
-        if (Group != null && jsonElement.HasValue)
-            Group.Ghosts = jsonElement.Value.GetProperty("Ghosts").Deserialize<List<Character>>() ??
-                           throw new JsonException("Ghosts is null");
+        if (Game != null && jsonElement.HasValue)
+            Game.Ghosts = jsonElement.Value.GetProperty("Ghosts").Deserialize<List<Character>>() ??
+                          throw new JsonException("Ghosts is null");
 
         return jsonElement;
     }
@@ -116,12 +117,12 @@ public class ActionService : IActionService
 
 public struct PlayerInfoData
 {
-    public required Player Player { get; set; }
-    public required Queue<DirectionalPosition> Spawns { get; set; }
+    [JsonInclude] public required Player Player { get; init; }
+    [JsonInclude] public required Queue<DirectionalPosition> Spawns { get; init; }
 }
 
 public struct ReadyData
 {
-    public required bool AllReady { get; init; }
-    public required IEnumerable<IPlayer> Players { get; set; }
+    [JsonInclude] public required bool AllReady { get; init; }
+    [JsonInclude] public required IEnumerable<IPlayer> Players { get; set; }
 }

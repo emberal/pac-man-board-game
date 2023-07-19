@@ -1,10 +1,10 @@
-import React, {useEffect} from "react";
+import React, {FC, useEffect} from "react";
 import {GameComponent} from "../components/gameComponent";
 import {useAtomValue} from "jotai";
 import {thisPlayerAtom} from "../utils/state";
 import {testMap} from "../game/map";
 
-const Game: Component = () => {
+const Game: FC = () => { // TODO gameId in path
   const player = useAtomValue(thisPlayerAtom);
 
   useEffect(() => {
