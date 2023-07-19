@@ -91,7 +91,7 @@ function removeEatenPellets(data?: MoveCharacterData): void {
   }
 }
 
-function playerInfo(data?: PlayerProps[]): void {
+function playerInfo(data?: PlayerProps[]): void { // TODO missing data when refreshing page
   const playerProps = data ?? [];
   spawns = getCharacterSpawns(testMap).filter(spawn => spawn.type === CharacterType.pacMan);
   store.set(playersAtom, playerProps.map(p => new Player(p)));
@@ -104,7 +104,7 @@ function ready(data?: ReadyData): void {
     const players = data.Players.map(p => new Player(p));
     store.set(playersAtom, players);
     if (data.AllReady) {
-      store.set(currentPlayerNameAtom, data.Players[0].Name);
+      store.set(currentPlayerNameAtom, data.Players[0].UserName);
     }
   } else {
     console.error("Error:", data);

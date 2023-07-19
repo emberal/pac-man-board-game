@@ -52,7 +52,7 @@ public class Game // TODO handle disconnects and reconnects
          */
 
         player.State = State.WaitingForPlayers;
-        if (Players.Exists(p => p.Name == player.Name)) return true; // TODO change to false
+        if (Players.Exists(p => p.UserName == player.UserName)) return true; // TODO change to false
         Players.Add(player);
         if (player.PacMan.SpawnPosition is null) SetSpawn(player);
         return true;
@@ -70,7 +70,7 @@ public class Game // TODO handle disconnects and reconnects
 
     public IEnumerable<IPlayer> SetReady(IPlayer player)
     {
-        if (!Players.Contains(player)) // TODO throws exception after game has started and refresh
+        if (!Players.Contains(player))
             throw new PlayerNotFoundException("The player was not found in the game group.");
         player.State = State.Ready;
         return Players;

@@ -8,7 +8,7 @@ internal static class Players
     internal static IPlayer Create(string colour) =>
         new Player
         {
-            Name = colour,
+            UserName = colour,
             Colour = colour,
             PacMan = CreatePacMan(colour),
             Box = CreateBox(colour)
@@ -33,7 +33,7 @@ internal static class Players
         {
             Box = player.Box,
             Colour = player.Colour,
-            Name = player.Name,
+            UserName = player.UserName,
             PacMan = player.PacMan
         };
 }

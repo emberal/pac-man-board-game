@@ -15,9 +15,11 @@ const wsService = new WebSocketService(import.meta.env.VITE_API_WS);
 
 // TODO bug, when taking player on last dice, the currentPlayer changes and the wrong character get to steal
 // TODO bug, first player can sometimes roll dice twice (maybe only on firefox)
+// TODO bug, when refreshing page, the characters are reset for all players
+// TODO bug, when refreshing page, some data is missing until other clients make a move
 
 // TODO add debug menu on dev, for testing and cheating
-// TODO join game lobby
+// TODO join/new game lobby
 // TODO sign up player page
 // TODO sign in page
 // TODO show box with collected pellets
@@ -91,7 +93,7 @@ export const GameComponent: Component<{ player: Player, map: GameMap }> = ({play
   return (
     <>
       <div className={"flex justify-center"}>
-        {players?.map(p => <PlayerStats key={p.Name} player={p}/>)}
+        {players?.map(p => <PlayerStats key={p.UserName} player={p}/>)}
       </div>
       <div className={"flex-center"}>
         <GameButton onReadyClick={sendReady} onRollDiceClick={rollDice}/>

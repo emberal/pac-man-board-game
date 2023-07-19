@@ -181,8 +181,8 @@ const SelectPlayerModal: Component = () => {
 
                   {
                     allPlayers.map(player =>
-                      <div key={player.Name} className={"border-b pb-1"}>
-                        <span className={"mx-2"}>{player.Name} has {player.Box.count} pellets</span>
+                      <div key={player.UserName} className={"border-b pb-1"}>
+                        <span className={"mx-2"}>{player.UserName} has {player.Box.count} pellets</span>
                         <button className={"text-blue-500 enabled:cursor-pointer disabled:text-gray-500"}
                                 style={{background: "none"}}
                                 disabled={player.Box.count === 0}

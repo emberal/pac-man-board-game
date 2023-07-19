@@ -5,15 +5,17 @@ using pacMan.GameStuff.Items;
 namespace pacMan.Services;
 
 /// <summary>
-/// The GameService class provides functionality for managing games in a WebSocket environment. It inherits from the WebSocketService class.
+///     The GameService class provides functionality for managing games in a WebSocket environment. It inherits from the
+///     WebSocketService class.
 /// </summary>
 public class GameService : WebSocketService
 {
     public GameService(ILogger<GameService> logger) : base(logger) { }
 
     /// <summary>
-    /// A thread-safe collection (SynchronizedCollection) of "Game" objects. Utilized for managing multiple game instances simultaneously.
-    /// It represents all the current games being managed by GameService. 
+    ///     A thread-safe collection (SynchronizedCollection) of "Game" objects. Utilized for managing multiple game instances
+    ///     simultaneously.
+    ///     It represents all the current games being managed by GameService.
     /// </summary>
     public SynchronizedCollection<Game> Games { get; } = new();
 
@@ -42,7 +44,7 @@ public class GameService : WebSocketService
     }
 
     /// <summary>
-    /// This method tries to find a game with the specified id, add a player to it and return the updated game.
+    ///     This method tries to find a game with the specified id, add a player to it and return the updated game.
     /// </summary>
     /// <param name="id">The unique id of the game the player wants to join</param>
     /// <param name="player">The player instance that wants to join the game</param>
@@ -58,12 +60,15 @@ public class GameService : WebSocketService
 
 
     /// <summary>
-    /// Creates a new game and adds a player to it.
+    ///     Creates a new game and adds a player to it.
     /// </summary>
     /// <param name="player">The player instance that is going to join the new game.</param>
     /// <param name="spawns">A collection of spawn points arranged in a directional queue.</param>
     /// <returns>Returns the newly created Game object, with the player added to it.</returns>
-    /// <exception cref="ArgumentException">Thrown if the number of spawns is not equal to the maximum number of players set by the Rules.</exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown if the number of spawns is not equal to the maximum number of players set by
+    ///     the Rules.
+    /// </exception>
     public Game CreateAndJoin(IPlayer player, Queue<DirectionalPosition> spawns)
     {
         if (spawns.Count != Rules.MaxPlayers)
@@ -74,5 +79,10 @@ public class GameService : WebSocketService
         Games.Add(game);
 
         return game;
+    }
+
+    public Game? FindGameByUsername(string username)
+    {
+        return Games.FirstOrDefault(game => game.Players.Exists(player => player.UserName == username));
     }
 }

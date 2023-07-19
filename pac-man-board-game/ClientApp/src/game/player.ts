@@ -9,18 +9,19 @@ import rules from "./rules";
 export enum State {
   waitingForPlayers,
   ready,
-  inGame
+  inGame,
+  disconnected
 }
 
 export default class Player {
-  public readonly Name: string;
+  public readonly UserName: string;
   public readonly PacMan: Character;
   public readonly Colour: Colour;
   public readonly Box: Box;
   public State: State;
 
   constructor(props: PlayerProps) {
-    this.Name = props.Name;
+    this.UserName = props.UserName;
     this.Colour = props.Colour;
     this.Box = new Box(props.Box ?? {Colour: props.Colour});
     this.PacMan = new Character(props.PacMan ?? {
@@ -32,7 +33,7 @@ export default class Player {
 
   public isTurn(): boolean {
     const store = getDefaultStore();
-    return store.get(currentPlayerNameAtom) === this.Name;
+    return store.get(currentPlayerNameAtom) === this.UserName;
   }
 
   public addPellet(pellet: Pellet): void {

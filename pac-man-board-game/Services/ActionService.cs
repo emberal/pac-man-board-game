@@ -62,7 +62,20 @@ public class ActionService : IActionService
             PlayerInfoData data = JsonSerializer.Deserialize<PlayerInfoData>(message.Data);
             Player = data.Player;
 
-            Group = _gameService.AddPlayer(Player, data.Spawns);
+            Game? group;
+            IPlayer? player;
+            if ((group = _gameService.FindGameByUsername(Player.UserName)) != null &&
+                (player = group.Players.Find(p => p.UserName == Player.UserName))?.State == State.Disconnected)
+            {
+                player.State = group.IsGameStarted ? State.InGame : State.WaitingForPlayers;
+                Player = player;
+                Group = group;
+                // TODO send missing data: Dices, CurrentPlayer, Ghosts
+            }
+            else
+            {
+                Group = _gameService.AddPlayer(Player, data.Spawns);
+            }
         }
         catch (RuntimeBinderException e)
         {
@@ -95,7 +108,7 @@ public class ActionService : IActionService
         return data;
     }
 
-    public string FindNextPlayer() => Group?.NextPlayer().Name ?? "Error: No group found";
+    public string FindNextPlayer() => Group?.NextPlayer().UserName ?? "Error: No group found";
 
     public void Disconnect()
     {

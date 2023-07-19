@@ -165,7 +165,7 @@ public class ActionServiceTests
         // If selected the state is changed to InGame
         _whitePlayer.State = State.InGame;
         var players = result.GetType().GetProperty("Players")?.GetValue(result) as IEnumerable<IPlayer>;
-        Assert.That(players?.First().Name, Is.EqualTo(_whitePlayer.Name));
+        Assert.That(players?.First().UserName, Is.EqualTo(_whitePlayer.UserName));
     }
 
     [Test]
@@ -185,7 +185,7 @@ public class ActionServiceTests
         result = _service.Ready();
 
         var players = result.GetType().GetProperty("Players")?.GetValue(result) as IEnumerable<IPlayer>;
-        Assert.That(players?.First().Name, Is.EqualTo(_blackPlayer.Name).Or.EqualTo(_whitePlayer.Name));
+        Assert.That(players?.First().UserName, Is.EqualTo(_blackPlayer.UserName).Or.EqualTo(_whitePlayer.UserName));
     }
 
     #endregion
@@ -208,7 +208,7 @@ public class ActionServiceTests
                 { Players = { _whitePlayer } };
 
         var name = _service.FindNextPlayer();
-        Assert.That(name, Is.EqualTo(_whitePlayer.Name));
+        Assert.That(name, Is.EqualTo(_whitePlayer.UserName));
     }
 
     [Test]
@@ -222,9 +222,9 @@ public class ActionServiceTests
             })) { Players = { _whitePlayer, _blackPlayer } };
 
         var first = _service.FindNextPlayer();
-        Assert.That(first, Is.EqualTo(_blackPlayer.Name));
+        Assert.That(first, Is.EqualTo(_blackPlayer.UserName));
         var second = _service.FindNextPlayer();
-        Assert.That(second, Is.EqualTo(_whitePlayer.Name));
+        Assert.That(second, Is.EqualTo(_whitePlayer.UserName));
     }
 
     #endregion
