@@ -19,14 +19,12 @@ public interface IActionService
 
 public class ActionService : IActionService
 {
-    private readonly IDiceCup _diceCup;
     private readonly GameService _gameService;
     private readonly ILogger<ActionService> _logger;
 
     public ActionService(ILogger<ActionService> logger, GameService gameService)
     {
         _logger = logger;
-        _diceCup = new DiceCup();
         _gameService = gameService;
     }
 
@@ -48,7 +46,8 @@ public class ActionService : IActionService
 
     public List<int> RollDice()
     {
-        var rolls = _diceCup.Roll;
+        Group?.DiceCup.Roll();
+        var rolls = Group?.DiceCup.Values ?? new List<int>();
         _logger.Log(LogLevel.Information, "Rolled [{}]", string.Join(", ", rolls));
 
         return rolls;

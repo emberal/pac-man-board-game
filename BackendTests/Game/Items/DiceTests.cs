@@ -8,7 +8,8 @@ public class DiceTests
     public void Roll_ReturnsNumberBetween1And6()
     {
         var dice = new Dice();
-        var roll = dice.Roll;
+        dice.Roll();
+        var roll = dice.Value;
         Assert.That(roll, Is.GreaterThanOrEqualTo(1));
         Assert.That(roll, Is.LessThanOrEqualTo(6));
     }

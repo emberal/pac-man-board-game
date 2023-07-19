@@ -1,13 +1,12 @@
+using System.Text.Json.Serialization;
+
 namespace pacMan.GameStuff.Items;
 
-public interface IDice
-{
-    int Roll { get; }
-}
-
-public class Dice : IDice
+public class Dice
 {
     private readonly Random _random = new();
 
-    public int Roll => _random.Next(1, 7);
+    [JsonInclude] public int Value { get; private set; }
+
+    public void Roll() => Value = _random.Next(1, 7);
 }

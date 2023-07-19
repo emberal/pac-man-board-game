@@ -8,7 +8,8 @@ public class DiceCupTests
     public void Roll_ReturnsTwoElements()
     {
         var diceCup = new DiceCup();
-        var roll = diceCup.Roll;
+        diceCup.Roll();
+        var roll = diceCup.Values;
         Assert.That(roll, Has.Count.EqualTo(2));
     }
 
@@ -16,10 +17,15 @@ public class DiceCupTests
     public void Roll_ReturnsNumbersInRange1To6()
     {
         var diceCup = new DiceCup();
-        var roll = diceCup.Roll;
-        Assert.That(roll[0], Is.GreaterThanOrEqualTo(1));
-        Assert.That(roll[0], Is.LessThanOrEqualTo(6));
-        Assert.That(roll[1], Is.GreaterThanOrEqualTo(1));
-        Assert.That(roll[1], Is.LessThanOrEqualTo(6));
+        diceCup.Roll();
+        var roll = diceCup.Values;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(roll[0], Is.GreaterThanOrEqualTo(1));
+            Assert.That(roll[0], Is.LessThanOrEqualTo(6));
+            Assert.That(roll[1], Is.GreaterThanOrEqualTo(1));
+            Assert.That(roll[1], Is.LessThanOrEqualTo(6));
+        });
     }
 }

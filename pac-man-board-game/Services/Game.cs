@@ -18,6 +18,8 @@ public class Game // TODO handle disconnects and reconnects
 
     [JsonIgnore] private Queue<DirectionalPosition> Spawns { get; }
 
+    [JsonIgnore] public DiceCup DiceCup { get; } = new();
+
     [JsonInclude] public int Count => Players.Count;
 
     [JsonInclude]

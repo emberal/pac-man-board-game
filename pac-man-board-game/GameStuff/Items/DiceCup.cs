@@ -1,11 +1,8 @@
+using System.Text.Json.Serialization;
+
 namespace pacMan.GameStuff.Items;
 
-public interface IDiceCup
-{
-    List<int> Roll { get; }
-}
-
-public class DiceCup : IDiceCup
+public class DiceCup
 {
     private readonly List<Dice> _dices;
 
@@ -16,5 +13,7 @@ public class DiceCup : IDiceCup
             new()
         };
 
-    public List<int> Roll => _dices.Select(d => d.Roll).ToList();
+    [JsonInclude] public List<int> Values => _dices.Select(dice => dice.Value).ToList();
+
+    public void Roll() => _dices.ForEach(dice => dice.Roll());
 }

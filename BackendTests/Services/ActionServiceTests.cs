@@ -60,6 +60,7 @@ public class ActionServiceTests
     [Test]
     public void RollDice_ReturnsListOfIntegers()
     {
+        _service.Group = new pacMan.Services.Game(new Queue<DirectionalPosition>());
         var dices = _service.RollDice();
         Assert.Multiple(() =>
         {
