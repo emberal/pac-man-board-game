@@ -1,3 +1,4 @@
+using DAL.Database.Service;
 using pacMan.Interfaces;
 using pacMan.Services;
 
@@ -9,6 +10,7 @@ builder.Services.AddControllersWithViews();
 builder.Services
     .AddSingleton<IWebSocketService, WebSocketService>()
     .AddSingleton<GameService>()
+    .AddScoped<UserService>()
     .AddTransient<IActionService, ActionService>();
 
 var app = builder.Build();

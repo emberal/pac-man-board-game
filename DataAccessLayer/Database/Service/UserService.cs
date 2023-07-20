@@ -1,26 +1,27 @@
-using pacMan.GameStuff;
-using pacMan.GameStuff.Items;
+using DAL.Database.Models;
 
 namespace DAL.Database.Service;
 
 public class UserService
 {
-    private readonly List<Player> _users = new()
+    private readonly List<User> _users = new()
     {
-        new Player
+        new User
         {
-            Username = "admin",
-            Colour = "red",
-            PacMan = new Character
-            {
-                Colour = "red",
-                Type = CharacterType.PacMan
-            }
+            Username = "Firefox",
+            Password = "Firefox",
+            Colour = "red"
+        },
+        new User
+        {
+            Username = "Chrome",
+            Password = "Chrome",
+            Colour = "blue"
         }
     };
 
-    public async Task<IPlayer?> Login(string username, string password)
+    public async Task<User?> Login(string username, string password)
     {
-        return await Task.Run(() => _users.FirstOrDefault(x => x.Username == username && password == "admin"));
+        return await Task.Run(() => _users.FirstOrDefault(x => x.Username == username && x.Password == password));
     }
 }

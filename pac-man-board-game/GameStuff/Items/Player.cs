@@ -1,3 +1,5 @@
+using DAL.Database.Models;
+
 namespace pacMan.GameStuff.Items;
 
 public interface IPlayer
@@ -40,4 +42,16 @@ public class Player : IPlayer, IEquatable<Player>
     }
 
     public override int GetHashCode() => Username.GetHashCode();
+
+    public static explicit operator Player(User user) =>
+        new()
+        {
+            Username = user.Username,
+            PacMan = new Character
+            {
+                Colour = user.Colour,
+                Type = CharacterType.PacMan
+            },
+            Colour = user.Colour
+        };
 }

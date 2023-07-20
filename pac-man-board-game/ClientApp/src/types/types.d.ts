@@ -40,3 +40,16 @@ type Game = {
   readonly count: number,
   readonly isGameStarted: boolean,
 }
+
+type User = {
+  readonly username: string,
+  readonly password: string,
+  readonly colour?: import("../game/colour").Colour
+}
+
+type Api<T = ApiRequest> = (path: string, data?: ApiRequest & T) => Promise<Response>;
+
+type ApiRequest = {
+  headers?: HeadersInit,
+  body?: any
+}

@@ -7,8 +7,4 @@
         <RootNamespace>DAL</RootNamespace>
     </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\pac-man-board-game\pac-man-board-game.csproj" />
-    </ItemGroup>
-
 </Project>

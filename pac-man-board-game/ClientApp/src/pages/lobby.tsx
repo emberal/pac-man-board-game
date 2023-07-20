@@ -2,11 +2,13 @@ import React, {FC, Suspense} from "react";
 import {atom, useAtomValue} from "jotai";
 import {Button} from "../components/button";
 import {thisPlayerAtom} from "../utils/state";
+import {getData, postData} from "../utils/api";
 
 const fetchAtom = atom(async () => {
-  const response = await fetch(import.meta.env.VITE_API_HTTP + "/all");
+  const response = await getData("/game/all");
   return await response.json() as Game[];
 });
+
 // TODO create game button
 const LobbyPage: FC = () => ( // TODO check if player is defined in storage, if not redirect to login
   <Suspense fallback={"Please wait"}>
@@ -26,19 +28,13 @@ const GameTable: FC<ComponentProps> = ({className}) => {
 
     console.debug("Joining game " + gameId);
 
-    const result = await fetch(import.meta.env.VITE_API_HTTP + "/join/" + gameId, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(thisPlayer),
-    })
+    const result = await postData("/game/join/" + gameId, {body: thisPlayer});
 
     if (result.ok) {
-      console.debug("Joined game " + gameId, result.body);
+      console.debug("Joined game " + gameId, await result.json());
       // TODO redirect to game page
     } else {
-      console.error("Failed to join game " + gameId, result.body);
+      console.error("Failed to join game " + gameId, await result.json());
       // TODO show error message
     }
   }
@@ -47,10 +43,10 @@ const GameTable: FC<ComponentProps> = ({className}) => {
     <table className={`rounded overflow-hidden ${className}`}>
       <thead className={"bg-gray-500 text-white"}>
       <tr className={"my-5"}>
-        <th>Id</th>
-        <th>Count</th>
+        <th className={"p-2"}>Id</th>
+        <th className={"p-2"}>Count</th>
         <th className={"p-2"}>State</th>
-        <th>Join</th>
+        <th className={"p-2"}>Join</th>
       </tr>
       </thead>
       <tbody>
@@ -66,6 +62,12 @@ const GameTable: FC<ComponentProps> = ({className}) => {
           </td>
         </tr>
       )}
+      {
+        data?.length === 0 &&
+          <tr>
+              <td colSpan={4} className={"text-center"}>No games found</td>
+          </tr>
+      }
       </tbody>
     </table>
   );

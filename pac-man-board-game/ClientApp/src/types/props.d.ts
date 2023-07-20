@@ -21,6 +21,7 @@ interface InputProps extends ComponentProps {
   type?: string,
   placeholder?: string,
   required?: boolean,
+  name?: string,
 }
 
 interface CharacterProps {
