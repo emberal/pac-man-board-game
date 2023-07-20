@@ -41,3 +41,9 @@ export function getCharacterSpawns(map: GameMap): { type: CharacterType, positio
 
   return result;
 }
+
+export function getPacManSpawns(map: GameMap): DirectionalPosition[] {
+  return getCharacterSpawns(map)
+    .filter(s => s.type === CharacterType.pacMan)
+    .map(s => s.position)
+}

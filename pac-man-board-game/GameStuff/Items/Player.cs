@@ -28,6 +28,7 @@ public class Player : IPlayer, IEquatable<Player>
         return Username == other.Username;
     }
 
+    // [JsonPropertyName("username")]
     public required string Username { get; init; }
     public required Character PacMan { get; init; }
     public required string Colour { get; init; }
@@ -49,9 +50,9 @@ public class Player : IPlayer, IEquatable<Player>
             Username = user.Username,
             PacMan = new Character
             {
-                Colour = user.Colour,
+                Colour = user.Colour ?? "white",
                 Type = CharacterType.PacMan
             },
-            Colour = user.Colour
+            Colour = user.Colour ?? "white"
         };
 }

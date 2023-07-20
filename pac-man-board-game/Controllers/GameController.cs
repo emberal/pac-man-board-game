@@ -51,7 +51,7 @@ public class GameController : GenericController // TODO reconnect using player i
         }
     }
 
-    [HttpPost("createGame")]
+    [HttpPost("create")]
     public IActionResult CreateGame([FromBody] PlayerInfoData data)
     {
         Logger.Log(LogLevel.Debug, "Creating game");

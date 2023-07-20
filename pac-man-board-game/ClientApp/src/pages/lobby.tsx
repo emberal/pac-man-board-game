@@ -3,6 +3,8 @@ import {atom, useAtomValue} from "jotai";
 import {Button} from "../components/button";
 import {thisPlayerAtom} from "../utils/state";
 import {getData, postData} from "../utils/api";
+import {getPacManSpawns, testMap} from "../game/map";
+import {useNavigate} from "react-router-dom";
 
 const fetchAtom = atom(async () => {
   const response = await getData("/game/all");
@@ -10,11 +12,38 @@ const fetchAtom = atom(async () => {
 });
 
 // TODO create game button
-const LobbyPage: FC = () => ( // TODO check if player is defined in storage, if not redirect to login
-  <Suspense fallback={"Please wait"}>
-    <GameTable className={"mx-auto"}/>
-  </Suspense>
-)
+const LobbyPage: FC = () => { // TODO check if player is defined in storage, if not redirect to login
+
+  const thisPlayer = useAtomValue(thisPlayerAtom);
+  const navigate = useNavigate();
+
+  async function createGame(): Promise<void> {
+
+    const response = await postData("/game/create", {
+      body: {Player: thisPlayer, Spawns: getPacManSpawns(testMap)} as PlayerInfoData
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      console.debug("Game created: ", data);
+      // TODO redirect to game page
+    } else {
+      console.error("Error: ", data);
+      // TODO display error
+    }
+
+  }
+
+  return (
+    <>
+      <Button onClick={createGame}>New game</Button>
+      <Suspense fallback={"Please wait"}>
+        <GameTable className={"mx-auto"}/>
+      </Suspense>
+    </>
+  );
+}
 
 export default LobbyPage;
 

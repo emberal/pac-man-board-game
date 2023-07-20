@@ -53,3 +53,8 @@ type ApiRequest = {
   headers?: HeadersInit,
   body?: any
 }
+
+type PlayerInfoData = {
+  readonly Player: PlayerProps,
+  readonly Spawns: DirectionalPosition[],
+}

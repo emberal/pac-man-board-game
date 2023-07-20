@@ -3,12 +3,11 @@ import {AllDice} from "./dice";
 import {doAction, GameAction} from "../utils/actions";
 import GameBoard from "./gameBoard";
 import WebSocketService from "../websockets/WebSocketService";
-import {getCharacterSpawns} from "../game/map";
+import {getPacManSpawns} from "../game/map";
 import Player from "../game/player";
 import PlayerStats from "../components/playerStats";
 import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {diceAtom, ghostsAtom, playersAtom, rollDiceButtonAtom, selectedDiceAtom} from "../utils/state";
-import {CharacterType} from "../game/character";
 import GameButton from "./gameButton";
 
 const wsService = new WebSocketService(import.meta.env.VITE_API_WS);
@@ -66,10 +65,8 @@ export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map
     wsService.send({
       Action: GameAction.playerInfo,
       Data: {
-        Player: player, Spawns: getCharacterSpawns(map)
-          .filter(s => s.type === CharacterType.pacMan)
-          .map(s => s.position)
-      }
+        Player: player, Spawns: getPacManSpawns(map)
+      } as PlayerInfoData
     });
   }
 
