@@ -50,6 +50,9 @@ export const doAction: MessageEventFunction<string> = (event): void => { // TODO
     case GameAction.nextPlayer:
       nextPlayer(message.data);
       break;
+    case GameAction.disconnect:
+      updatePlayers(message.data);
+      break;
   }
 };
 
@@ -61,14 +64,12 @@ type MoveCharacterData = { dice: number[], players: PlayerProps[], ghosts: Chara
 
 function moveCharacter(data?: MoveCharacterData): void {
   store.set(diceAtom, data?.dice);
-  updatePlayers(data);
+  updatePlayers(data?.players);
   updateGhosts(data);
   removeEatenPellets(data);
 }
 
-function updatePlayers(data?: MoveCharacterData): void {
-  const updatedPlayers = data?.players;
-
+function updatePlayers(updatedPlayers?: PlayerProps[]): void {
   if (updatedPlayers) {
     const newList: Player[] = updatedPlayers.map(p => new Player(p));
     store.set(playersAtom, newList);

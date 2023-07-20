@@ -1,3 +1,4 @@
+using System.Net.WebSockets;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using pacMan.GameStuff;
@@ -9,12 +10,15 @@ public interface IActionService
 {
     Player Player { set; }
     Game Game { set; }
+    WebSocket? WebSocket { set; }
     void DoAction(ActionMessage message);
     List<int> RollDice();
     List<Player> SetPlayerInfo(JsonElement? jsonElement);
-    object? HandleMoveCharacter(JsonElement? jsonElement); // TODO test
+    object? HandleMoveCharacter(JsonElement? jsonElement);
     object Ready();
     string FindNextPlayer();
+    List<Player> LeaveGame();
+    void SendToAll(ArraySegment<byte> segment);
     void Disconnect();
 }
 
@@ -29,6 +33,8 @@ public class ActionService : IActionService
         _gameService = gameService;
     }
 
+    public WebSocket? WebSocket { private get; set; }
+
     public Game? Game { get; set; }
 
     public Player? Player { get; set; }
@@ -42,6 +48,7 @@ public class ActionService : IActionService
             GameAction.PlayerInfo => SetPlayerInfo(message.Data),
             GameAction.Ready => Ready(),
             GameAction.NextPlayer => FindNextPlayer(),
+            GameAction.Disconnect => LeaveGame(),
             _ => message.Data
         };
     }
@@ -55,25 +62,36 @@ public class ActionService : IActionService
         return rolls;
     }
 
+    public object? HandleMoveCharacter(JsonElement? jsonElement)
+    {
+        if (Game != null && jsonElement.HasValue)
+            Game.Ghosts = jsonElement.Value.GetProperty("ghosts").Deserialize<List<Character>>() ??
+                          throw new JsonException("Ghosts is null");
+
+        return jsonElement;
+    }
+
     public List<Player> SetPlayerInfo(JsonElement? jsonElement) // TODO split up into two actions
     {
         var data = jsonElement?.Deserialize<PlayerInfoData>() ?? throw new NullReferenceException("Data is null");
         Player = data.Player;
 
-        Game? group;
+        Game? game;
         Player? player;
-        if ((group = _gameService.FindGameByUsername(Player.Username)) != null &&
-            (player = group.Players.Find(p => p.Username == Player.Username))?.State == State.Disconnected)
+        if ((game = _gameService.FindGameByUsername(Player.Username)) != null &&
+            (player = game.Players.Find(p => p.Username == Player.Username))?.State == State.Disconnected)
         {
-            player.State = group.IsGameStarted ? State.InGame : State.WaitingForPlayers;
+            player.State = game.IsGameStarted ? State.InGame : State.WaitingForPlayers; // TODO doesn't work anymore
             Player = player;
-            Game = group;
+            Game = game;
             // TODO send missing data: Dices, CurrentPlayer, Ghosts
         }
         else
         {
             Game = _gameService.AddPlayer(Player, data.Spawns);
         }
+
+        Game.Connections += SendSegment;
 
         return Game.Players;
     }
@@ -100,18 +118,26 @@ public class ActionService : IActionService
 
     public string FindNextPlayer() => Game?.NextPlayer().Username ?? "Error: No group found";
 
-    public void Disconnect()
+    public List<Player> LeaveGame()
     {
-        if (Player != null) Player.State = State.Disconnected;
+        if (Game == null || Player == null) throw new NullReferenceException("Game or Player is null");
+        Game.RemovePlayer(Player.Username);
+        return Game.Players;
     }
 
-    public object? HandleMoveCharacter(JsonElement? jsonElement)
+    public void Disconnect()
     {
-        if (Game != null && jsonElement.HasValue)
-            Game.Ghosts = jsonElement.Value.GetProperty("ghosts").Deserialize<List<Character>>() ??
-                          throw new JsonException("Ghosts is null");
+        if (Player == null) return;
+        Player.State = State.Disconnected;
+        if (Game != null) Game.Connections -= SendSegment;
+    }
 
-        return jsonElement;
+    public void SendToAll(ArraySegment<byte> segment) => Game?.SendToAll(segment);
+
+    private async Task SendSegment(ArraySegment<byte> segment)
+    {
+        if (WebSocket != null) await _gameService.Send(WebSocket, segment);
+        else await Task.FromCanceled(new CancellationToken(true));
     }
 }
 

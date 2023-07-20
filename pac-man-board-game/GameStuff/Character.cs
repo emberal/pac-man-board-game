@@ -31,7 +31,7 @@ public class Character : IEquatable<Character>
         return obj.GetType() == GetType() && Equals((Character)obj);
     }
 
-    public override int GetHashCode() => HashCode.Combine(Colour, Position, IsEatable, SpawnPosition, (int)Type);
+    public override int GetHashCode() => HashCode.Combine(Colour, Position, IsEatable, SpawnPosition, (int?)Type);
 }
 
 public enum CharacterType

@@ -66,6 +66,11 @@ public class GameController : GenericController
         }
     }
 
+    protected override Task Echo()
+    {
+        _actionService.WebSocket = WebSocket ?? throw new NullReferenceException("WebSocket is null");
+        return base.Echo();
+    }
 
     protected override ArraySegment<byte> Run(WebSocketReceiveResult result, byte[] data)
     {
@@ -78,24 +83,7 @@ public class GameController : GenericController
         return action.ToArraySegment();
     }
 
-    protected override void Send(ArraySegment<byte> segment) => _gameService.SendToAll(segment);
+    protected override void Send(ArraySegment<byte> segment) => _actionService.SendToAll(segment);
 
-    protected override Task Echo()
-    {
-        _gameService.Connections += WsServiceOnFire; // TODO move to ActionService
-        // _actionService.Game.Connections += WsServiceOnFire;
-        return base.Echo();
-    }
-
-    protected override void Disconnect()
-    {
-        _gameService.Connections -= WsServiceOnFire;
-        _actionService.Disconnect();
-    }
-
-    private async Task WsServiceOnFire(ArraySegment<byte> segment)
-    {
-        if (WebSocket == null) return;
-        await GameService.Send(WebSocket, segment);
-    }
+    protected override void Disconnect() => _actionService.Disconnect();
 }
