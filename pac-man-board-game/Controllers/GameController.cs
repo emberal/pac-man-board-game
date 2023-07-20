@@ -82,7 +82,7 @@ public class GameController : GenericController
 
     protected override Task Echo()
     {
-        _gameService.Connections += WsServiceOnFire;
+        _gameService.Connections += WsServiceOnFire; // TODO move to ActionService
         // _actionService.Game.Connections += WsServiceOnFire;
         return base.Echo();
     }

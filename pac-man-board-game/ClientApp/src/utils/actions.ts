@@ -12,6 +12,7 @@ export enum GameAction {
   playerInfo,
   ready,
   nextPlayer,
+  disconnect,
 }
 
 const store = getDefaultStore();

@@ -38,10 +38,10 @@ public class ActionService : IActionService
         message.Data = message.Action switch
         {
             GameAction.RollDice => RollDice(),
+            GameAction.MoveCharacter => HandleMoveCharacter(message.Data),
             GameAction.PlayerInfo => SetPlayerInfo(message.Data),
             GameAction.Ready => Ready(),
             GameAction.NextPlayer => FindNextPlayer(),
-            GameAction.MoveCharacter => HandleMoveCharacter(message.Data),
             _ => message.Data
         };
     }
@@ -55,7 +55,7 @@ public class ActionService : IActionService
         return rolls;
     }
 
-    public List<Player> SetPlayerInfo(JsonElement? jsonElement)
+    public List<Player> SetPlayerInfo(JsonElement? jsonElement) // TODO split up into two actions
     {
         var data = jsonElement?.Deserialize<PlayerInfoData>() ?? throw new NullReferenceException("Data is null");
         Player = data.Player;
@@ -83,7 +83,7 @@ public class ActionService : IActionService
         object data;
         if (Player != null && Game != null)
         {
-            var players = Game.SetReady(Player).ToArray();
+            var players = Game.SetReady(Player.Username).ToArray();
             // TODO roll to start
             Game.Shuffle();
             var allReady = players.All(p => p.State == State.Ready);

@@ -9,7 +9,8 @@ public enum GameAction
     MoveCharacter,
     PlayerInfo,
     Ready,
-    NextPlayer
+    NextPlayer,
+    Disconnect
 }
 
 public class ActionMessage<T>

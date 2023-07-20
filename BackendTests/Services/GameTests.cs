@@ -110,8 +110,8 @@ public class GameTests
         _game.AddPlayer(_redPlayer);
         _game.AddPlayer(_bluePlayer);
 
-        _game.SetReady(_redPlayer);
-        _game.SetReady(_bluePlayer);
+        _game.SetReady(_redPlayer.Username);
+        _game.SetReady(_bluePlayer.Username);
         _game.SetAllInGame();
 
         Assert.That(_game.AddPlayer(_greenPlayer), Is.False);
@@ -154,7 +154,7 @@ public class GameTests
         _game.AddPlayer(_redPlayer);
         _game.AddPlayer(_bluePlayer);
 
-        var players = _game.SetReady(_redPlayer).ToList();
+        var players = _game.SetReady(_redPlayer.Username).ToList();
 
         Assert.Multiple(() =>
         {
@@ -171,7 +171,7 @@ public class GameTests
 
         Assert.That(_redPlayer.State, Is.Not.EqualTo(State.Ready));
 
-        _game.SetReady(_redPlayer);
+        _game.SetReady(_redPlayer.Username);
 
         Assert.That(_redPlayer.State, Is.EqualTo(State.Ready));
     }
@@ -179,7 +179,7 @@ public class GameTests
     [Test]
     public void SetReady_WhenPlayerIsNotInPlayers()
     {
-        Assert.Throws<PlayerNotFoundException>(() => _game.SetReady(_redPlayer));
+        Assert.Throws<PlayerNotFoundException>(() => _game.SetReady(_redPlayer.Username));
     }
 
     #endregion

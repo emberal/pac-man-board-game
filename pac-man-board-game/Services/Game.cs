@@ -81,9 +81,10 @@ public class Game // TODO handle disconnects and reconnects
 
     public void SendToAll(ArraySegment<byte> segment) => Connections?.Invoke(segment);
 
-    public IEnumerable<Player> SetReady(Player player)
+    public IEnumerable<Player> SetReady(string username)
     {
-        if (!Players.Contains(player))
+        var player = Players.FirstOrDefault(p => p.Username == username);
+        if (player is null)
             throw new PlayerNotFoundException("The player was not found in the game group.");
         player.State = State.Ready;
         return Players;
