@@ -53,3 +53,7 @@ export const currentPlayerAtom = atom<Player | undefined>(get => {
  * Whether the roll dice button should be enabled.
  */
 export const rollDiceButtonAtom = atom(true);
+/**
+ * The map that is currently selected.
+ */
+export const selectedMapAtom = atom<GameMap | undefined>(undefined);

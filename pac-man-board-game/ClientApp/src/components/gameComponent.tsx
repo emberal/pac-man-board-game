@@ -17,6 +17,7 @@ const wsService = new WebSocketService(import.meta.env.VITE_API_WS);
 // TODO bug, when refreshing page, the characters are reset for all players
 // TODO bug, when refreshing page, some data is missing until other clients make a move
 
+// TODO store map in backend and save it in state on each client
 // TODO add debug menu on dev, for testing and cheating
 // TODO join/new game lobby
 // TODO sign up player page
