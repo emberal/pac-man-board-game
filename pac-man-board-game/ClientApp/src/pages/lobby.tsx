@@ -26,7 +26,7 @@ const LobbyPage: FC = () => { // TODO check if player is defined in storage, if 
     if (response.ok) {
       const data = await response.json();
       console.debug("Game created: ", data);
-      // TODO redirect to game page
+      navigate("/game/" + data.id)
     } else {
       const data = await response.text();
       console.error("Error: ", data);
@@ -51,6 +51,7 @@ const GameTable: FC<ComponentProps> = ({className}) => {
 
   const data = useAtomValue(fetchAtom);
   const thisPlayer = useAtomValue(thisPlayerAtom);
+  const navigate = useNavigate();
 
   async function joinGame(gameId: string): Promise<void> {
     if (thisPlayer === undefined) throw new Error("Player is undefined");
@@ -60,10 +61,10 @@ const GameTable: FC<ComponentProps> = ({className}) => {
     const result = await postData("/game/join/" + gameId, {body: thisPlayer});
 
     if (result.ok) {
-      console.debug("Joined game " + gameId, await result.json());
-      // TODO redirect to game page
+      console.debug("Joined game " + gameId, await result.text());
+      navigate("/game/" + gameId);
     } else {
-      console.error("Failed to join game " + gameId, await result.json());
+      console.error("Failed to join game " + gameId, await result.text());
       // TODO show error message
     }
   }

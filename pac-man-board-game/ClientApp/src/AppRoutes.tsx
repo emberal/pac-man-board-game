@@ -15,7 +15,7 @@ const AppRoutes = [
     element: <Counter/>
   },
   {
-    path: "/game",
+    path: "/game/:id",
     element: <Game/>,
   },
   {
