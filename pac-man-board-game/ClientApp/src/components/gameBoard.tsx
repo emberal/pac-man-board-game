@@ -31,7 +31,7 @@ const Board: FC<BoardProps> = (
   const setModalOpen = useSetAtom(modalOpenAtom);
 
   function handleSelectCharacter(character: Character): void {
-    if (character.isPacMan() && currentPlayer?.PacMan.Colour !== character.Colour) {
+    if (character.isPacMan() && currentPlayer?.pacMan.colour !== character.colour) {
       return;
     }
     setSelectedCharacter(character);
@@ -58,7 +58,7 @@ const Board: FC<BoardProps> = (
   }
 
   function tryMovePacManToSpawn(destination: Path): void {
-    const takenChar = characters.find(c => c.isPacMan() && c.isAt(destination.End));
+    const takenChar = characters.find(c => c.isPacMan() && c.isAt(destination.end));
     if (takenChar) {
       takenChar.moveToSpawn();
       stealFromPlayer();
@@ -73,12 +73,12 @@ const Board: FC<BoardProps> = (
     const positions: Position[] = [];
     if (selectedCharacter?.isPacMan()) {
 
-      for (const tile of [...destination.Path ?? [], destination.End]) {
-        const currentTile = map[tile.Y][tile.X];
+      for (const tile of [...destination.path ?? [], destination.end]) {
+        const currentTile = map[tile.y][tile.x];
 
         function updateTileAndPlayerBox(isPowerPellet = false): void {
           currentPlayer?.addPellet(new Pellet(isPowerPellet));
-          map[tile.Y][tile.X] = TileType.empty;
+          map[tile.y][tile.x] = TileType.empty;
           positions.push(tile);
         }
 
@@ -112,10 +112,10 @@ const Board: FC<BoardProps> = (
                 <GameTile
                   key={colIndex + rowIndex * colIndex}
                   type={tile}
-                  possiblePath={possiblePositions.find(p => p.End.X === colIndex && p.End.Y === rowIndex)}
-                  character={characters.find(c => c.isAt({X: colIndex, Y: rowIndex}))}
-                  isSelected={selectedCharacter?.isAt({X: colIndex, Y: rowIndex})}
-                  showPath={hoveredPosition?.Path?.find(pos => pos.X === colIndex && pos.Y === rowIndex) !== undefined}
+                  possiblePath={possiblePositions.find(p => p.end.x === colIndex && p.end.y === rowIndex)}
+                  character={characters.find(c => c.isAt({x: colIndex, y: rowIndex}))}
+                  isSelected={selectedCharacter?.isAt({x: colIndex, y: rowIndex})}
+                  showPath={hoveredPosition?.path?.find(pos => pos.x === colIndex && pos.y === rowIndex) !== undefined}
                   handleMoveCharacter={handleMoveCharacter}
                   handleSelectCharacter={handleSelectCharacter}
                   handleStartShowPath={handleShowPath}
@@ -181,11 +181,11 @@ const SelectPlayerModal: FC = () => {
 
                   {
                     allPlayers.map(player =>
-                      <div key={player.Username} className={"border-b pb-1"}>
-                        <span className={"mx-2"}>{player.Username} has {player.Box.count} pellets</span>
+                      <div key={player.username} className={"border-b pb-1"}>
+                        <span className={"mx-2"}>{player.username} has {player.box.count} pellets</span>
                         <button className={"text-blue-500 enabled:cursor-pointer disabled:text-gray-500"}
                                 style={{background: "none"}}
-                                disabled={player.Box.count === 0}
+                                disabled={player.box.count === 0}
                                 onClick={() => {
                                   currentPlayer?.stealFrom(player);
                                   close();

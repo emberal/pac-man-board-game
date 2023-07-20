@@ -2,7 +2,7 @@ import React, {FC, useEffect} from "react";
 import {GameComponent} from "../components/gameComponent";
 import {useAtomValue} from "jotai";
 import {thisPlayerAtom} from "../utils/state";
-import {testMap} from "../game/map";
+import {customMap} from "../game/map";
 
 const Game: FC = () => { // TODO gameId in path
   const player = useAtomValue(thisPlayerAtom);
@@ -16,7 +16,7 @@ const Game: FC = () => { // TODO gameId in path
   }, [player]);
 
   if (player) {
-    return <GameComponent player={player} map={testMap}/>;
+    return <GameComponent player={player} map={customMap}/>;
   } else {
     return null;
   }

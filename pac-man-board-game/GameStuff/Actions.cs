@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace pacMan.GameStuff;
 
@@ -13,8 +14,9 @@ public enum GameAction
 
 public class ActionMessage<T>
 {
-    public GameAction Action { get; init; }
-    public T? Data { get; set; }
+    [JsonPropertyName("action")] public GameAction Action { get; init; }
+
+    [JsonPropertyName("data")] public T? Data { get; set; }
 
     public static ActionMessage FromJson(string json) => JsonSerializer.Deserialize<ActionMessage>(json)!;
 }

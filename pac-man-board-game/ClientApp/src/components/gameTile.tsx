@@ -28,7 +28,7 @@ export const GameTile: FC<TileWithCharacterProps> = (
     isSelected = false,
     showPath = false
   }) => (
-  <Tile className={`${possiblePath?.End ? "border-4 border-white" : ""}`}
+  <Tile className={`${possiblePath?.end ? "border-4 border-white" : ""}`}
         type={type}
         onClick={possiblePath ? () => handleMoveCharacter?.(possiblePath) : undefined}
         onMouseEnter={possiblePath ? () => handleStartShowPath?.(possiblePath) : undefined}
@@ -48,7 +48,7 @@ export const GameTile: FC<TileWithCharacterProps> = (
   </Tile>
 );
 
-const Circle: FC<{ colour?: Colour } & ComponentProps> = ({colour = Colour.White, className}) => (
+const Circle: FC<{ colour?: Colour } & ComponentProps> = ({colour = Colour.white, className}) => (
   <div className={`flex-center w-full h-full ${className}`}>
     <div className={`w-1/2 h-1/2 rounded-full`}
          style={{backgroundColor: colour}}/>
@@ -93,7 +93,7 @@ const Tile: FC<TileProps> = (
   useEffect(() => {
 
     function handleResize(): void {
-      const newSize = Math.floor(window.innerWidth / 12);
+      const newSize = Math.floor(window.innerWidth / 16);
       setTileSize(newSize);
     }
 
@@ -110,8 +110,8 @@ const Tile: FC<TileProps> = (
          onMouseEnter={onMouseEnter}
          onMouseLeave={onMouseLeave}>
       {children}
-      {type === TileType.pellet && <Circle colour={Colour.Yellow}/>}
-      {type === TileType.powerPellet && <Circle colour={Colour.Red}/>}
+      {type === TileType.pellet && <Circle colour={Colour.yellow}/>}
+      {type === TileType.powerPellet && <Circle colour={Colour.red}/>}
     </div>
   );
 };
@@ -139,7 +139,7 @@ const CharacterComponent: FC<CharacterComponentProps> = (
   }) => {
 
   function getSide() {
-    switch (character?.Position?.Direction) {
+    switch (character?.position?.direction) {
       case Direction.up:
         return "right-1/4 top-0";
       case Direction.down:
@@ -155,7 +155,7 @@ const CharacterComponent: FC<CharacterComponentProps> = (
 
   return (
     <div className={`rounded-full w-4/5 h-4/5 cursor-pointer hover:border border-black relative ${className}`}
-         style={{backgroundColor: `${character.Colour}`}}
+         style={{backgroundColor: `${character.colour}`}}
          onClick={() => onClick?.(character)}>
       <div>
         <div className={`absolute ${getSide()} w-1/2 h-1/2 rounded-full bg-black`}/>

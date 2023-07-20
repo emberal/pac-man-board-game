@@ -1,9 +1,12 @@
+using System.Text.Json.Serialization;
+
 namespace pacMan.GameStuff.Items;
 
 public class Box : IEquatable<Box>
 {
-    public List<Pellet>? Pellets { get; init; } = new();
-    public required string Colour { get; init; }
+    [JsonPropertyName("pellets")] public List<Pellet>? Pellets { get; init; } = new();
+
+    [JsonPropertyName("colour")] public required string Colour { get; init; }
 
     public int CountNormal => Pellets?.Count(pellet => !pellet.IsPowerPellet) ?? 0;
 
@@ -14,13 +17,6 @@ public class Box : IEquatable<Box>
         return (Equals(Pellets, other.Pellets) || (Pellets?.Count == 0 && other.Pellets?.Count == 0)) &&
                Colour == other.Colour;
     }
-
-    public IEnumerator<IPellet> GetEnumerator() => Pellets?.GetEnumerator() ?? new List<Pellet>.Enumerator();
-
-    // IEnumerator IEnumerable.GetEnumerator()
-    // {
-    //     return GetEnumerator();
-    // }
 
     public void Add(Pellet pellet)
     {

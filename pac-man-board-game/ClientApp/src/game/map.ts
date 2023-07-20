@@ -9,18 +9,22 @@ import {Direction} from "./direction";
  * 4 = ghost spawn
  * 5 = pacman spawn
  */
-export const testMap: GameMap = [ // TODO create map class object using tile type enum
-  [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
-  [1, 2, 0, 0, 0, 2, 0, 0, 0, 2, 1],
-  [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-  [1, 0, 1, 5, 1, 0, 1, 4, 1, 0, 1],
-  [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-  [0, 2, 0, 0, 0, 3, 0, 0, 0, 2, 0],
-  [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-  [1, 0, 1, 4, 1, 0, 1, 5, 1, 0, 1],
-  [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-  [1, 2, 0, 0, 0, 2, 0, 0, 0, 2, 1],
-  [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
+export const customMap: GameMap = [
+  [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 2, 1, 0, 1, 2, 1, 0, 1, 2, 1, 0, 1, 2, 1],
+  [0, 2, 1, 5, 1, 2, 1, 0, 1, 2, 1, 5, 1, 2, 0],
+  [1, 2, 1, 0, 0, 2, 0, 3, 0, 2, 0, 0, 1, 2, 1],
+  [1, 2, 1, 1, 1, 2, 1, 0, 1, 2, 1, 1, 1, 2, 1],
+  [1, 2, 2, 2, 2, 2, 1, 4, 1, 2, 2, 2, 2, 2, 1],
+  [1, 3, 1, 1, 1, 2, 1, 0, 1, 2, 1, 1, 1, 3, 1],
+  [1, 2, 2, 2, 2, 2, 1, 4, 1, 2, 2, 2, 2, 2, 1],
+  [1, 2, 1, 1, 1, 2, 1, 0, 1, 2, 1, 1, 1, 2, 1],
+  [1, 2, 1, 0, 0, 2, 0, 3, 0, 2, 0, 0, 1, 2, 1],
+  [0, 2, 1, 5, 1, 2, 1, 0, 1, 2, 1, 5, 1, 2, 0],
+  [1, 2, 1, 0, 1, 2, 1, 0, 1, 2, 1, 0, 1, 2, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
 ];
 
 export function getCharacterSpawns(map: GameMap): { type: CharacterType, position: DirectionalPosition }[] {
@@ -30,10 +34,10 @@ export function getCharacterSpawns(map: GameMap): { type: CharacterType, positio
     for (let col = 0; col < map.length; col++) {
       // TODO find direction
       if (map[row][col] === 4) {
-        result.push({type: CharacterType.ghost, position: {At: {X: col, Y: row}, Direction: Direction.up}});
+        result.push({type: CharacterType.ghost, position: {at: {x: col, y: row}, direction: Direction.up}});
       } else if (map[row][col] === 5) {
         result.push({
-          type: CharacterType.pacMan, position: {At: {X: col, Y: row}, Direction: Direction.up}
+          type: CharacterType.pacMan, position: {at: {x: col, y: row}, direction: Direction.up}
         });
       }
     }

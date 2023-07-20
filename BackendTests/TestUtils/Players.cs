@@ -5,8 +5,8 @@ namespace BackendTests.TestUtils;
 
 internal static class Players
 {
-    internal static IPlayer Create(string colour) =>
-        new Player
+    internal static Player Create(string colour) =>
+        new()
         {
             Username = colour,
             Colour = colour,
@@ -28,8 +28,8 @@ internal static class Players
             Pellets = new List<Pellet>()
         };
 
-    internal static IPlayer Clone(IPlayer player) =>
-        new Player
+    internal static Player Clone(this Player player) =>
+        new()
         {
             Box = player.Box,
             Colour = player.Colour,

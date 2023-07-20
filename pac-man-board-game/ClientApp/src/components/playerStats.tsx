@@ -11,16 +11,16 @@ const PlayerStats: FC<{ player: Player } & ComponentProps> = (
   }) => {
   const currentPlayerName = useAtomValue(currentPlayerNameAtom);
   return (
-    <div key={player.Colour}
-         className={`w-fit m-2 ${player.State === State.disconnected ? "text-gray-500" : ""} ${className}`} id={id}>
-      <p className={player.Username === currentPlayerName ? "underline" : ""}>Player: {player.Username}</p>
-      <p>Colour: {player.Colour}</p>
-      {player.State === State.inGame || player.State === State.disconnected ?
+    <div key={player.colour}
+         className={`w-fit m-2 ${player.state === State.disconnected ? "text-gray-500" : ""} ${className}`} id={id}>
+      <p className={player.username === currentPlayerName ? "underline" : ""}>Player: {player.username}</p>
+      <p>Colour: {player.colour}</p>
+      {player.state === State.inGame || player.state === State.disconnected ?
         <>
-          <p>Pellets: {player.Box.count}</p>
-          <p>PowerPellets: {player.Box.countPowerPellets}</p>
+          <p>Pellets: {player.box.count}</p>
+          <p>PowerPellets: {player.box.countPowerPellets}</p>
         </> :
-        <p>{player.State === State.waitingForPlayers ? "Waiting" : "Ready"}</p>}
+        <p>{player.state === State.waitingForPlayers ? "Waiting" : "Ready"}</p>}
     </div>
   );
 };

@@ -28,13 +28,14 @@ const Login = () => {
       body: {username: user.username, password: user.password} as User
     })
 
-    const data = await response.json();
 
     if (response.ok) {
+      const data = await response.json();
       console.debug("Login successful: ", data);
       setThisPlayer(new Player(data as PlayerProps));
       navigate("/lobby");
     } else {
+      const data = await response.text();
       console.error("Error: ", data);
       // TODO display error
     }

@@ -8,76 +8,76 @@ export enum CharacterType {
 }
 
 export class Character {
-  public readonly Colour: Colour;
-  public Position: Path | null;
-  public IsEatable: boolean;
-  public readonly SpawnPosition: DirectionalPosition | null;
-  public readonly Type: CharacterType;
+  public readonly colour: Colour;
+  public position: Path | null;
+  public isEatable: boolean;
+  public readonly spawnPosition: DirectionalPosition | null;
+  public readonly type: CharacterType;
 
   public constructor(
     {
-      Colour,
-      Position = null,
-      Type = CharacterType.dummy,
-      IsEatable = Type === CharacterType.pacMan,
-      SpawnPosition = null
+      colour,
+      position = null,
+      type = CharacterType.dummy,
+      isEatable = type === CharacterType.pacMan,
+      spawnPosition = null
     }: CharacterProps) {
-    this.Colour = Colour;
-    this.IsEatable = IsEatable;
-    this.SpawnPosition = SpawnPosition;
+    this.colour = colour;
+    this.isEatable = isEatable;
+    this.spawnPosition = spawnPosition;
 
-    if (Position) {
-      this.Position = Position;
+    if (position) {
+      this.position = position;
     } else {
-      this.Position = SpawnPosition ? {
-        End: SpawnPosition!.At,
-        Direction: SpawnPosition!.Direction
+      this.position = spawnPosition ? {
+        end: spawnPosition!.at,
+        direction: spawnPosition!.direction
       } : null;
     }
 
-    this.Type = Type;
+    this.type = type;
   }
 
   public follow(path: Path): void {
-    if (!this.Position) {
-      this.Position = path;
+    if (!this.position) {
+      this.position = path;
     } else {
-      this.Position.End = path.End;
-      this.Position.Direction = path.Direction;
-      this.Position.Path = undefined;
+      this.position.end = path.end;
+      this.position.direction = path.direction;
+      this.position.path = undefined;
     }
   }
 
   public isPacMan(): boolean {
-    return this.Type === CharacterType.pacMan;
+    return this.type === CharacterType.pacMan;
   }
 
   public isGhost(): boolean {
-    return this.Type === CharacterType.ghost;
+    return this.type === CharacterType.ghost;
   }
 
   public moveToSpawn(): void {
-    if (!this.SpawnPosition) return;
-    this.follow({End: this.SpawnPosition.At, Direction: this.SpawnPosition.Direction});
+    if (!this.spawnPosition) return;
+    this.follow({end: this.spawnPosition.at, direction: this.spawnPosition.direction});
   }
 
   public isAt(position: Position): boolean {
-    return this.Position !== null && this.Position.End.X === position.X && this.Position.End.Y === position.Y;
+    return this.position !== null && this.position.end.x === position.x && this.position.end.y === position.y;
   }
 }
 
 export class PacMan extends Character {
 
-  public constructor({Colour, Position, IsEatable = true, SpawnPosition, Type = CharacterType.pacMan}: CharacterProps) {
-    super({Colour: Colour, Position: Position, IsEatable: IsEatable, SpawnPosition: SpawnPosition, Type: Type});
+  public constructor({colour, position, isEatable = true, spawnPosition, type = CharacterType.pacMan}: CharacterProps) {
+    super({colour: colour, position: position, isEatable: isEatable, spawnPosition: spawnPosition, type: type});
   }
 
 }
 
 export class Ghost extends Character {
 
-  public constructor({Colour, Position, IsEatable, SpawnPosition, Type = CharacterType.ghost}: CharacterProps) {
-    super({Colour: Colour, Position: Position, IsEatable: IsEatable, SpawnPosition: SpawnPosition, Type: Type});
+  public constructor({colour, position, isEatable, spawnPosition, type = CharacterType.ghost}: CharacterProps) {
+    super({colour: colour, position: position, isEatable: isEatable, spawnPosition: spawnPosition, type: type});
   }
 }
 
@@ -85,11 +85,11 @@ export class Dummy extends Character {
 
   public constructor(position: Path) { // TODO see-through
     super({
-      Colour: Colour.Grey,
-      Position: position,
-      IsEatable: false,
-      SpawnPosition: {At: {X: 0, Y: 0}, Direction: Direction.up},
-      Type: CharacterType.dummy,
+      colour: Colour.grey,
+      position: position,
+      isEatable: false,
+      spawnPosition: {at: {x: 0, y: 0}, direction: Direction.up},
+      type: CharacterType.dummy,
     });
   }
 

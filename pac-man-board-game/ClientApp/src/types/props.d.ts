@@ -25,22 +25,22 @@ interface InputProps extends ComponentProps {
 }
 
 interface CharacterProps {
-  Colour: import("../game/colour").Colour,
-  Position?: Path | null,
-  IsEatable?: boolean,
-  SpawnPosition?: DirectionalPosition | null,
-  Type?: import("../game/character").CharacterType,
+  colour: import("../game/colour").Colour,
+  position?: Path | null,
+  isEatable?: boolean,
+  spawnPosition?: DirectionalPosition | null,
+  type?: import("../game/character").CharacterType,
 }
 
 interface BoxProps {
-  Pellets?: import("../game/pellet").default[],
-  readonly Colour: import("../game/colour").Colour,
+  pellets?: import("../game/pellet").default[],
+  readonly colour: import("../game/colour").Colour,
 }
 
 interface PlayerProps {
-  readonly Username: string,
-  readonly PacMan?: CharacterProps,
-  readonly Colour: import("../game/colour").Colour,
-  readonly Box?: BoxProps,
-  State?: import("../game/player").State,
+  readonly username: string,
+  readonly pacMan?: CharacterProps,
+  readonly colour: import("../game/colour").Colour,
+  readonly box?: BoxProps,
+  state?: import("../game/player").State,
 }

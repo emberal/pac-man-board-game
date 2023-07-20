@@ -7,11 +7,11 @@ namespace pacMan.Services;
 
 public interface IActionService
 {
-    IPlayer Player { set; }
+    Player Player { set; }
     Game Game { set; }
     void DoAction(ActionMessage message);
     List<int> RollDice();
-    List<IPlayer> SetPlayerInfo(JsonElement? jsonElement);
+    List<Player> SetPlayerInfo(JsonElement? jsonElement);
     object? HandleMoveCharacter(JsonElement? jsonElement); // TODO test
     object Ready();
     string FindNextPlayer();
@@ -31,7 +31,7 @@ public class ActionService : IActionService
 
     public Game? Game { get; set; }
 
-    public IPlayer? Player { get; set; }
+    public Player? Player { get; set; }
 
     public void DoAction(ActionMessage message)
     {
@@ -55,13 +55,13 @@ public class ActionService : IActionService
         return rolls;
     }
 
-    public List<IPlayer> SetPlayerInfo(JsonElement? jsonElement)
+    public List<Player> SetPlayerInfo(JsonElement? jsonElement)
     {
         var data = jsonElement?.Deserialize<PlayerInfoData>() ?? throw new NullReferenceException("Data is null");
         Player = data.Player;
 
         Game? group;
-        IPlayer? player;
+        Player? player;
         if ((group = _gameService.FindGameByUsername(Player.Username)) != null &&
             (player = group.Players.Find(p => p.Username == Player.Username))?.State == State.Disconnected)
         {
@@ -108,7 +108,7 @@ public class ActionService : IActionService
     public object? HandleMoveCharacter(JsonElement? jsonElement)
     {
         if (Game != null && jsonElement.HasValue)
-            Game.Ghosts = jsonElement.Value.GetProperty("Ghosts").Deserialize<List<Character>>() ??
+            Game.Ghosts = jsonElement.Value.GetProperty("ghosts").Deserialize<List<Character>>() ??
                           throw new JsonException("Ghosts is null");
 
         return jsonElement;
@@ -117,12 +117,22 @@ public class ActionService : IActionService
 
 public struct PlayerInfoData
 {
-    [JsonInclude] public required Player Player { get; init; }
-    [JsonInclude] public required Queue<DirectionalPosition> Spawns { get; init; }
+    [JsonInclude]
+    [JsonPropertyName("player")]
+    public required Player Player { get; init; }
+
+    [JsonInclude]
+    [JsonPropertyName("spawns")]
+    public required Queue<DirectionalPosition> Spawns { get; init; }
 }
 
 public struct ReadyData
 {
-    [JsonInclude] public required bool AllReady { get; init; }
-    [JsonInclude] public required IEnumerable<IPlayer> Players { get; set; }
+    [JsonInclude]
+    [JsonPropertyName("allReady")]
+    public required bool AllReady { get; init; }
+
+    [JsonInclude]
+    [JsonPropertyName("players")]
+    public required IEnumerable<Player> Players { get; set; }
 }

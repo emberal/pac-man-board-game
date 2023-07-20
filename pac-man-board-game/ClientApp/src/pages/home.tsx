@@ -17,8 +17,8 @@ const Home: FC = () => {
   function formHandler(): void {
     if (!input.current || !dropdown.current) return;
     const player = new Player({
-      Username: input.current.value,
-      Colour: dropdown.current.value as Colour,
+      username: input.current.value,
+      colour: dropdown.current.value as Colour,
     });
     setPlayer(player);
     navigate("/game");

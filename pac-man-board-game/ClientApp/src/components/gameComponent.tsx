@@ -36,7 +36,7 @@ export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map
     if (!player.isTurn()) return;
 
     setSelectedDice(undefined);
-    wsService.send({Action: GameAction.rollDice});
+    wsService.send({action: GameAction.rollDice});
     setActiveRollDiceButton(false);
   }
 
@@ -46,12 +46,12 @@ export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map
     }
     setSelectedDice(undefined);
     const data: ActionMessage = {
-      Action: GameAction.moveCharacter,
-      Data: {
-        Dice: dice?.length ?? 0 > 0 ? dice : null,
-        Players: players,
-        Ghosts: ghosts,
-        EatenPellets: eatenPellets
+      action: GameAction.moveCharacter,
+      data: {
+        dice: dice?.length ?? 0 > 0 ? dice : null,
+        players: players,
+        ghosts: ghosts,
+        eatenPellets: eatenPellets
       }
     };
     wsService.send(data);
@@ -63,19 +63,19 @@ export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map
 
   function sendPlayer(): void {
     wsService.send({
-      Action: GameAction.playerInfo,
-      Data: {
-        Player: player, Spawns: getPacManSpawns(map)
+      action: GameAction.playerInfo,
+      data: {
+        player: player, spawns: getPacManSpawns(map)
       } as PlayerInfoData
     });
   }
 
   function sendReady(): void {
-    wsService.send({Action: GameAction.ready});
+    wsService.send({action: GameAction.ready});
   }
 
   function endTurn(): void {
-    wsService.send({Action: GameAction.nextPlayer});
+    wsService.send({action: GameAction.nextPlayer});
   }
 
   useEffect(() => {
@@ -90,7 +90,7 @@ export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map
   return (
     <>
       <div className={"flex justify-center"}>
-        {players?.map(p => <PlayerStats key={p.Username} player={p}/>)}
+        {players?.map(p => <PlayerStats key={p.username} player={p}/>)}
       </div>
       <div className={"flex-center"}>
         <GameButton onReadyClick={sendReady} onRollDiceClick={rollDice}/>

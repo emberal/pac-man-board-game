@@ -21,7 +21,7 @@ const GameButton: FC<GameButtonProps> = (
   const players = useAtomValue(playersAtom);
   const activeRollDiceButton = useAtomValue(rollDiceButtonAtom);
 
-  if (players.length >= rules.minPlayers && (currentPlayer === undefined || currentPlayer.State === State.waitingForPlayers)) {
+  if (players.length >= rules.minPlayers && (currentPlayer === undefined || currentPlayer.state === State.waitingForPlayers)) {
     return <Button onClick={onReadyClick}>Ready</Button>;
   }
   if (!thisPlayer?.isTurn()) { // TODO also show when waiting for other players

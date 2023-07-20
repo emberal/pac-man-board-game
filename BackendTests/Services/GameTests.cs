@@ -20,14 +20,14 @@ public class GameTests
     private readonly DirectionalPosition _spawn7By7Right = new()
         { At = new Position { X = 7, Y = 7 }, Direction = Direction.Right };
 
-    private IPlayer _bluePlayer = null!;
+    private Player _bluePlayer = null!;
     private pacMan.Services.Game _game = null!;
-    private IPlayer _greenPlayer = null!;
-    private IPlayer _purplePlayer = null!;
-    private IPlayer _redPlayer = null!;
+    private Player _greenPlayer = null!;
+    private Player _purplePlayer = null!;
+    private Player _redPlayer = null!;
 
     private Queue<DirectionalPosition> _spawns = null!;
-    private IPlayer _yellowPlayer = null!;
+    private Player _yellowPlayer = null!;
 
     [SetUp]
     public void Setup()
@@ -61,7 +61,7 @@ public class GameTests
 
     #endregion
 
-    #region AddPlayer(IPlayer player)
+    #region AddPlayer(Player player)
 
     [Test]
     public void AddPlayer_WhenEmpty()
@@ -82,7 +82,7 @@ public class GameTests
     [Test]
     public void AddPlayer_WhenNameExists()
     {
-        var redClone = Players.Clone(_redPlayer);
+        var redClone = _redPlayer.Clone();
         _game.AddPlayer(_redPlayer);
         var added = _game.AddPlayer(redClone);
         Assert.That(added, Is.True);
@@ -146,7 +146,7 @@ public class GameTests
 
     #endregion
 
-    #region SetReady(IPlayer player)
+    #region SetReady(Player player)
 
     [Test]
     public void SetReady_ReturnsAllPlayers()
@@ -191,14 +191,14 @@ public class GameTests
     {
         AddFullParty();
         _game.Players.ForEach(player => player.State = State.Ready);
-        Assert.That(_game.Players, Has.All.Property(nameof(IPlayer.State)).EqualTo(State.Ready));
+        Assert.That(_game.Players, Has.All.Property(nameof(Player.State)).EqualTo(State.Ready));
 
         var allInGame = _game.SetAllInGame();
 
         Assert.Multiple(() =>
         {
             Assert.That(allInGame, Is.True);
-            Assert.That(_game.Players, Has.All.Property(nameof(IPlayer.State)).EqualTo(State.InGame));
+            Assert.That(_game.Players, Has.All.Property(nameof(Player.State)).EqualTo(State.InGame));
         });
     }
 

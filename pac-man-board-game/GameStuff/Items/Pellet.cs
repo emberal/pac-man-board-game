@@ -1,20 +1,17 @@
+using System.Text.Json.Serialization;
+
 namespace pacMan.GameStuff.Items;
 
-public interface IPellet
+public class Pellet : IEquatable<Pellet>
 {
-    bool IsPowerPellet { get; init; }
-}
+    [JsonPropertyName("isPowerPellet")] public bool IsPowerPellet { get; init; }
 
-public class Pellet : IPellet, IEquatable<Pellet>
-{
     public bool Equals(Pellet? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return IsPowerPellet == other.IsPowerPellet;
     }
-
-    public bool IsPowerPellet { get; init; }
 
     public override bool Equals(object? obj)
     {

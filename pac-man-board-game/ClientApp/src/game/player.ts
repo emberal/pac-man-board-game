@@ -14,37 +14,37 @@ export enum State {
 }
 
 export default class Player {
-  public readonly Username: string;
-  public readonly PacMan: Character;
-  public readonly Colour: Colour;
-  public readonly Box: Box;
-  public State: State;
+  public readonly username: string;
+  public readonly pacMan: Character;
+  public readonly colour: Colour;
+  public readonly box: Box;
+  public state: State;
 
   constructor(props: PlayerProps) {
-    this.Username = props.Username;
-    this.Colour = props.Colour;
-    this.Box = new Box(props.Box ?? {Colour: props.Colour});
-    this.PacMan = new Character(props.PacMan ?? {
-      Colour: props.Colour,
-      Type: CharacterType.pacMan
+    this.username = props.username;
+    this.colour = props.colour;
+    this.box = new Box(props.box ?? {colour: props.colour});
+    this.pacMan = new Character(props.pacMan ?? {
+      colour: props.colour,
+      type: CharacterType.pacMan
     });
-    this.State = props.State ?? State.waitingForPlayers;
+    this.state = props.state ?? State.waitingForPlayers;
   }
 
   public isTurn(): boolean {
     const store = getDefaultStore();
-    return store.get(currentPlayerNameAtom) === this.Username;
+    return store.get(currentPlayerNameAtom) === this.username;
   }
 
   public addPellet(pellet: Pellet): void {
-    this.Box.addPellet(pellet);
+    this.box.addPellet(pellet);
   }
 
   public stealFrom(other: Player): void {
     for (let i = 0; i < rules.maxStealPellets; i++) {
-      const pellet = other.Box.Pellets.pop();
+      const pellet = other.box.pellets.pop();
       if (pellet)
-        this.Box.addPellet(pellet);
+        this.box.addPellet(pellet);
     }
     const store = getDefaultStore();
     store.set(playersAtom, store.get(playersAtom).map(player => player));

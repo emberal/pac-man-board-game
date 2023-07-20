@@ -14,7 +14,7 @@ public class Game // TODO handle disconnects and reconnects
 
     [JsonInclude] public Guid Id { get; } = Guid.NewGuid();
 
-    [JsonIgnore] public List<IPlayer> Players { get; } = new();
+    [JsonIgnore] public List<Player> Players { get; } = new();
 
     [JsonIgnore] public List<Character> Ghosts { get; set; } = new();
 
@@ -27,7 +27,7 @@ public class Game // TODO handle disconnects and reconnects
     [JsonInclude]
     public bool IsGameStarted => Count > 0 && Players.All(player => player.State is State.InGame or State.Disconnected);
 
-    public IPlayer NextPlayer()
+    public Player NextPlayer()
     {
         try
         {
@@ -45,7 +45,7 @@ public class Game // TODO handle disconnects and reconnects
 
     public event Func<ArraySegment<byte>, Task>? Connections;
 
-    public bool AddPlayer(IPlayer player)
+    public bool AddPlayer(Player player)
     {
         if (Players.Count >= Rules.MaxPlayers || IsGameStarted) return false;
         /* TODO remove above and uncomment below
@@ -62,7 +62,7 @@ public class Game // TODO handle disconnects and reconnects
         return true;
     }
 
-    public IPlayer? RemovePlayer(string username)
+    public Player? RemovePlayer(string username)
     {
         var index = Players.FindIndex(p => p.Username == username);
         if (index == -1) return null;
@@ -71,7 +71,7 @@ public class Game // TODO handle disconnects and reconnects
         return removedPlayer;
     }
 
-    private void SetSpawn(IPlayer player)
+    private void SetSpawn(Player player)
     {
         if (player.PacMan.SpawnPosition is not null) return;
         var spawn = Spawns.Dequeue();
@@ -81,7 +81,7 @@ public class Game // TODO handle disconnects and reconnects
 
     public void SendToAll(ArraySegment<byte> segment) => Connections?.Invoke(segment);
 
-    public IEnumerable<IPlayer> SetReady(IPlayer player)
+    public IEnumerable<Player> SetReady(Player player)
     {
         if (!Players.Contains(player))
             throw new PlayerNotFoundException("The player was not found in the game group.");

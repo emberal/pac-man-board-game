@@ -1,12 +1,20 @@
+using System.Text.Json.Serialization;
+
 namespace pacMan.GameStuff;
 
 public class Character : IEquatable<Character>
 {
-    public required string Colour { get; init; }
-    public MovePath? Position { get; set; }
+    [JsonPropertyName("colour")] public required string Colour { get; init; }
+
+    [JsonPropertyName("position")] public MovePath? Position { get; set; }
+
+    [JsonInclude]
+    [JsonPropertyName("isEatable")]
     public bool IsEatable { get; set; } = true;
-    public DirectionalPosition? SpawnPosition { get; set; }
-    public required CharacterType? Type { get; init; }
+
+    [JsonPropertyName("spawnPosition")] public DirectionalPosition? SpawnPosition { get; set; }
+
+    [JsonPropertyName("type")] public required CharacterType? Type { get; init; }
 
     public bool Equals(Character? other)
     {

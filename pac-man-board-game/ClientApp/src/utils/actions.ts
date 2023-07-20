@@ -1,6 +1,6 @@
 import Player from "../game/player";
 import {CharacterType, Ghost} from "../game/character";
-import {getCharacterSpawns, testMap} from "../game/map";
+import {customMap, getCharacterSpawns} from "../game/map";
 import {TileType} from "../game/tileType";
 import {getDefaultStore} from "jotai";
 import {currentPlayerNameAtom, diceAtom, ghostsAtom, playersAtom, rollDiceButtonAtom} from "./state";
@@ -17,12 +17,12 @@ export enum GameAction {
 const store = getDefaultStore();
 
 const ghostsProps: CharacterProps[] = [
-  {Colour: Colour.Purple},
-  {Colour: Colour.Purple},
+  {colour: Colour.purple},
+  {colour: Colour.purple},
 ];
-let spawns = getCharacterSpawns(testMap).filter(spawn => spawn.type === CharacterType.ghost);
+let spawns = getCharacterSpawns(customMap).filter(spawn => spawn.type === CharacterType.ghost);
 ghostsProps.forEach(ghost => {
-  ghost.SpawnPosition = spawns.pop()?.position;
+  ghost.spawnPosition = spawns.pop()?.position;
 
 });
 const ghosts = ghostsProps.map(props => new Ghost(props));
@@ -33,21 +33,21 @@ export const doAction: MessageEventFunction<string> = (event): void => { // TODO
   const message: ActionMessage = JSON.parse(event.data);
   console.debug("Received message:", message);
 
-  switch (message.Action as GameAction) {
+  switch (message.action as GameAction) {
     case GameAction.rollDice:
-      setDice(message.Data);
+      setDice(message.data);
       break;
     case GameAction.moveCharacter:
-      moveCharacter(message.Data);
+      moveCharacter(message.data);
       break;
     case GameAction.playerInfo:
-      playerInfo(message.Data);
+      playerInfo(message.data);
       break;
     case GameAction.ready:
-      ready(message.Data);
+      ready(message.data);
       break;
     case GameAction.nextPlayer:
-      nextPlayer(message.Data);
+      nextPlayer(message.data);
       break;
   }
 };
@@ -56,17 +56,17 @@ function setDice(data?: number[]): void {
   store.set(diceAtom, data);
 }
 
-type MoveCharacterData = { Dice: number[], Players: PlayerProps[], Ghosts: CharacterProps[], EatenPellets: Position[] };
+type MoveCharacterData = { dice: number[], players: PlayerProps[], ghosts: CharacterProps[], eatenPellets: Position[] };
 
 function moveCharacter(data?: MoveCharacterData): void {
-  store.set(diceAtom, data?.Dice);
+  store.set(diceAtom, data?.dice);
   updatePlayers(data);
   updateGhosts(data);
   removeEatenPellets(data);
 }
 
 function updatePlayers(data?: MoveCharacterData): void {
-  const updatedPlayers = data?.Players;
+  const updatedPlayers = data?.players;
 
   if (updatedPlayers) {
     const newList: Player[] = updatedPlayers.map(p => new Player(p));
@@ -75,7 +75,7 @@ function updatePlayers(data?: MoveCharacterData): void {
 }
 
 function updateGhosts(data?: MoveCharacterData): void {
-  const updatedGhosts = data?.Ghosts;
+  const updatedGhosts = data?.ghosts;
 
   if (updatedGhosts) {
     const newList: Ghost[] = updatedGhosts.map(g => new Ghost(g));
@@ -84,27 +84,27 @@ function updateGhosts(data?: MoveCharacterData): void {
 }
 
 function removeEatenPellets(data?: MoveCharacterData): void {
-  const pellets = data?.EatenPellets;
+  const pellets = data?.eatenPellets;
 
   for (const pellet of pellets ?? []) {
-    testMap[pellet.Y][pellet.X] = TileType.empty;
+    customMap[pellet.y][pellet.x] = TileType.empty;
   }
 }
 
 function playerInfo(data?: PlayerProps[]): void { // TODO missing data when refreshing page
   const playerProps = data ?? [];
-  spawns = getCharacterSpawns(testMap).filter(spawn => spawn.type === CharacterType.pacMan);
+  spawns = getCharacterSpawns(customMap).filter(spawn => spawn.type === CharacterType.pacMan);
   store.set(playersAtom, playerProps.map(p => new Player(p)));
 }
 
-type ReadyData = { AllReady: boolean, Players: PlayerProps[] } | string;
+type ReadyData = { allReady: boolean, players: PlayerProps[] } | string;
 
 function ready(data?: ReadyData): void {
   if (data && typeof data !== "string") {
-    const players = data.Players.map(p => new Player(p));
+    const players = data.players.map(p => new Player(p));
     store.set(playersAtom, players);
-    if (data.AllReady) {
-      store.set(currentPlayerNameAtom, data.Players[0].Username);
+    if (data.allReady) {
+      store.set(currentPlayerNameAtom, data.players[0].username);
     }
   } else {
     console.error("Error:", data);

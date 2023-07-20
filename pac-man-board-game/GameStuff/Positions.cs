@@ -1,10 +1,16 @@
+using System.Text.Json.Serialization;
+
 namespace pacMan.GameStuff;
 
 public class MovePath : IEquatable<MovePath>
 {
+    [JsonInclude]
+    [JsonPropertyName("path")]
     public Position[]? Path { get; set; }
-    public required Position End { get; init; }
-    public required Direction Direction { get; init; }
+
+    [JsonPropertyName("end")] public required Position End { get; init; }
+
+    [JsonPropertyName("direction")] public required Direction Direction { get; init; }
 
     public bool Equals(MovePath? other)
     {
@@ -32,8 +38,9 @@ public class MovePath : IEquatable<MovePath>
 
 public class Position : IEquatable<Position>
 {
-    public int X { get; init; }
-    public int Y { get; init; }
+    [JsonPropertyName("x")] public int X { get; init; }
+
+    [JsonPropertyName("y")] public int Y { get; init; }
 
     public bool Equals(Position? other)
     {
@@ -62,8 +69,9 @@ public enum Direction
 
 public class DirectionalPosition : IEquatable<DirectionalPosition>
 {
-    public required Position At { get; init; }
-    public required Direction Direction { get; init; }
+    [JsonPropertyName("at")] public required Position At { get; init; }
+
+    [JsonPropertyName("direction")] public required Direction Direction { get; init; }
 
     public bool Equals(DirectionalPosition? other)
     {

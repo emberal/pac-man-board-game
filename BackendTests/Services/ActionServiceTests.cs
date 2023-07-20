@@ -10,7 +10,7 @@ namespace BackendTests.Services;
 
 public class ActionServiceTests
 {
-    private readonly Player _blackPlayer = (Player)Players.Create("black");
+    private readonly Player _blackPlayer = Players.Create("black");
     private readonly Player _redPlayer = (Player)Players.Create("red");
 
     private readonly Player _whitePlayer = (Player)Players.Create("white");
@@ -109,7 +109,7 @@ public class ActionServiceTests
         var pos = _spawns.Dequeue();
         _whitePlayer.PacMan.Position = pos;
         _whitePlayer.PacMan.SpawnPosition = pos;
-        Assert.That(new List<IPlayer> { _whitePlayer }, Is.EqualTo(players));
+        Assert.That(new List<Player> { _whitePlayer }, Is.EqualTo(players));
     }
 
     #endregion
@@ -173,7 +173,7 @@ public class ActionServiceTests
         var result = _service.Ready();
         // If selected the state is changed to InGame
         _whitePlayer.State = State.InGame;
-        var players = result.GetType().GetProperty("Players")?.GetValue(result) as IEnumerable<IPlayer>;
+        var players = result.GetType().GetProperty("Players")?.GetValue(result) as IEnumerable<Player>;
         Assert.That(players?.First().Username, Is.EqualTo(_whitePlayer.Username));
     }
 
@@ -193,7 +193,7 @@ public class ActionServiceTests
 
         result = _service.Ready();
 
-        var players = result.GetType().GetProperty("Players")?.GetValue(result) as IEnumerable<IPlayer>;
+        var players = result.GetType().GetProperty("Players")?.GetValue(result) as IEnumerable<Player>;
         Assert.That(players?.First().Username, Is.EqualTo(_blackPlayer.Username).Or.EqualTo(_whitePlayer.Username));
     }
 

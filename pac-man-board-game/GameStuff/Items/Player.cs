@@ -1,15 +1,7 @@
+using System.Text.Json.Serialization;
 using DAL.Database.Models;
 
 namespace pacMan.GameStuff.Items;
-
-public interface IPlayer
-{
-    string Username { get; init; }
-    Character PacMan { get; init; }
-    string Colour { get; init; }
-    Box? Box { get; init; }
-    State State { get; set; }
-}
 
 public enum State
 {
@@ -19,21 +11,24 @@ public enum State
     Disconnected
 }
 
-public class Player : IPlayer, IEquatable<Player>
+public class Player : IEquatable<Player>
 {
+    [JsonPropertyName("username")] public required string Username { get; init; }
+
+    [JsonPropertyName("pacMan")] public required Character PacMan { get; init; }
+
+    [JsonPropertyName("colour")] public required string Colour { get; init; }
+
+    [JsonPropertyName("box")] public Box? Box { get; init; }
+
+    [JsonPropertyName("state")] public State State { get; set; } = State.WaitingForPlayers;
+
     public bool Equals(Player? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
         return Username == other.Username;
     }
-
-    // [JsonPropertyName("username")]
-    public required string Username { get; init; }
-    public required Character PacMan { get; init; }
-    public required string Colour { get; init; }
-    public Box? Box { get; init; }
-    public State State { get; set; } = State.WaitingForPlayers;
 
     public override bool Equals(object? obj)
     {

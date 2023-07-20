@@ -26,7 +26,7 @@ public class GameService : WebSocketService
         Connections?.Invoke(segment);
     }
 
-    public Game AddPlayer(IPlayer player, Queue<DirectionalPosition> spawns)
+    public Game AddPlayer(Player player, Queue<DirectionalPosition> spawns)
     {
         var index = 0;
         try
@@ -50,7 +50,7 @@ public class GameService : WebSocketService
     /// <param name="player">The player instance that wants to join the game</param>
     /// <returns>Returns the updated Game object after adding the player.</returns>
     /// <exception cref="GameNotFoundException">Thrown if a game with the specified id cannot be found.</exception>
-    public Game JoinById(Guid id, IPlayer player)
+    public Game JoinById(Guid id, Player player)
     {
         var game = Games.FirstOrDefault(g => g.Id == id) ?? throw new GameNotFoundException();
         game.AddPlayer(player);
@@ -69,7 +69,7 @@ public class GameService : WebSocketService
     ///     Thrown if the number of spawns is not equal to the maximum number of players set by
     ///     the Rules.
     /// </exception>
-    public Game CreateAndJoin(IPlayer player, Queue<DirectionalPosition> spawns)
+    public Game CreateAndJoin(Player player, Queue<DirectionalPosition> spawns)
     {
         if (spawns.Count != Rules.MaxPlayers)
             throw new ArgumentException($"The number of spawns must be equal to {Rules.MaxPlayers}.");

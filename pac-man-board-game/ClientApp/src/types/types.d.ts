@@ -5,8 +5,8 @@ type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
 type WebSocketData = string | ArrayBufferLike | Blob | ArrayBufferView;
 
 type ActionMessage<T = any> = {
-  readonly Action: import("../utils/actions").GameAction,
-  readonly Data?: T
+  readonly action: import("../utils/actions").GameAction,
+  readonly data?: T
 }
 
 type Action<T> = (obj: T) => void;
@@ -20,19 +20,19 @@ type SelectedDice = {
   index: number
 };
 
-type Position = { X: number, Y: number };
+type Position = { x: number, y: number };
 
 type GameMap = number[][];
 
 type DirectionalPosition = {
-  At: Position,
-  Direction: import("../game/direction").Direction
+  at: Position,
+  direction: import("../game/direction").Direction
 }
 
 type Path = {
-  Path?: Position[] | null,
-  End: Position,
-  Direction: import("../game/direction").Direction
+  path?: Position[] | null,
+  end: Position,
+  direction: import("../game/direction").Direction
 }
 
 type Game = {
@@ -55,6 +55,6 @@ type ApiRequest = {
 }
 
 type PlayerInfoData = {
-  readonly Player: PlayerProps,
-  readonly Spawns: DirectionalPosition[],
+  readonly player: PlayerProps,
+  readonly spawns: DirectionalPosition[],
 }

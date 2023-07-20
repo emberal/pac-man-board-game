@@ -3,7 +3,7 @@ import {atom, useAtomValue} from "jotai";
 import {Button} from "../components/button";
 import {thisPlayerAtom} from "../utils/state";
 import {getData, postData} from "../utils/api";
-import {getPacManSpawns, testMap} from "../game/map";
+import {customMap, getPacManSpawns} from "../game/map";
 import {useNavigate} from "react-router-dom";
 
 const fetchAtom = atom(async () => {
@@ -20,15 +20,15 @@ const LobbyPage: FC = () => { // TODO check if player is defined in storage, if 
   async function createGame(): Promise<void> {
 
     const response = await postData("/game/create", {
-      body: {Player: thisPlayer, Spawns: getPacManSpawns(testMap)} as PlayerInfoData
+      body: {player: thisPlayer, spawns: getPacManSpawns(customMap)} as PlayerInfoData
     });
 
-    const data = await response.json();
-
     if (response.ok) {
+      const data = await response.json();
       console.debug("Game created: ", data);
       // TODO redirect to game page
     } else {
+      const data = await response.text();
       console.error("Error: ", data);
       // TODO display error
     }

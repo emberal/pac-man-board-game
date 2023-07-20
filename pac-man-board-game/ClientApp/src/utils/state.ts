@@ -11,7 +11,7 @@ export const playersAtom = atom<Player[]>([]);
 /**
  * All player characters (Pac-Man) in the game.
  */
-export const playerCharactersAtom = atom(get => get(playersAtom).map(player => player.PacMan));
+export const playerCharactersAtom = atom(get => get(playersAtom).map(player => player.pacMan));
 /**
  * All ghosts in the game.
  */
@@ -47,7 +47,7 @@ export const currentPlayerNameAtom = atom<string | undefined>(undefined);
  */
 export const currentPlayerAtom = atom<Player | undefined>(get => {
   const currentPlayerName = get(currentPlayerNameAtom);
-  return get(playersAtom).find(player => player.Username === currentPlayerName);
+  return get(playersAtom).find(player => player.username === currentPlayerName);
 });
 /**
  * Whether the roll dice button should be enabled.
