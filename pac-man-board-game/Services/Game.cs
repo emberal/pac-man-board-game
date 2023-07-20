@@ -62,6 +62,15 @@ public class Game // TODO handle disconnects and reconnects
         return true;
     }
 
+    public IPlayer? RemovePlayer(string username)
+    {
+        var index = Players.FindIndex(p => p.Username == username);
+        if (index == -1) return null;
+        var removedPlayer = Players[index];
+        Players.RemoveAt(index);
+        return removedPlayer;
+    }
+
     private void SetSpawn(IPlayer player)
     {
         if (player.PacMan.SpawnPosition is not null) return;
