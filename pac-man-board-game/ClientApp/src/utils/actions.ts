@@ -1,9 +1,9 @@
 import Player from "../game/player";
 import {CharacterType, Ghost} from "../game/character";
-import {customMap, getCharacterSpawns} from "../game/map";
+import {getCharacterSpawns} from "../game/map";
 import {TileType} from "../game/tileType";
 import {getDefaultStore} from "jotai";
-import {currentPlayerNameAtom, diceAtom, ghostsAtom, playersAtom, rollDiceButtonAtom} from "./state";
+import {currentPlayerNameAtom, diceAtom, ghostsAtom, playersAtom, rollDiceButtonAtom, selectedMapAtom} from "./state";
 import {Colour} from "../game/colour";
 
 export enum GameAction {
@@ -16,12 +16,13 @@ export enum GameAction {
 }
 
 const store = getDefaultStore();
+const map = store.get(selectedMapAtom);
 
 const ghostsProps: CharacterProps[] = [
   {colour: Colour.purple},
   {colour: Colour.purple},
 ];
-let spawns = getCharacterSpawns(customMap).filter(spawn => spawn.type === CharacterType.ghost);
+let spawns = getCharacterSpawns(map).filter(spawn => spawn.type === CharacterType.ghost);
 ghostsProps.forEach(ghost => {
   ghost.spawnPosition = spawns.pop()?.position;
 
@@ -89,13 +90,13 @@ function removeEatenPellets(data?: MoveCharacterData): void {
   const pellets = data?.eatenPellets;
 
   for (const pellet of pellets ?? []) {
-    customMap[pellet.y][pellet.x] = TileType.empty;
+    map[pellet.y][pellet.x] = TileType.empty;
   }
 }
 
 function playerInfo(data?: PlayerProps[]): void { // TODO missing data when refreshing page
   const playerProps = data ?? [];
-  spawns = getCharacterSpawns(customMap).filter(spawn => spawn.type === CharacterType.pacMan);
+  spawns = getCharacterSpawns(map).filter(spawn => spawn.type === CharacterType.pacMan);
   store.set(playersAtom, playerProps.map(p => new Player(p)));
 }
 

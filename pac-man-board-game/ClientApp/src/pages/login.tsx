@@ -1,4 +1,4 @@
-import React, {FormEvent} from "react";
+import React, {FC, FormEvent} from "react";
 import {Button} from "../components/button";
 import Input from "../components/input";
 import {useSetAtom} from "jotai";
@@ -7,7 +7,7 @@ import Player from "../game/player";
 import {useNavigate} from "react-router-dom";
 import {postData} from "../utils/api";
 
-const Login = () => {
+const Login: FC = () => {
 
   const setThisPlayer = useSetAtom(thisPlayerAtom);
   const navigate = useNavigate();

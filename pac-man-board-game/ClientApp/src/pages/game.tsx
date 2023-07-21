@@ -1,11 +1,11 @@
 import React, {FC, useEffect} from "react";
 import {GameComponent} from "../components/gameComponent";
 import {useAtomValue} from "jotai";
-import {thisPlayerAtom} from "../utils/state";
-import {customMap} from "../game/map";
+import {selectedMapAtom, thisPlayerAtom} from "../utils/state";
 
 const Game: FC = () => { // TODO gameId in path
   const player = useAtomValue(thisPlayerAtom);
+  const map = useAtomValue(selectedMapAtom);
 
   useEffect(() => {
     console.debug(player);
@@ -15,10 +15,10 @@ const Game: FC = () => { // TODO gameId in path
     }
   }, [player]);
 
-  if (player) {
-    return <GameComponent player={player} map={customMap}/>;
+  if (player && map) {
+    return <GameComponent player={player} map={map}/>;
   } else {
-    return null;
+    throw new Error("Player or map is undefined");
   }
 };
 

@@ -17,9 +17,9 @@ const wsService = new WebSocketService(import.meta.env.VITE_API_WS);
 // TODO bug, when taking player on last dice, the currentPlayer changes and the wrong character gets to steal
 // TODO bug, first player can sometimes roll dice twice
 // TODO bug, when refreshing page, some data is missing until other clients make a move
-// TODO bug, teleportation doesn't work
 
 // TODO guest users
+// TODO protected routes? checking if user is logged in
 // TODO store map in backend and save it in state on each client
 // TODO add debug menu on dev, for testing and cheating
 // TODO sign up player page

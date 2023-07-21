@@ -2,6 +2,7 @@ import Player from "../game/player";
 import {atom} from "jotai";
 import {atomWithStorage, createJSONStorage} from "jotai/utils";
 import {Ghost} from "../game/character";
+import {customMap} from "../game/map";
 
 const playerStorage = createJSONStorage<Player | undefined>(() => sessionStorage);
 /**
@@ -56,4 +57,4 @@ export const rollDiceButtonAtom = atom(true);
 /**
  * The map that is currently selected.
  */
-export const selectedMapAtom = atom<GameMap | undefined>(undefined);
+export const selectedMapAtom = atom(customMap);

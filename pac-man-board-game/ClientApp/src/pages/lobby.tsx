@@ -1,9 +1,9 @@
 import React, {FC, Suspense} from "react";
 import {atom, useAtomValue} from "jotai";
 import {Button} from "../components/button";
-import {thisPlayerAtom} from "../utils/state";
+import {selectedMapAtom, thisPlayerAtom} from "../utils/state";
 import {getData, postData} from "../utils/api";
-import {customMap, getPacManSpawns} from "../game/map";
+import {getPacManSpawns} from "../game/map";
 import {useNavigate} from "react-router-dom";
 
 const fetchAtom = atom(async () => {
@@ -11,16 +11,16 @@ const fetchAtom = atom(async () => {
   return await response.json() as Game[];
 });
 
-// TODO create game button
 const LobbyPage: FC = () => { // TODO check if player is defined in storage, if not redirect to login
 
   const thisPlayer = useAtomValue(thisPlayerAtom);
   const navigate = useNavigate();
+  const map = useAtomValue(selectedMapAtom);
 
   async function createGame(): Promise<void> {
 
     const response = await postData("/game/create", {
-      body: {player: thisPlayer, spawns: getPacManSpawns(customMap)} as PlayerInfoData
+      body: {player: thisPlayer, spawns: getPacManSpawns(map)} as PlayerInfoData
     });
 
     if (response.ok) {
