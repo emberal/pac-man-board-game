@@ -21,6 +21,24 @@ const testMap: GameMap = [
   [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
 ];
 
+const testMapBig: GameMap = [
+  [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 2, 1, 0, 1, 2, 1, 0, 1, 2, 1, 0, 1, 2, 1],
+  [0, 2, 1, 5, 1, 2, 1, 0, 1, 2, 1, 5, 1, 2, 0],
+  [1, 2, 1, 0, 0, 2, 0, 3, 0, 2, 0, 0, 1, 2, 1],
+  [1, 2, 1, 1, 1, 2, 1, 0, 1, 2, 1, 1, 1, 2, 1],
+  [1, 2, 2, 2, 2, 2, 1, 4, 1, 2, 2, 2, 2, 2, 1],
+  [1, 3, 1, 1, 1, 2, 1, 0, 1, 2, 1, 1, 1, 3, 1],
+  [1, 2, 2, 2, 2, 2, 1, 4, 1, 2, 2, 2, 2, 2, 1],
+  [1, 2, 1, 1, 1, 2, 1, 0, 1, 2, 1, 1, 1, 2, 1],
+  [1, 2, 1, 0, 0, 2, 0, 3, 0, 2, 0, 0, 1, 2, 1],
+  [0, 2, 1, 5, 1, 2, 1, 0, 1, 2, 1, 5, 1, 2, 0],
+  [1, 2, 1, 0, 1, 2, 1, 0, 1, 2, 1, 0, 1, 2, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+];
+
 beforeEach(() => {
   pacMan = new PacMan({
     colour: Colour.yellow, spawnPosition: {at: {x: 3, y: 3}, direction: Direction.up}
@@ -197,6 +215,12 @@ test("Ghost can take Pac-Man, steps overshoot Pac-Man", () => {
       path: [{x: 7, y: 2}, {x: 7, y: 1}, {x: 8, y: 1}, {x: 9, y: 1}, {x: 9, y: 2}]
     },
   ])
+});
+
+test("Pac-Man rolls 1 from position [0,3] (left), should return 5", () => {
+  pacMan.follow({end: {x: 0, y: 3}, direction: Direction.left});
+  const result = possibleMovesAlgorithm(testMapBig, pacMan, 1, [pacMan]);
+  expect(result.length).toBe(5);
 });
 
 function arrayEquals<T extends any[]>(result: T, expected: T, message?: string): void {
