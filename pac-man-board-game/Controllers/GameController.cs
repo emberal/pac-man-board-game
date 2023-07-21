@@ -15,10 +15,10 @@ public class GameController : GenericController
     private readonly IActionService _actionService;
     private readonly GameService _gameService;
 
-    public GameController(ILogger<GameController> logger, GameService gameService, IActionService actionService) :
-        base(logger, gameService)
+    public GameController(ILogger<GameController> logger, GameService webSocketService, IActionService actionService) :
+        base(logger, webSocketService)
     {
-        _gameService = gameService;
+        _gameService = webSocketService;
         _actionService = actionService;
     }
 
@@ -85,5 +85,9 @@ public class GameController : GenericController
 
     protected override void Send(ArraySegment<byte> segment) => _actionService.SendToAll(segment);
 
-    protected override void Disconnect() => _actionService.Disconnect();
+    protected override ArraySegment<byte>? Disconnect() =>
+        new ActionMessage { Action = GameAction.Disconnect, Data = _actionService.Disconnect() }
+            .ToArraySegment();
+
+    protected override void SendDisconnectMessage(ArraySegment<byte> segment) => _actionService.SendToAll(segment);
 }

@@ -9,12 +9,25 @@ public class Game // TODO handle disconnects and reconnects
 {
     private readonly Random _random = new();
     private int _currentPlayerIndex;
+    private List<Player> _players = new();
 
     public Game(Queue<DirectionalPosition> spawns) => Spawns = spawns;
 
     [JsonInclude] public Guid Id { get; } = Guid.NewGuid();
 
-    [JsonIgnore] public List<Player> Players { get; } = new();
+    [JsonIgnore]
+    public List<Player> Players
+    {
+        get => _players;
+        set =>
+            _players = _players.Select((player, index) =>
+            {
+                player.State = value[index].State;
+                player.PacMan = value[index].PacMan;
+                player.Box = value[index].Box;
+                return player;
+            }).ToList();
+    }
 
     [JsonIgnore] public List<Character> Ghosts { get; set; } = new();
 

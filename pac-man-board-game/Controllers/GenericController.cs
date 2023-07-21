@@ -7,14 +7,14 @@ namespace pacMan.Controllers;
 public abstract class GenericController : ControllerBase
 {
     private const int BufferSize = 1024 * 4;
-    protected readonly IWebSocketService GameService;
+    private readonly IWebSocketService _webSocketService;
     protected readonly ILogger<GenericController> Logger;
     protected WebSocket? WebSocket;
 
-    protected GenericController(ILogger<GenericController> logger, IWebSocketService gameService)
+    protected GenericController(ILogger<GenericController> logger, IWebSocketService webSocketService)
     {
         Logger = logger;
-        GameService = gameService;
+        _webSocketService = webSocketService;
         Logger.Log(LogLevel.Debug, "WebSocket Controller created");
     }
 
@@ -42,7 +42,7 @@ public abstract class GenericController : ControllerBase
             do
             {
                 var buffer = new byte[BufferSize];
-                result = await GameService.Receive(WebSocket, buffer);
+                result = await _webSocketService.Receive(WebSocket, buffer);
 
                 if (result.CloseStatus.HasValue) break;
 
@@ -51,23 +51,26 @@ public abstract class GenericController : ControllerBase
                 Send(segment);
             } while (true);
 
-            await GameService.Close(WebSocket, result.CloseStatus.Value, result.CloseStatusDescription);
+            var disconnectSegment = Disconnect();
+            if (disconnectSegment != null) SendDisconnectMessage((ArraySegment<byte>)disconnectSegment);
+
+            await _webSocketService.Close(WebSocket, result.CloseStatus.Value, result.CloseStatusDescription);
         }
         catch (WebSocketException e)
         {
             Logger.Log(LogLevel.Error, "{}", e.Message);
         }
-
-        Disconnect();
     }
 
     protected virtual async void Send(ArraySegment<byte> segment)
     {
         if (WebSocket == null) return;
-        await GameService.Send(WebSocket, segment);
+        await _webSocketService.Send(WebSocket, segment);
     }
 
     protected abstract ArraySegment<byte> Run(WebSocketReceiveResult result, byte[] data);
 
-    protected virtual void Disconnect() { }
+    protected virtual ArraySegment<byte>? Disconnect() => null;
+
+    protected virtual void SendDisconnectMessage(ArraySegment<byte> segment) { }
 }

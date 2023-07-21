@@ -19,7 +19,7 @@ public interface IActionService
     string FindNextPlayer();
     List<Player> LeaveGame();
     void SendToAll(ArraySegment<byte> segment);
-    void Disconnect();
+    List<Player>? Disconnect();
 }
 
 public class ActionService : IActionService
@@ -65,8 +65,12 @@ public class ActionService : IActionService
     public object? HandleMoveCharacter(JsonElement? jsonElement)
     {
         if (Game != null && jsonElement.HasValue)
+        {
             Game.Ghosts = jsonElement.Value.GetProperty("ghosts").Deserialize<List<Character>>() ??
                           throw new JsonException("Ghosts is null");
+            Game.Players = jsonElement.Value.GetProperty("players").Deserialize<List<Player>>() ??
+                           throw new NullReferenceException("Players is null");
+        }
 
         return jsonElement;
     }
@@ -77,10 +81,11 @@ public class ActionService : IActionService
         Player = data.Player;
 
         Game? game;
-        Player? player;
-        if ((game = _gameService.FindGameByUsername(Player.Username)) != null &&
-            (player = game.Players.Find(p => p.Username == Player.Username))?.State == State.Disconnected)
+        if ((game = _gameService.FindGameByUsername(Player.Username)) != null)
         {
+            var player = game.Players.Find(p => p.Username == Player.Username);
+            if (player is null) throw new NullReferenceException("Player is null");
+
             player.State = game.IsGameStarted ? State.InGame : State.WaitingForPlayers; // TODO doesn't work anymore
             Player = player;
             Game = game;
@@ -125,11 +130,12 @@ public class ActionService : IActionService
         return Game.Players;
     }
 
-    public void Disconnect()
+    public List<Player>? Disconnect()
     {
-        if (Player == null) return;
+        if (Player == null) return null;
         Player.State = State.Disconnected;
         if (Game != null) Game.Connections -= SendSegment;
+        return Game?.Players;
     }
 
     public void SendToAll(ArraySegment<byte> segment) => Game?.SendToAll(segment);
