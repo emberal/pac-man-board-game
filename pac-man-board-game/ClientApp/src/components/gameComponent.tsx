@@ -19,6 +19,7 @@ const wsService = new WebSocketService(import.meta.env.VITE_API_WS);
 // TODO bug, when refreshing page, some data is missing until other clients make a move
 // TODO bug, teleportation doesn't work
 
+// TODO guest users
 // TODO store map in backend and save it in state on each client
 // TODO add debug menu on dev, for testing and cheating
 // TODO sign up player page
