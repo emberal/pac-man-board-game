@@ -19,13 +19,6 @@ public class GameService : WebSocketService
     /// </summary>
     public SynchronizedCollection<Game> Games { get; } = new();
 
-    public event Func<ArraySegment<byte>, Task>? Connections; // TODO remove and use Game
-
-    public void SendToAll(ArraySegment<byte> segment)
-    {
-        Connections?.Invoke(segment);
-    }
-
     public Game AddPlayer(Player player, Queue<DirectionalPosition> spawns)
     {
         var index = 0;

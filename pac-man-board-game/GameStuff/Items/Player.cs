@@ -15,11 +15,11 @@ public class Player : IEquatable<Player>
 {
     [JsonPropertyName("username")] public required string Username { get; init; }
 
-    [JsonPropertyName("pacMan")] public required Character PacMan { get; init; }
+    [JsonPropertyName("pacMan")] public required Character PacMan { get; set; }
 
     [JsonPropertyName("colour")] public required string Colour { get; init; }
 
-    [JsonPropertyName("box")] public Box? Box { get; init; }
+    [JsonPropertyName("box")] public Box? Box { get; set; }
 
     [JsonPropertyName("state")] public State State { get; set; } = State.WaitingForPlayers;
 

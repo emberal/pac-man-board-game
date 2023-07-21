@@ -9,19 +9,20 @@ import PlayerStats from "../components/playerStats";
 import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {diceAtom, ghostsAtom, playersAtom, rollDiceButtonAtom, selectedDiceAtom} from "../utils/state";
 import GameButton from "./gameButton";
+import {Button} from "./button";
+import {useNavigate} from "react-router-dom";
 
 const wsService = new WebSocketService(import.meta.env.VITE_API_WS);
 
-// TODO bug, when taking player on last dice, the currentPlayer changes and the wrong character get to steal
-// TODO bug, first player can sometimes roll dice twice (maybe only on firefox)
-// TODO bug, when refreshing page, the characters are reset for all players
+// TODO bug, when taking player on last dice, the currentPlayer changes and the wrong character gets to steal
+// TODO bug, first player can sometimes roll dice twice
 // TODO bug, when refreshing page, some data is missing until other clients make a move
+// TODO bug, teleportation doesn't work
 
+// TODO guest users
 // TODO store map in backend and save it in state on each client
 // TODO add debug menu on dev, for testing and cheating
-// TODO join/new game lobby
 // TODO sign up player page
-// TODO sign in page
 // TODO show box with collected pellets
 // TODO layout
 
@@ -32,6 +33,8 @@ export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map
   const [selectedDice, setSelectedDice] = useAtom(selectedDiceAtom);
   const setActiveRollDiceButton = useSetAtom(rollDiceButtonAtom);
   const ghosts = useAtomValue(ghostsAtom);
+
+  const navigate = useNavigate();
 
   function rollDice(): void {
     if (!player.isTurn()) return;
@@ -79,6 +82,11 @@ export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map
     wsService.send({action: GameAction.nextPlayer});
   }
 
+  function leaveGame(): void {
+    wsService.send({action: GameAction.disconnect});
+    navigate("/lobby");
+  }
+
   useEffect(() => {
     wsService.onReceive = doAction;
     wsService.open();
@@ -90,6 +98,7 @@ export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map
 
   return (
     <>
+      <Button onClick={leaveGame}>Leave game</Button>
       <div className={"flex justify-center"}>
         {players?.map(p => <PlayerStats key={p.username} player={p}/>)}
       </div>

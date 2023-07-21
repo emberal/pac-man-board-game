@@ -18,26 +18,26 @@ export default function findPossiblePositions(board: GameMap, character: Charact
 };
 
 /**
- * Uses recursion to move through the board and find all the possible positions
- * @param board The board the character is on
+ * Uses recursion to move through the map and find all the possible positions
+ * @param map The map the character is on
  * @param currentPath The current path the character is on
  * @param steps The number of steps the character can move
  * @param character The current character
  * @param characters
  * @returns An array of paths the character can move to
  */
-function findPossibleRecursive(board: GameMap, currentPath: Path, steps: number, character: Character, characters: Character[]): Path[] {
+function findPossibleRecursive(map: GameMap, currentPath: Path, steps: number, character: Character, characters: Character[]): Path[] {
 
   const paths: Path[] = [];
-  if (isOutsideBoard(currentPath, board.length)) { // TODO not working on new map
+  if (isOutsideBoard(currentPath, map.length)) { // TODO not working on new map
     if (character.isPacMan()) {
-      return addTeleportationTiles(board, currentPath, steps, character, characters);
+      return addTeleportationTiles(map, currentPath, steps, character, characters);
     }
-  } else if (!isWall(board, currentPath)) {
+  } else if (!isWall(map, currentPath)) {
 
     if (!characterHitsAnotherCharacter(character, currentPath, characters)) {
       if (steps <= 0) {
-        if (!(isSpawn(board, currentPath) && !isOwnSpawn(currentPath, character))) {
+        if (!(isSpawn(map, currentPath) && !isOwnSpawn(currentPath, character))) {
           paths.push(currentPath);
         }
 
@@ -47,7 +47,7 @@ function findPossibleRecursive(board: GameMap, currentPath: Path, steps: number,
 
         steps--;
         for (const direction of getDirections()) {
-          paths.push(...tryMove(board, currentPath, direction, steps, character, characters));
+          paths.push(...tryMove(map, currentPath, direction, steps, character, characters));
         }
       }
     } else {

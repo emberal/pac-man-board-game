@@ -10,15 +10,15 @@ namespace pacMan.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class GameController : GenericController // TODO reconnect using player id
+public class GameController : GenericController
 {
     private readonly IActionService _actionService;
     private readonly GameService _gameService;
 
-    public GameController(ILogger<GameController> logger, GameService gameService, IActionService actionService) :
-        base(logger, gameService)
+    public GameController(ILogger<GameController> logger, GameService webSocketService, IActionService actionService) :
+        base(logger, webSocketService)
     {
-        _gameService = gameService;
+        _gameService = webSocketService;
         _actionService = actionService;
     }
 
@@ -66,6 +66,11 @@ public class GameController : GenericController // TODO reconnect using player i
         }
     }
 
+    protected override Task Echo()
+    {
+        _actionService.WebSocket = WebSocket ?? throw new NullReferenceException("WebSocket is null");
+        return base.Echo();
+    }
 
     protected override ArraySegment<byte> Run(WebSocketReceiveResult result, byte[] data)
     {
@@ -78,24 +83,11 @@ public class GameController : GenericController // TODO reconnect using player i
         return action.ToArraySegment();
     }
 
-    protected override void Send(ArraySegment<byte> segment) => _gameService.SendToAll(segment);
+    protected override void Send(ArraySegment<byte> segment) => _actionService.SendToAll(segment);
 
-    protected override Task Echo()
-    {
-        _gameService.Connections += WsServiceOnFire;
-        // _actionService.Game.Connections += WsServiceOnFire;
-        return base.Echo();
-    }
+    protected override ArraySegment<byte>? Disconnect() =>
+        new ActionMessage { Action = GameAction.Disconnect, Data = _actionService.Disconnect() }
+            .ToArraySegment();
 
-    protected override void Disconnect()
-    {
-        _gameService.Connections -= WsServiceOnFire;
-        _actionService.Disconnect();
-    }
-
-    private async Task WsServiceOnFire(ArraySegment<byte> segment)
-    {
-        if (WebSocket == null) return;
-        await GameService.Send(WebSocket, segment);
-    }
+    protected override void SendDisconnectMessage(ArraySegment<byte> segment) => _actionService.SendToAll(segment);
 }
