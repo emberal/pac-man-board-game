@@ -21,15 +21,13 @@ const NavMenu: FC = () => {
           <NavItem to="/">Home</NavItem>
           <NavItem to={"/lobby"}>Lobby</NavItem>
           {
-            player === undefined ? /* TODO thisPlayerAtom contains a player object, from sessionStorage */
+            player === undefined ?
               <NavItem className={"mx-2"} to={"/login"}>Login</NavItem>
               :
               <li className={"mx-2"}>
                 <button onClick={logout} className={"hover:underline"}>Logout</button>
               </li>
           }
-
-          {/*TODO show signed in user when signed in, otherwise login button*/}
         </ul>
       </nav>
     </header>

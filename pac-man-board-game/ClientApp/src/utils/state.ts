@@ -39,11 +39,11 @@ export const thisPlayerAtom = atom(get => {
   }
   return atomValue;
 }, (get, set, player: Player | undefined) => {
-  set(playerAtom, player);
   if (player)
     sessionStorage.setItem(playerStorage, JSON.stringify(player));
   else
     sessionStorage.removeItem(playerStorage);
+  set(playerAtom, player);
 });
 /**
  * All dice that have been rolled.
