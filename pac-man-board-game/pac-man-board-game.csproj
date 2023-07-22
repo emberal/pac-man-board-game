@@ -48,6 +48,7 @@
       <TypeScriptCompile Remove="ClientApp\src\websockets\actions.ts" />
       <TypeScriptCompile Remove="ClientApp\src\utils\colours.ts" />
       <TypeScriptCompile Remove="ClientApp\src\utils\dom.ts" />
+      <TypeScriptCompile Remove="ClientApp\src\game\pellet.ts" />
     </ItemGroup>
 
     <ItemGroup>

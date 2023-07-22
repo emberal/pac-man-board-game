@@ -3,9 +3,8 @@ import {Character} from "../game/character";
 import findPossiblePositions from "../game/possibleMovesAlgorithm";
 import {GameTile} from "./gameTile";
 import {TileType} from "../game/tileType";
-import {atom, PrimitiveAtom, useAtom, useAtomValue, useSetAtom} from "jotai";
+import {atom, useAtom, useAtomValue, useSetAtom} from "jotai";
 import {allCharactersAtom, currentPlayerAtom, playersAtom, selectedDiceAtom} from "../utils/state";
-import Pellet from "../game/pellet";
 import {Dialog, Transition} from "@headlessui/react";
 
 interface BoardProps extends ComponentProps {
@@ -13,7 +12,7 @@ interface BoardProps extends ComponentProps {
   map: GameMap
 }
 
-const modalOpenAtom: PrimitiveAtom<boolean> = atom(false);
+const modalOpenAtom = atom(false);
 
 const Board: FC<BoardProps> = (
   {
@@ -77,7 +76,11 @@ const Board: FC<BoardProps> = (
         const currentTile = map[tile.y][tile.x];
 
         function updateTileAndPlayerBox(isPowerPellet = false): void {
-          currentPlayer?.addPellet(new Pellet(isPowerPellet));
+          if (isPowerPellet) {
+            currentPlayer?.addPowerPellet();
+          } else {
+            currentPlayer?.addPellet();
+          }
           map[tile.y][tile.x] = TileType.empty;
           positions.push(tile);
         }
@@ -182,10 +185,10 @@ const SelectPlayerModal: FC = () => {
                   {
                     allPlayers.map(player =>
                       <div key={player.username} className={"border-b pb-1"}>
-                        <span className={"mx-2"}>{player.username} has {player.box.count} pellets</span>
+                        <span className={"mx-2"}>{player.username} has {player.box.pellets} pellets</span>
                         <button className={"text-blue-500 enabled:cursor-pointer disabled:text-gray-500"}
                                 style={{background: "none"}}
-                                disabled={player.box.count === 0}
+                                disabled={player.box.pellets === 0}
                                 onClick={() => {
                                   currentPlayer?.stealFrom(player);
                                   close();

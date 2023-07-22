@@ -11,9 +11,9 @@ namespace BackendTests.Services;
 public class ActionServiceTests
 {
     private readonly Player _blackPlayer = Players.Create("black");
-    private readonly Player _redPlayer = (Player)Players.Create("red");
+    private readonly Player _redPlayer = Players.Create("red");
 
-    private readonly Player _whitePlayer = (Player)Players.Create("white");
+    private readonly Player _whitePlayer = Players.Create("white");
     private ActionMessage _blackMessage = null!;
     private GameService _gameService = null!;
     private ActionMessage _redMessage = null!;
@@ -92,7 +92,7 @@ public class ActionServiceTests
     public void PlayerInfo_DataIsNotPlayer()
     {
         var serialized =
-            JsonDocument.Parse(JsonSerializer.Serialize(new Box { Colour = "white", Pellets = new List<Pellet>() }));
+            JsonDocument.Parse(JsonSerializer.Serialize(new Box { Colour = "white" }));
         var message = new ActionMessage
         {
             Action = GameAction.PlayerInfo,

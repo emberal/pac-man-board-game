@@ -20,7 +20,6 @@ const wsService = new WebSocketService(import.meta.env.VITE_API_WS);
 // TODO bug, stolen pellets are only updated on the client that stole them
 
 // TODO guest users
-// TODO protected routes? checking if user is logged in
 // TODO store map in backend and save it in state on each client
 // TODO add debug menu on dev, for testing and cheating
 // TODO sign up player page

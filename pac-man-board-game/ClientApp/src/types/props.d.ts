@@ -38,7 +38,8 @@ interface CharacterProps {
 }
 
 interface BoxProps {
-  pellets?: import("../game/pellet").default[],
+  pellets?: number,
+  powerPellets?: number,
   readonly colour: import("../game/colour").Colour,
 }
 

@@ -24,8 +24,7 @@ internal static class Players
     internal static Box CreateBox(string colour) =>
         new()
         {
-            Colour = colour,
-            Pellets = new List<Pellet>()
+            Colour = colour
         };
 
     internal static Player Clone(this Player player) =>

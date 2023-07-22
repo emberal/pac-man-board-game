@@ -2,7 +2,6 @@ import {Character, CharacterType} from "./character";
 import Box from "./box";
 import {getDefaultStore} from "jotai";
 import {currentPlayerNameAtom, playersAtom} from "../utils/state";
-import Pellet from "./pellet";
 import rules from "./rules";
 
 export enum State {
@@ -35,15 +34,19 @@ export default class Player implements PlayerProps {
     return Player.store.get(currentPlayerNameAtom) === this.username;
   }
 
-  public addPellet(pellet: Pellet): void {
-    this.box.addPellet(pellet);
+  public addPellet(): void {
+    this.box.addPellet();
+  }
+
+  public addPowerPellet(): void {
+    this.box.addPowerPellet();
   }
 
   public stealFrom(other: Player): void {
     for (let i = 0; i < rules.maxStealPellets; i++) {
-      const pellet = other.box.pellets.pop();
-      if (pellet)
-        this.box.addPellet(pellet);
+      const removed = other.box.removePellet();
+      if (removed)
+        this.box.addPellet();
     }
     Player.store.set(playersAtom, Player.store.get(playersAtom).map(player => player));
   }

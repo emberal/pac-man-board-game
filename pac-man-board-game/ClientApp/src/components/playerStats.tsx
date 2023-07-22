@@ -17,9 +17,10 @@ const PlayerStats: FC<{ player: Player } & ComponentProps> = (
       <p>Colour: {player.colour}</p>
       {player.state === State.inGame || player.state === State.disconnected ?
         <>
-          <p>Pellets: {player.box.count}</p>
-          <p>PowerPellets: {player.box.countPowerPellets}</p>
-        </> :
+          <p>Pellets: {player.box.pellets}</p>
+          <p>PowerPellets: {player.box.powerPellets}</p>
+        </>
+        :
         <p>{player.state === State.waitingForPlayers ? "Waiting" : "Ready"}</p>}
     </div>
   );

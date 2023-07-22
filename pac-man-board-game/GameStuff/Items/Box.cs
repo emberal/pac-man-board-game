@@ -4,23 +4,16 @@ namespace pacMan.GameStuff.Items;
 
 public class Box : IEquatable<Box>
 {
-    [JsonPropertyName("pellets")] public List<Pellet>? Pellets { get; init; } = new();
+    [JsonPropertyName("pellets")] public int Pellets { get; init; }
+    [JsonPropertyName("powerPellets")] public int PowerPellet { get; init; }
 
     [JsonPropertyName("colour")] public required string Colour { get; init; }
-
-    public int CountNormal => Pellets?.Count(pellet => !pellet.IsPowerPellet) ?? 0;
 
     public bool Equals(Box? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
-        return (Equals(Pellets, other.Pellets) || (Pellets?.Count == 0 && other.Pellets?.Count == 0)) &&
-               Colour == other.Colour;
-    }
-
-    public void Add(Pellet pellet)
-    {
-        Pellets?.Add(pellet);
+        return Pellets == other.Pellets && PowerPellet == other.PowerPellet && Colour == other.Colour;
     }
 
     public override bool Equals(object? obj)
@@ -30,5 +23,5 @@ public class Box : IEquatable<Box>
         return obj.GetType() == GetType() && Equals((Box)obj);
     }
 
-    public override int GetHashCode() => HashCode.Combine(Pellets, Colour);
+    public override int GetHashCode() => HashCode.Combine(Pellets, PowerPellet, Colour);
 }
