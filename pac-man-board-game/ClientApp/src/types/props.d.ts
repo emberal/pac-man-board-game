@@ -11,6 +11,11 @@ interface ChildProps extends ComponentProps {
   children?: React.JSX.Element | string,
 }
 
+interface LinkProps extends ChildProps {
+  to: string,
+  newTab?: boolean,
+}
+
 interface ButtonProps extends ChildProps {
   onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
   disabled?: boolean,

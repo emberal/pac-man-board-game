@@ -2,28 +2,27 @@ import React, {FC} from "react";
 import {Link} from "react-router-dom";
 
 const NavMenu: FC = () => {
-
-  const [collapsed, setCollapsed] = React.useState(true);
-
-  function toggleNavbar() {
-    setCollapsed(!collapsed);
-  }
-
   return (
     <header>
-      <nav className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3">
-        <Link to="/">Pac-Man Board Game</Link>
-        <div onClick={toggleNavbar} className="mr-2"/>
-        <div className="d-sm-inline-flex flex-sm-row-reverse">
-          <ul className="navbar-nav flex-grow">
-            <Link className="text-dark" to="/">Home</Link>
-            <Link className="text-dark" to="/counter">Counter</Link>
-            <Link to={"/lobby"}>Lobby</Link>
-          </ul>
-        </div>
+      <nav className="mb-3 flex justify-between border-b-2">
+        <Link to="/"><h2 className={"my-1"}>Pac-Man Board Game</h2></Link>
+
+        <ul className="inline-flex gap-2 items-center mr-5">
+          <NavItem to="/">Home</NavItem>
+          <NavItem to={"/lobby"}>Lobby</NavItem>
+          <NavItem className={"mx-2"} to={"/login"}>Login</NavItem>
+
+          {/*TODO show signed in user when signed in, otherwise login button*/}
+        </ul>
       </nav>
     </header>
   );
 };
 
 export default NavMenu;
+
+const NavItem: FC<LinkProps> = ({to, children, className}) => (
+  <li>
+    <Link className={`hover:underline ${className}`} to={to}>{children}</Link>
+  </li>
+)
