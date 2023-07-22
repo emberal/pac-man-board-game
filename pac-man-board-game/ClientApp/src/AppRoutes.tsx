@@ -7,7 +7,7 @@ import Login from "./pages/login";
 const AppRoutes = [
   {
     index: true,
-    element: <LobbyPage/>
+    element: <LobbyPage/> // TODO change to home page
   },
   {
     path: "/counter",
@@ -16,10 +16,12 @@ const AppRoutes = [
   {
     path: "/game/:id",
     element: <Game/>,
+    secured: true
   },
   {
     path: "/lobby",
     element: <LobbyPage/>,
+    secured: true
   },
   {
     path: "/login",

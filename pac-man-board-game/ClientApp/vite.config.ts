@@ -7,9 +7,15 @@ import fs from "fs";
 // @ts-ignore
 import path from "path";
 import {execSync} from "child_process";
+import jotaiDebugLabel from 'jotai/babel/plugin-debug-label'
+import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh'
+import {nodePolyfills} from "vite-plugin-node-polyfills";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react({babel: {plugins: [jotaiDebugLabel, jotaiReactRefresh]}}),
+    nodePolyfills()
+  ],
   build: {
     outDir: "build",
   },

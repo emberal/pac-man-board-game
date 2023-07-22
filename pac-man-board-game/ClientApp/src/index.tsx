@@ -4,6 +4,7 @@ import {BrowserRouter} from 'react-router-dom';
 import {App} from './App';
 // @ts-ignore
 import reportWebVitals from './reportWebVitals';
+import {DevTools} from "jotai-devtools";
 
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
@@ -12,6 +13,7 @@ const root = createRoot(rootElement);
 
 root.render(
   <BrowserRouter basename={baseUrl ?? undefined}>
+    <DevTools/>
     <App/>
   </BrowserRouter>);
 
