@@ -1,9 +1,8 @@
 import Pellet from "./pellet";
-import {Colour} from "./colour";
 
-export default class Box {
-  public pellets: Pellet[];
-  public readonly colour: Colour;
+export default class Box implements BoxProps {
+  public pellets;
+  public readonly colour;
 
   public constructor({colour, pellets = []}: BoxProps) {
     this.colour = colour;

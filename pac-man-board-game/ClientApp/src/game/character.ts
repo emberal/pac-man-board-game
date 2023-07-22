@@ -7,12 +7,12 @@ export enum CharacterType {
   dummy,
 }
 
-export class Character {
-  public readonly colour: Colour;
-  public position: Path | null;
-  public isEatable: boolean;
-  public readonly spawnPosition: DirectionalPosition | null;
-  public readonly type: CharacterType;
+export class Character implements CharacterProps {
+  public readonly colour;
+  public position;
+  public isEatable;
+  public readonly spawnPosition;
+  public readonly type;
 
   public constructor(
     {
@@ -66,7 +66,7 @@ export class Character {
   }
 }
 
-export class PacMan extends Character {
+export class PacMan extends Character implements CharacterProps {
 
   public constructor({colour, position, isEatable = true, spawnPosition, type = CharacterType.pacMan}: CharacterProps) {
     super({colour: colour, position: position, isEatable: isEatable, spawnPosition: spawnPosition, type: type});
@@ -74,14 +74,14 @@ export class PacMan extends Character {
 
 }
 
-export class Ghost extends Character {
+export class Ghost extends Character implements CharacterProps {
 
   public constructor({colour, position, isEatable, spawnPosition, type = CharacterType.ghost}: CharacterProps) {
     super({colour: colour, position: position, isEatable: isEatable, spawnPosition: spawnPosition, type: type});
   }
 }
 
-export class Dummy extends Character {
+export class Dummy extends Character implements CharacterProps {
 
   public constructor(position: Path) { // TODO see-through
     super({

@@ -1,6 +1,5 @@
 import {Character, CharacterType} from "./character";
 import Box from "./box";
-import {Colour} from "./colour";
 import {getDefaultStore} from "jotai";
 import {currentPlayerNameAtom, playersAtom} from "../utils/state";
 import Pellet from "./pellet";
@@ -13,12 +12,13 @@ export enum State {
   disconnected
 }
 
-export default class Player {
-  public readonly username: string;
-  public readonly pacMan: Character;
-  public readonly colour: Colour;
-  public readonly box: Box;
-  public state: State;
+export default class Player implements PlayerProps {
+  private static store = getDefaultStore();
+  public readonly username;
+  public readonly pacMan;
+  public readonly colour;
+  public readonly box;
+  public state;
 
   constructor(props: PlayerProps) {
     this.username = props.username;
@@ -32,8 +32,7 @@ export default class Player {
   }
 
   public isTurn(): boolean {
-    const store = getDefaultStore();
-    return store.get(currentPlayerNameAtom) === this.username;
+    return Player.store.get(currentPlayerNameAtom) === this.username;
   }
 
   public addPellet(pellet: Pellet): void {
@@ -46,8 +45,7 @@ export default class Player {
       if (pellet)
         this.box.addPellet(pellet);
     }
-    const store = getDefaultStore();
-    store.set(playersAtom, store.get(playersAtom).map(player => player));
+    Player.store.set(playersAtom, Player.store.get(playersAtom).map(player => player));
   }
 
 }
