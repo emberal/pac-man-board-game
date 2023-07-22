@@ -1,6 +1,6 @@
 import React, {FC, MouseEventHandler} from "react";
 import {State} from "../game/player";
-import {currentPlayerAtom, getPlayerAtom, playersAtom, rollDiceButtonAtom} from "../utils/state";
+import {currentPlayerAtom, playersAtom, rollDiceButtonAtom, thisPlayerAtom} from "../utils/state";
 import {useAtomValue} from "jotai";
 import {Button} from "./button";
 import rules from "../game/rules";
@@ -17,7 +17,7 @@ const GameButton: FC<GameButtonProps> = (
   }) => {
 
   const currentPlayer = useAtomValue(currentPlayerAtom);
-  const thisPlayer = useAtomValue(getPlayerAtom);
+  const thisPlayer = useAtomValue(thisPlayerAtom);
   const players = useAtomValue(playersAtom);
   const activeRollDiceButton = useAtomValue(rollDiceButtonAtom);
 

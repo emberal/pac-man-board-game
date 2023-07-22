@@ -2,14 +2,14 @@ import React, {FC, FormEvent} from "react";
 import {Button} from "../components/button";
 import Input from "../components/input";
 import {useSetAtom} from "jotai";
-import {setPlayerAtom} from "../utils/state";
+import {thisPlayerAtom} from "../utils/state";
 import Player from "../game/player";
 import {useNavigate} from "react-router-dom";
 import {postData} from "../utils/api";
 
 const Login: FC = () => {
 
-  const setThisPlayer = useSetAtom(setPlayerAtom);
+  const setThisPlayer = useSetAtom(thisPlayerAtom);
   const navigate = useNavigate();
 
   async function handleLogin(e: FormEvent<HTMLFormElement>): Promise<void> {

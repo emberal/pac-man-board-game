@@ -5,13 +5,13 @@ import Dropdown from "../components/dropdown";
 import {Colour, getColours} from "../game/colour";
 import {useNavigate} from "react-router-dom";
 import {useSetAtom} from "jotai";
-import {setPlayerAtom} from "../utils/state";
+import {thisPlayerAtom} from "../utils/state";
 
 const Home: FC = () => {
 
   const input = useRef<HTMLInputElement>(null);
   const dropdown = useRef<HTMLSelectElement>(null);
-  const setPlayer = useSetAtom(setPlayerAtom);
+  const setPlayer = useSetAtom(thisPlayerAtom);
   const navigate = useNavigate();
 
   function formHandler(): void {

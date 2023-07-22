@@ -25,10 +25,10 @@ export const allCharactersAtom = atom(get => [...get(playerCharactersAtom), ...g
  */
 const playerAtom = atom<Player | undefined>(undefined);
 /**
- * Gets the player that is currently logged in. If playerAtom is undefined, then it will try to get the player from session storage.
- * @returns An atom representing the player that is currently logged in, or undefined if there is no player logged in.
+ * Gets a getter and setter to get or set the player that is currently logged in.
+ * @returns A tuple containing a getter and setter to get or set the player that is currently logged in.
  */
-export const getPlayerAtom = atom(get => {
+export const thisPlayerAtom = atom(get => {
   const atomValue = get(playerAtom);
   if (!atomValue) {
     const item = sessionStorage.getItem(playerStorage);
@@ -38,13 +38,7 @@ export const getPlayerAtom = atom(get => {
     }
   }
   return atomValue;
-});
-/**
- * Sets the player that is currently logged in. If player is undefined, then it will remove the player from session storage.
- * @param player The player that is currently logged in, or undefined if there is no player logged in.
- * @return An atom used to set the player that is currently logged in.
- */
-export const setPlayerAtom = atom(null, (get, set, player: Player | undefined) => {
+}, (get, set, player: Player | undefined) => {
   set(playerAtom, player);
   if (player)
     sessionStorage.setItem(playerStorage, JSON.stringify(player));

@@ -1,6 +1,6 @@
 import React, {FC} from "react";
 import {useAtom, useAtomValue} from "jotai";
-import {getPlayerAtom, selectedDiceAtom,} from "../utils/state";
+import {selectedDiceAtom, thisPlayerAtom,} from "../utils/state";
 import {Button} from "./button";
 
 export const AllDice: FC<{ values?: number[] } & ComponentProps> = (
@@ -38,7 +38,7 @@ export const Dice: FC<DiceProps> = (
     onClick,
   }) => {
 
-  const thisPlayer = useAtomValue(getPlayerAtom);
+  const thisPlayer = useAtomValue(thisPlayerAtom);
 
   function handleClick() {
     if (onClick && value) {
