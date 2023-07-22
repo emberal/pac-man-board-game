@@ -1,7 +1,7 @@
-import React, {FC, Suspense} from "react";
+import React, {FC, Suspense, useEffect} from "react";
 import {atom, useAtomValue} from "jotai";
 import {Button} from "../components/button";
-import {selectedMapAtom, thisPlayerAtom} from "../utils/state";
+import {getPlayerAtom, selectedMapAtom} from "../utils/state";
 import {getData, postData} from "../utils/api";
 import {getPacManSpawns} from "../game/map";
 import {useNavigate} from "react-router-dom";
@@ -13,7 +13,7 @@ const fetchAtom = atom(async () => {
 
 const LobbyPage: FC = () => { // TODO check if player is defined in storage, if not redirect to login
 
-  const thisPlayer = useAtomValue(thisPlayerAtom);
+  const thisPlayer = useAtomValue(getPlayerAtom);
   const navigate = useNavigate();
   const map = useAtomValue(selectedMapAtom);
 
@@ -35,6 +35,10 @@ const LobbyPage: FC = () => { // TODO check if player is defined in storage, if 
 
   }
 
+  useEffect(() => {
+    console.debug(thisPlayer)
+  })
+
   return (
     <>
       <Button onClick={createGame}>New game</Button>
@@ -50,7 +54,7 @@ export default LobbyPage;
 const GameTable: FC<ComponentProps> = ({className}) => {
 
   const data = useAtomValue(fetchAtom);
-  const thisPlayer = useAtomValue(thisPlayerAtom);
+  const thisPlayer = useAtomValue(getPlayerAtom);
   const navigate = useNavigate();
 
   async function joinGame(gameId: string): Promise<void> {

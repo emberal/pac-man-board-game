@@ -1,10 +1,9 @@
 import Player from "../game/player";
 import {atom} from "jotai";
-import {atomWithStorage, createJSONStorage} from "jotai/utils";
 import {Ghost} from "../game/character";
 import {customMap} from "../game/map";
 
-const playerStorage = createJSONStorage<Player | undefined>(() => sessionStorage);
+const playerStorage = "player";
 /**
  * All players in the game.
  */
@@ -22,14 +21,35 @@ export const ghostsAtom = atom<Ghost[]>([]);
  */
 export const allCharactersAtom = atom(get => [...get(playerCharactersAtom), ...get(ghostsAtom)]);
 /**
- * The player that is currently using this browser.
+ * The player that is currently logged in.
  */
-export const thisPlayerAtom = atomWithStorage<Player | undefined>("player", undefined, {
-  ...playerStorage,
-  getItem(key, initialValue): Player | undefined {
-    const playerProps = playerStorage.getItem(key, initialValue) as PlayerProps | undefined;
-    return playerProps ? new Player(playerProps) : undefined;
-  },
+const playerAtom = atom<Player | undefined>(undefined);
+/**
+ * Gets the player that is currently logged in. If playerAtom is undefined, then it will try to get the player from session storage.
+ * @returns An atom representing the player that is currently logged in, or undefined if there is no player logged in.
+ */
+export const getPlayerAtom = atom(get => {
+  const atomValue = get(playerAtom);
+  if (!atomValue) {
+    const item = sessionStorage.getItem(playerStorage);
+    if (item) {
+      const playerProps = JSON.parse(item) as PlayerProps;
+      return new Player(playerProps);
+    }
+  }
+  return atomValue;
+});
+/**
+ * Sets the player that is currently logged in. If player is undefined, then it will remove the player from session storage.
+ * @param player The player that is currently logged in, or undefined if there is no player logged in.
+ * @return An atom used to set the player that is currently logged in.
+ */
+export const setPlayerAtom = atom(null, (get, set, player: Player | undefined) => {
+  set(playerAtom, player);
+  if (player)
+    sessionStorage.setItem(playerStorage, JSON.stringify(player));
+  else
+    sessionStorage.removeItem(playerStorage);
 });
 /**
  * All dice that have been rolled.
