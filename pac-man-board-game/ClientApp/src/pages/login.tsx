@@ -1,4 +1,4 @@
-import React, {FC, FormEvent} from "react";
+import React, {FC, FormEvent, useState} from "react";
 import {Button} from "../components/button";
 import Input from "../components/input";
 import {useSetAtom} from "jotai";
@@ -11,6 +11,7 @@ const Login: FC = () => {
 
   const setThisPlayer = useSetAtom(thisPlayerAtom);
   const navigate = useNavigate();
+  const [error, setError] = useState<string | undefined>();
 
   async function handleLogin(e: FormEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault();
@@ -30,23 +31,27 @@ const Login: FC = () => {
 
 
     if (response.ok) {
-      const data = await response.json();
-      console.debug("Login successful: ", data);
-      setThisPlayer(new Player(data as PlayerProps));
+      const data = await response.json() as PlayerProps;
+      setThisPlayer(new Player(data));
       navigate("/lobby");
     } else {
       const data = await response.text();
-      console.error("Error: ", data);
-      // TODO display error
+      console.error(data);
+      setError(data);
     }
 
   }
 
-  return ( // TODO prettify
-    <form onSubmit={handleLogin}>
-      <h1>Login</h1>
-      <Input name={"username"} placeholder={"Username"}/>
-      <Input name={"password"} type={"password"} placeholder={"Password"}/>
+  const username = "username", password = "password";
+
+  return (
+    <form onSubmit={handleLogin} className={"container w-fit mx-auto flex flex-col gap-2"}>
+      <h1 className={"my-5"}>Login</h1>
+      {error && <p className={"text-red-500"}>{error}</p>}
+      <label htmlFor={username}>Username:</label>
+      <Input id={username} name={username} placeholder={"Username"} required/>
+      <label htmlFor={password}>Password:</label>
+      <Input id={password} name={password} type={"password"} placeholder={"Password"} required/>
       <Button type={"submit"}>Login</Button>
     </form>
   );
