@@ -1,4 +1,4 @@
-import React, {FC} from "react";
+import React, {FC, useEffect} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {useAtom, useAtomValue} from "jotai";
 import {thisPlayerAtom} from "../utils/state";
@@ -20,7 +20,6 @@ const NavMenu: FC = () => {
             player === undefined ?
               <NavItem className={"mx-2"} to={"/login"}>Login</NavItem>
               :
-              /*TODO show user instead, when clicking a dropdown menu opens where the user can log out or other actions*/
               <ProfileDropdown className={"mx-2"}/>
           }
         </ul>
@@ -35,11 +34,11 @@ const NavItem: FC<LinkProps> = ({to, children, className}) => (
   <li>
     <Link className={`hover:underline ${className}`} to={to}>{children}</Link>
   </li>
-)
+);
 
 const ProfileDropdown: FC<ComponentProps> = ({className}) => {
   const [player, setPlayer] = useAtom(thisPlayerAtom);
-  const [isOpened, toggle] = useToggle(false);
+  const [isOpened, toggleOpen] = useToggle();
   const navigate = useNavigate();
 
   async function logout(): Promise<void> {
@@ -47,18 +46,35 @@ const ProfileDropdown: FC<ComponentProps> = ({className}) => {
     navigate("/login");
   }
 
+  useEffect(() => {
+
+    if (isOpened) {
+      function closeIfOutsideButton(e: MouseEvent): void {
+        if (isOpened && e.target instanceof HTMLElement) {
+          if (e.target.closest("#profile-dropdown") === null) {
+            toggleOpen(false);
+          }
+        }
+      }
+
+      document.addEventListener("click", closeIfOutsideButton);
+      return () => document.removeEventListener("click", closeIfOutsideButton);
+    }
+
+  }, [isOpened]);
+
   return (
     <>
-      <li
-        className={`inline-flex justify-center items-center cursor-pointer hover:bg-gray-100 h-full px-2 ${className}`}
-        onClick={() => toggle()}>
+      <li id={"profile-dropdown"}
+          className={`inline-flex-center cursor-pointer hover:bg-gray-100 h-full px-2 ${className}`}
+          onClick={() => toggleOpen()}>
         <UserCircleIcon className={"w-7"}/>
         <span>{player?.username}</span>
       </li>
       {
         isOpened &&
-          <div className={"absolute right-2 border rounded-b -bottom-7 px-5"}>
-              <button onClick={logout} className={"hover:underline"}>Logout</button>
+          <div className={"absolute right-2 border rounded-b -bottom-9 px-5"}>
+              <button onClick={logout} className={"hover:underline py-1"}>Logout</button>
           </div>
       }
     </>

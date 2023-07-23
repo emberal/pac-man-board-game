@@ -1,4 +1,4 @@
-import React, {FC, Suspense, useEffect} from "react";
+import React, {FC, Suspense} from "react";
 import {atom, useAtomValue} from "jotai";
 import {Button} from "../components/button";
 import {selectedMapAtom, thisPlayerAtom} from "../utils/state";
@@ -11,7 +11,7 @@ const fetchAtom = atom(async () => {
   return await response.json() as Game[];
 });
 
-const LobbyPage: FC = () => { // TODO check if player is defined in storage, if not redirect to login
+const LobbyPage: FC = () => {
 
   const thisPlayer = useAtomValue(thisPlayerAtom);
   const navigate = useNavigate();
@@ -25,7 +25,6 @@ const LobbyPage: FC = () => { // TODO check if player is defined in storage, if 
 
     if (response.ok) {
       const data = await response.json();
-      console.debug("Game created: ", data);
       navigate("/game/" + data.id)
     } else {
       const data = await response.text();
@@ -34,10 +33,6 @@ const LobbyPage: FC = () => { // TODO check if player is defined in storage, if 
     }
 
   }
-
-  useEffect(() => {
-    console.debug(thisPlayer)
-  })
 
   return (
     <>
@@ -60,12 +55,9 @@ const GameTable: FC<ComponentProps> = ({className}) => {
   async function joinGame(gameId: string): Promise<void> {
     if (thisPlayer === undefined) throw new Error("Player is undefined");
 
-    console.debug("Joining game " + gameId);
-
     const result = await postData("/game/join/" + gameId, {body: thisPlayer});
 
     if (result.ok) {
-      console.debug("Joined game " + gameId, await result.text());
       navigate("/game/" + gameId);
     } else {
       console.error("Failed to join game " + gameId, await result.text());
