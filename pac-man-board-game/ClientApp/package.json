@@ -18,6 +18,7 @@
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
     "@vitejs/plugin-react": "^4.0.2",
+    "@vitest/coverage-c8": "^0.33.0",
     "autoprefixer": "^10.4.14",
     "cross-env": "^7.0.3",
     "happy-dom": "^9.20.3",
@@ -35,13 +36,12 @@
     "nth-check": "^3.0.1"
   },
   "scripts": {
-    "prestart": "node aspnetcore-https && node aspnetcore-react",
+    "prestart": "npx only-allow pnpm && node aspnetcore-https && node aspnetcore-react",
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
     "test": "cross-env CI=true vitest",
-    "coverage": "vitest run --coverage",
-    "lint": "eslint ./src/"
+    "coverage": "vitest run --coverage"
   },
   "eslintConfig": {
     "extends": [
