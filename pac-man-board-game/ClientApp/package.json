@@ -43,11 +43,6 @@
     "test": "cross-env CI=true vitest",
     "coverage": "vitest run --coverage"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",

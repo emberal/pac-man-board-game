@@ -19,6 +19,7 @@ public class GameService : WebSocketService
     /// </summary>
     public SynchronizedCollection<Game> Games { get; } = new();
 
+    [Obsolete("Use CreateAndJoin instead")]
     public Game AddPlayer(Player player, Queue<DirectionalPosition> spawns)
     {
         var index = 0;

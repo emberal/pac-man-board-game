@@ -75,7 +75,7 @@ public class ActionService : IActionService
         return jsonElement;
     }
 
-    public List<Player> SetPlayerInfo(JsonElement? jsonElement) // TODO split up into two actions
+    public List<Player> SetPlayerInfo(JsonElement? jsonElement) // TODO split up into two actions, join and create
     {
         var data = jsonElement?.Deserialize<PlayerInfoData>() ?? throw new NullReferenceException("Data is null");
         Player = data.Player;
@@ -93,7 +93,7 @@ public class ActionService : IActionService
         }
         else
         {
-            Game = _gameService.AddPlayer(Player, data.Spawns);
+            Game = _gameService.CreateAndJoin(Player, data.Spawns);
         }
 
         Game.Connections += SendSegment;

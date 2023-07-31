@@ -32,7 +32,7 @@ public class GameController : GenericController
         return _gameService.Games;
     }
 
-    [HttpPost("join/{gameId}")]
+    [HttpPost("join/{gameId:guid}")]
     public IActionResult JoinGame(Guid gameId, [FromBody] Player player) // TODO what if player is in a game already?
     {
         Logger.Log(LogLevel.Debug, "Joining game {}", gameId);

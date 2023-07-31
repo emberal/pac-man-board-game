@@ -148,8 +148,9 @@ public class ActionServiceTests
     [Test]
     public void Ready_NotAllReady()
     {
+        var game = _gameService.CreateAndJoin(_whitePlayer, _spawns);
+        _gameService.JoinById(game.Id, _blackPlayer);
         _service.SetPlayerInfo(_whiteMessage.Data);
-        _service.SetPlayerInfo(_blackMessage.Data);
 
         var result = _service.Ready();
         if (result is ReadyData r1)
@@ -157,6 +158,7 @@ public class ActionServiceTests
         else
             Assert.Fail("Result should be ReadyData");
 
+        _gameService.JoinById(game.Id, _redPlayer);
         _service.SetPlayerInfo(_redMessage.Data);
 
         result = _service.Ready();
