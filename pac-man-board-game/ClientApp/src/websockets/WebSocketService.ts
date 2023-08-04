@@ -1,3 +1,5 @@
+import {wait} from "../utils/utils";
+
 interface IWebSocket {
   onOpen?: VoidFunction,
   onReceive?: MessageEventFunction,
@@ -5,6 +7,9 @@ interface IWebSocket {
   onError?: VoidFunction
 }
 
+/**
+ * WebSocketService class provides a WebSocket client interface for easy communication with a WebSocket server.
+ */
 export default class WebSocketService {
   private ws?: WebSocket;
   private readonly _url: string;
@@ -49,6 +54,9 @@ export default class WebSocketService {
     this.ws.onerror = onError;
   }
 
+  /**
+   * Opens a WebSocket connection with the specified URL and sets the event callbacks.
+   */
   public open(): void {
     if (typeof WebSocket === "undefined" || this.isConnecting()) return;
     this.ws = new WebSocket(this._url);
@@ -58,20 +66,21 @@ export default class WebSocketService {
     if (this._onError) this.ws.onerror = this._onError;
   }
 
-  public waitForOpen(): Promise<void> {
-    return new Promise<void>((resolve) => {
-      const f = () => {
-        if (this.isOpen()) {
-          if (this._onOpen) this.onOpen = this._onOpen;
-          return resolve();
-        }
-        setTimeout(f, 50);
-      };
-
-      f();
-    });
+  /**
+   * Waits until the "isOpen" condition is met.
+   *
+   * @returns {Promise<void>} - A promise that resolves when the "isOpen" condition is met.
+   */
+  public async waitForOpen(): Promise<void> {
+    await wait(() => this.isOpen());
+    if (this._onOpen) this.onOpen = this._onOpen;
   }
 
+  /**
+   * Sends data to the WebSocket server. If the data is an ActionMessage object, it will be stringified.
+   *
+   * @param {ActionMessage | string} data - The data to send. It can be an ActionMessage object or a string.
+   */
   public send(data: ActionMessage | string): void {
     if (typeof data !== "string") {
       data = JSON.stringify(data);
@@ -79,42 +88,35 @@ export default class WebSocketService {
     this.ws?.send(data);
   }
 
-  public async sendAndReceive<R>(data: ActionMessage): Promise<R> {
-    if (!this.isOpen()) return Promise.reject("WebSocket is not open");
-
-    let result: R | undefined;
-    this.ws!.onmessage = (event: MessageEvent<string>) => {
-      result = JSON.parse(event.data) as R;
-    };
-
-    this.send(data);
-    return new Promise<R>((resolve) => {
-      const f = () => {
-        if (result === undefined) {
-          setTimeout(f, 50);
-          return;
-        }
-        const resolved = resolve(result);
-        if (this._onReceive) this.onReceive = this._onReceive;
-        return resolved;
-      };
-
-      f();
-    });
-  }
-
+  /**
+   * Closes the WebSocket connection.
+   */
   public close(): void {
     this.ws?.close();
   }
 
+  /**
+   * Checks if the WebSocket is open.
+   * @returns {boolean} Returns true if the WebSocket is open, otherwise false.
+   */
   public isOpen(): boolean {
     return this.ws?.readyState === WebSocket?.OPEN;
   }
 
+  /**
+   * Checks if the WebSocket connection is currently in the process of connecting.
+   *
+   * @returns {boolean} - Returns 'true' if the WebSocket is connecting, otherwise 'false'.
+   */
   public isConnecting(): boolean {
     return this.ws?.readyState === WebSocket?.CONNECTING;
   }
 
+  /**
+   * Check if the WebSocket connection is closed.
+   *
+   * @returns {boolean} Returns true if the WebSocket connection is closed, false otherwise.
+   */
   public isClosed(): boolean {
     return this.ws?.readyState === WebSocket?.CLOSED;
   }
