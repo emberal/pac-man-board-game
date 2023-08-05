@@ -2,6 +2,8 @@ type MessageEventFunction<T = any> = (data: MessageEvent<T>) => void;
 
 type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
 
+type GUID = `${string}-${string}-${string}-${string}-${string}`;
+
 type WebSocketData = string | ArrayBufferLike | Blob | ArrayBufferView;
 
 type ActionMessage<T = any> = {
@@ -54,7 +56,12 @@ type ApiRequest = {
   body?: any
 }
 
-type PlayerInfoData = {
+type JoinGameData = {
+  readonly username: string,
+  readonly gameId: GUID,
+}
+
+type CreateGameData = {
   readonly player: PlayerProps,
   readonly spawns: DirectionalPosition[],
 }

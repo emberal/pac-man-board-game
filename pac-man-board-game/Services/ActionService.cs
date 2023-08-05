@@ -1,6 +1,7 @@
 using System.Net.WebSockets;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using pacMan.Exceptions;
 using pacMan.GameStuff;
 using pacMan.GameStuff.Items;
 
@@ -13,7 +14,7 @@ public interface IActionService
     WebSocket? WebSocket { set; }
     void DoAction(ActionMessage message);
     List<int> RollDice();
-    List<Player> SetPlayerInfo(JsonElement? jsonElement);
+    List<Player> FindGame(JsonElement? jsonElement);
     object? HandleMoveCharacter(JsonElement? jsonElement);
     object Ready();
     string FindNextPlayer();
@@ -45,7 +46,7 @@ public class ActionService : IActionService
         {
             GameAction.RollDice => RollDice(),
             GameAction.MoveCharacter => HandleMoveCharacter(message.Data),
-            GameAction.PlayerInfo => SetPlayerInfo(message.Data),
+            GameAction.JoinGame => FindGame(message.Data),
             GameAction.Ready => Ready(),
             GameAction.NextPlayer => FindNextPlayer(),
             GameAction.Disconnect => LeaveGame(),
@@ -75,29 +76,22 @@ public class ActionService : IActionService
         return jsonElement;
     }
 
-    public List<Player> SetPlayerInfo(JsonElement? jsonElement) // TODO split up into two actions, join and create
+    public List<Player> FindGame(JsonElement? jsonElement)
     {
-        var data = jsonElement?.Deserialize<PlayerInfoData>() ?? throw new NullReferenceException("Data is null");
-        Player = data.Player;
+        // TODO Receive Username and GameId
+        var data = jsonElement?.Deserialize<JoinGameData>() ?? throw new NullReferenceException("Data is null");
 
-        Game? game;
-        if ((game = _gameService.FindGameByUsername(Player.Username)) != null)
-        {
-            var player = game.Players.Find(p => p.Username == Player.Username);
-            if (player is null) throw new NullReferenceException("Player is null");
+        var game = _gameService.Games.FirstOrDefault(game => game.Id == data.GameId) ??
+                   throw new GameNotFoundException();
 
-            player.State = game.IsGameStarted ? State.InGame : State.WaitingForPlayers; // TODO doesn't work anymore
-            Player = player;
-            Game = game;
-            // TODO send missing data: Dices, CurrentPlayer, Ghosts
-        }
-        else
-        {
-            Game = _gameService.CreateAndJoin(Player, data.Spawns);
-        }
+        var player = game.Players.Find(p => p.Username == data.Username)
+                     ?? throw new PlayerNotFoundException("Player was not found in game");
 
+        player.State = game.IsGameStarted ? State.InGame : State.WaitingForPlayers; // TODO doesn't work anymore
+        Player = player;
+        Game = game;
+        // TODO send missing data: Dices, CurrentPlayer, Ghosts | Return Game instead?
         Game.Connections += SendSegment;
-
         return Game.Players;
     }
 
@@ -147,7 +141,18 @@ public class ActionService : IActionService
     }
 }
 
-public struct PlayerInfoData
+public struct JoinGameData
+{
+    [JsonInclude]
+    [JsonPropertyName("username")]
+    public required string Username { get; init; }
+
+    [JsonInclude]
+    [JsonPropertyName("gameId")]
+    public required Guid GameId { get; init; }
+}
+
+public struct CreateGameData
 {
     [JsonInclude]
     [JsonPropertyName("player")]

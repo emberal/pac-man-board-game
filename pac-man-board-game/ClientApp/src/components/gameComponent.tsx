@@ -3,14 +3,13 @@ import {AllDice} from "./dice";
 import {doAction, GameAction} from "../utils/actions";
 import GameBoard from "./gameBoard";
 import WebSocketService from "../websockets/WebSocketService";
-import {getPacManSpawns} from "../game/map";
 import Player from "../game/player";
 import PlayerStats from "../components/playerStats";
 import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {diceAtom, ghostsAtom, playersAtom, rollDiceButtonAtom, selectedDiceAtom} from "../utils/state";
 import GameButton from "./gameButton";
 import {Button} from "./button";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 
 const wsService = new WebSocketService(import.meta.env.VITE_API_WS);
 
@@ -19,6 +18,7 @@ const wsService = new WebSocketService(import.meta.env.VITE_API_WS);
 // TODO bug, when refreshing page, some data is missing until other clients make a move
 // TODO bug, stolen pellets are only updated on the client that stole them
 // TODO bug, when navigating to lobby from the navbar while not logged in, the page is blank instead of redirecting to login
+// TODO bug, when refreshing page, the player's button show ready, instead of roll dice or waiting
 
 // TODO spawns should be the same color as the player
 // TODO better front page
@@ -29,6 +29,9 @@ const wsService = new WebSocketService(import.meta.env.VITE_API_WS);
 // TODO sign up player page
 // TODO show box with collected pellets
 // TODO layout
+// TODO end game when all pellets are eaten
+// TODO store stats in backend
+// TODO check if game exists on load, if not redirect to lobby
 
 export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map}) => {
 
@@ -39,7 +42,11 @@ export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map
   const ghosts = useAtomValue(ghostsAtom);
 
   const navigate = useNavigate();
+  const {id} = useParams();
 
+  /**
+   * Rolls the dice for the current player's turn.
+   */
   function rollDice(): void {
     if (!player.isTurn()) return;
 
@@ -48,6 +55,10 @@ export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map
     setActiveRollDiceButton(false);
   }
 
+  /**
+   * Handles the event when the character moves.
+   * @param {Position[]} eatenPellets - An array of positions where the pellets have been eaten.
+   */
   function onCharacterMove(eatenPellets: Position[]): void {
     if (dice && selectedDice) {
       dice.splice(selectedDice.index, 1);
@@ -69,23 +80,37 @@ export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map
     }
   }
 
-  function sendPlayer(): void {
-    wsService.send({
-      action: GameAction.playerInfo,
+  /**
+   * Joins a game by sending a WebSocket request to the server.
+   */
+  function joinGame(): void {
+    wsService.send({ // TODO if returns exception, navigate to lobby
+      action: GameAction.joinGame,
       data: {
-        player: player, spawns: getPacManSpawns(map)
-      } as PlayerInfoData
+        username: player.username,
+        gameId: id,
+      } as JoinGameData
     });
   }
 
+  /**
+   * Sends a ready action to the WebSocket service.
+   */
   function sendReady(): void {
     wsService.send({action: GameAction.ready});
   }
 
+  /**
+   * Ends the current turn and sends a message to the web socket service
+   * to advance to the next player in the game.
+   */
   function endTurn(): void {
     wsService.send({action: GameAction.nextPlayer});
   }
 
+  /**
+   * Leaves the current game and navigates to the lobby.
+   */
   function leaveGame(): void {
     wsService.send({action: GameAction.disconnect});
     navigate("/lobby");
@@ -95,7 +120,7 @@ export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map
     wsService.onReceive = doAction;
     wsService.open();
 
-    wsService.waitForOpen().then(() => sendPlayer());
+    wsService.waitForOpen().then(() => joinGame());
 
     return () => wsService.close();
   }, []);

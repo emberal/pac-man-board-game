@@ -7,7 +7,7 @@ public enum GameAction
 {
     RollDice,
     MoveCharacter,
-    PlayerInfo,
+    JoinGame,
     Ready,
     NextPlayer,
     Disconnect

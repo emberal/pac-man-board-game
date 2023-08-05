@@ -9,7 +9,7 @@ import {Colour} from "../game/colour";
 export enum GameAction {
   rollDice,
   moveCharacter,
-  playerInfo, // TODO rename to joinGame
+  joinGame,
   ready,
   nextPlayer,
   disconnect,
@@ -32,7 +32,7 @@ const ghosts = ghostsProps.map(props => new Ghost(props));
 
 store.set(ghostsAtom, ghosts);
 
-export const doAction: MessageEventFunction<string> = (event): void => { // TODO divide into smaller functions
+export const doAction: MessageEventFunction<string> = (event): void => {
   const message: ActionMessage = JSON.parse(event.data);
   console.debug("Received message:", message);
 
@@ -43,8 +43,8 @@ export const doAction: MessageEventFunction<string> = (event): void => { // TODO
     case GameAction.moveCharacter:
       moveCharacter(message.data);
       break;
-    case GameAction.playerInfo:
-      playerInfo(message.data);
+    case GameAction.joinGame:
+      joinGame(message.data);
       break;
     case GameAction.ready:
       ready(message.data);
@@ -95,7 +95,7 @@ function removeEatenPellets(data?: MoveCharacterData): void {
   }
 }
 
-function playerInfo(data?: PlayerProps[]): void { // TODO missing data when refreshing page
+function joinGame(data?: PlayerProps[]): void { // TODO missing data when refreshing page
   const playerProps = data ?? [];
   spawns = getCharacterSpawns(map).filter(spawn => spawn.type === CharacterType.pacMan);
   store.set(playersAtom, playerProps.map(p => new Player(p)));

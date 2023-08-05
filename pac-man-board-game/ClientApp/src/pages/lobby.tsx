@@ -20,7 +20,7 @@ const LobbyPage: FC = () => {
   async function createGame(): Promise<void> {
 
     const response = await postData("/game/create", {
-      body: {player: thisPlayer, spawns: getPacManSpawns(map)} as PlayerInfoData
+      body: {player: thisPlayer, spawns: getPacManSpawns(map)} as CreateGameData
     });
 
     if (response.ok) {

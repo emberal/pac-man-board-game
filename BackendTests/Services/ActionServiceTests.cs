@@ -12,43 +12,45 @@ public class ActionServiceTests
 {
     private readonly Player _blackPlayer = Players.Create("black");
     private readonly Player _redPlayer = Players.Create("red");
-
     private readonly Player _whitePlayer = Players.Create("white");
     private ActionMessage _blackMessage = null!;
+    private pacMan.Services.Game _game = null!;
     private GameService _gameService = null!;
     private ActionMessage _redMessage = null!;
     private IActionService _service = null!;
 
     private Queue<DirectionalPosition> _spawns = null!;
-
     private ActionMessage _whiteMessage = null!;
+
 
     [SetUp]
     public void Setup()
     {
         _spawns = CreateQueue();
+        _game = new pacMan.Services.Game(_spawns);
         _whiteMessage = new ActionMessage
         {
-            Action = GameAction.PlayerInfo,
-            Data = SerializeData(_whitePlayer)
+            Action = GameAction.JoinGame,
+            Data = SerializeData(_whitePlayer.Username)
         };
         _blackMessage = new ActionMessage
         {
-            Action = GameAction.PlayerInfo,
-            Data = SerializeData(_blackPlayer)
+            Action = GameAction.JoinGame,
+            Data = SerializeData(_blackPlayer.Username)
         };
         _redMessage = new ActionMessage
         {
-            Action = GameAction.PlayerInfo,
-            Data = SerializeData(_redPlayer)
+            Action = GameAction.JoinGame,
+            Data = SerializeData(_redPlayer.Username)
         };
         _gameService = Substitute.For<GameService>(Substitute.For<ILogger<GameService>>());
         _service = new ActionService(Substitute.For<ILogger<ActionService>>(), _gameService);
     }
 
-    private static JsonElement SerializeData(Player player) =>
+    private JsonElement SerializeData(string username) =>
         JsonDocument.Parse(JsonSerializer.Serialize(
-            new PlayerInfoData { Player = player, Spawns = CreateQueue() })
+                new JoinGameData { Username = username, GameId = _game.Id }
+            )
         ).RootElement;
 
     private static Queue<DirectionalPosition> CreateQueue() =>
@@ -81,34 +83,34 @@ public class ActionServiceTests
     [Test]
     public void PlayerInfo_DataIsNull()
     {
-        var message = new ActionMessage { Action = GameAction.PlayerInfo, Data = "null" };
+        var message = new ActionMessage { Action = GameAction.JoinGame, Data = "null" };
         var serialized = JsonDocument.Parse(JsonSerializer.Serialize(message.Data));
-        Assert.Throws<JsonException>(() => _service.SetPlayerInfo(serialized.RootElement));
+        Assert.Throws<JsonException>(() => _service.FindGame(serialized.RootElement));
         message.Data = null;
-        Assert.Throws<NullReferenceException>(() => _service.SetPlayerInfo(message.Data));
+        Assert.Throws<NullReferenceException>(() => _service.FindGame(message.Data));
     }
 
     [Test]
-    public void PlayerInfo_DataIsNotPlayer()
+    public void PlayerInfo_DataIsNotJoinGameData()
     {
         var serialized =
             JsonDocument.Parse(JsonSerializer.Serialize(new Box { Colour = "white" }));
         var message = new ActionMessage
         {
-            Action = GameAction.PlayerInfo,
+            Action = GameAction.JoinGame,
             Data = serialized.RootElement
         };
-        Assert.Throws<JsonException>(() => _service.SetPlayerInfo(message.Data));
+        Assert.Throws<JsonException>(() => _service.FindGame(message.Data));
     }
 
     [Test]
-    public void PlayerInfo_DataIsPlayer()
+    public void PlayerInfo_DataIsUsernameAndGameId()
     {
-        var players = _service.SetPlayerInfo(_whiteMessage.Data);
+        _game.AddPlayer(_whitePlayer);
+        _gameService.Games.Add(_game);
+        var players = _service.FindGame(_whiteMessage.Data);
 
-        var pos = _spawns.Dequeue();
-        _whitePlayer.PacMan.Position = pos;
-        _whitePlayer.PacMan.SpawnPosition = pos;
+        Assert.That(players, Is.InstanceOf<IEnumerable<Player>>());
         Assert.That(new List<Player> { _whitePlayer }, Is.EqualTo(players));
     }
 
@@ -148,9 +150,11 @@ public class ActionServiceTests
     [Test]
     public void Ready_NotAllReady()
     {
-        var game = _gameService.CreateAndJoin(_whitePlayer, _spawns);
+        _gameService.Games.Add(_game);
+        var game = _gameService.JoinById(_game.Id, _whitePlayer);
         _gameService.JoinById(game.Id, _blackPlayer);
-        _service.SetPlayerInfo(_whiteMessage.Data);
+
+        _service.FindGame(_whiteMessage.Data); // Sets white to ready
 
         var result = _service.Ready();
         if (result is ReadyData r1)
@@ -159,7 +163,7 @@ public class ActionServiceTests
             Assert.Fail("Result should be ReadyData");
 
         _gameService.JoinById(game.Id, _redPlayer);
-        _service.SetPlayerInfo(_redMessage.Data);
+        _service.FindGame(_redMessage.Data); // Sets red to ready
 
         result = _service.Ready();
         if (result is ReadyData r2)
@@ -171,7 +175,10 @@ public class ActionServiceTests
     [Test]
     public void Ready_OneReady()
     {
-        _service.SetPlayerInfo(_whiteMessage.Data);
+        _gameService.Games.Add(_game);
+        _gameService.JoinById(_game.Id, _whitePlayer);
+        _service.FindGame(_whiteMessage.Data); // Sets white to ready
+
         var result = _service.Ready();
         // If selected the state is changed to InGame
         _whitePlayer.State = State.InGame;

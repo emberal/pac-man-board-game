@@ -60,7 +60,7 @@ public class GameServiceTests
     public void JoinById_WhenIdNotExists()
     {
         var player = Players.Create("white");
-        _service.AddPlayer(player, _spawns);
+        _service.AddPlayer(player, _spawns); // TODO obsolete
 
         Assert.Throws<GameNotFoundException>(() => _service.JoinById(Guid.NewGuid(), player));
     }
@@ -69,7 +69,7 @@ public class GameServiceTests
     public void JoinById_WhenIdExists()
     {
         var player = Players.Create("white");
-        var group = _service.AddPlayer(player, _spawns);
+        var group = _service.AddPlayer(player, _spawns); // TODO obsolete
 
         var player2 = Players.Create("black");
         var result = _service.JoinById(group.Id, player2);
@@ -90,7 +90,7 @@ public class GameServiceTests
     public void AddPlayer_ToEmptyGroup()
     {
         var player = Players.Create("white");
-        var group = _service.AddPlayer(player, _spawns);
+        var group = _service.AddPlayer(player, _spawns); // TODO obsolete
 
         Assert.Multiple(() =>
         {
@@ -106,7 +106,7 @@ public class GameServiceTests
         for (var i = 0; i < 4; i++)
         {
             var player = Players.Create(i.ToString());
-            _service.AddPlayer(player, _spawns);
+            _service.AddPlayer(player, _spawns); // TODO obsolete
         }
 
         var player5 = Players.Create("white");

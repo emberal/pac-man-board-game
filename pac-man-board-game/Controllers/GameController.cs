@@ -52,7 +52,7 @@ public class GameController : GenericController
     }
 
     [HttpPost("create")]
-    public IActionResult CreateGame([FromBody] PlayerInfoData data)
+    public IActionResult CreateGame([FromBody] CreateGameData data)
     {
         Logger.Log(LogLevel.Debug, "Creating game");
         try
