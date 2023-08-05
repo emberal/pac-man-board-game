@@ -26,7 +26,7 @@ export const allCharactersAtom = atom(get => [...get(playerCharactersAtom), ...g
 const playerAtom = atom<Player | undefined>(undefined);
 /**
  * Gets a getter and setter to get or set the player that is currently logged in.
- * @returns A tuple containing a getter and setter to get or set the player that is currently logged in.
+ * Returns A tuple containing a getter and setter to get or set the player that is currently logged in.
  */
 export const thisPlayerAtom = atom(get => {
   const atomValue = get(playerAtom);
@@ -38,7 +38,7 @@ export const thisPlayerAtom = atom(get => {
     }
   }
   return atomValue;
-}, (get, set, player: Player | undefined) => {
+}, (_get, set, player: Player | undefined) => {
   if (player)
     sessionStorage.setItem(playerStorage, JSON.stringify(player));
   else

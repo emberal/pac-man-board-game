@@ -1,42 +1,27 @@
-import React, {FC, useRef} from "react";
-import Player from "../game/player";
-import Input from "../components/input";
-import Dropdown from "../components/dropdown";
-import {Colour, getColours} from "../game/colour";
-import {useNavigate} from "react-router-dom";
-import {useSetAtom} from "jotai";
+import React, {FC} from "react";
+import {Link} from "react-router-dom";
+import {useAtomValue} from "jotai";
 import {thisPlayerAtom} from "../utils/state";
 
-const Home: FC = () => {
-
-  const input = useRef<HTMLInputElement>(null);
-  const dropdown = useRef<HTMLSelectElement>(null);
-  const setPlayer = useSetAtom(thisPlayerAtom);
-  const navigate = useNavigate();
-
-  function formHandler(): void {
-    if (!input.current || !dropdown.current) return;
-    const player = new Player({
-      username: input.current.value,
-      colour: dropdown.current.value as Colour,
-    });
-    setPlayer(player);
-    navigate("/game");
-  }
+const HomePage: FC = () => {
+  const player = useAtomValue(thisPlayerAtom);
 
   return (
-    <>
-      <h1 className={"w-fit mx-auto"}>Pac-Man The Board Game</h1>
-      <form className={"flex flex-col items-center"} onSubmit={formHandler}>
-        <p>Enter your name:</p>
-        <Input ref={input} required/>
-        <p>Choose a colour:</p>
-        <Dropdown ref={dropdown} options={getColours()}/>
-        <br/>
-        <button type={"submit"}>Find game</button>
-      </form>
-    </>
+    <div className={"container max-w-[800px] mx-auto px-2"}>
+      <h1 className={"w-fit mx-auto"}>Hello {player?.username ?? "Player"}. Do you want to play a game?</h1>
+      <p className={"text-center mt-5"}>
+        {!player ?
+          <>Start by {" "}
+            <Link to={"/login"} className={"text-blue-600"}>logging in</Link>.
+          </>
+          :
+          <>Go to the {" "}
+            <Link to={"/lobby"} className={"text-blue-600"}>lobby</Link> to select a game.
+          </>
+        }
+      </p>
+    </div>
   );
 };
 
-export default Home;
+export default HomePage;

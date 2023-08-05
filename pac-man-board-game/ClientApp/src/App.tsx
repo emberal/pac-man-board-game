@@ -23,6 +23,7 @@ export const App: FC = () => (
  * @param secured Whether or not the page is secured.
  * @constructor The Secured component.
  */
+// TODO only works on first render after refresh
 const Secured: FC<{ secured: boolean } & ChildProps> = ({children, secured}) => {
   const player = useAtomValue(thisPlayerAtom);
   const navigate = useNavigate();

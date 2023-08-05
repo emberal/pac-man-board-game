@@ -5,6 +5,7 @@ import {App} from './App';
 // @ts-ignore
 import reportWebVitals from './reportWebVitals';
 import {DevTools} from "jotai-devtools";
+import DebugMenu from "./components/debugMenu";
 
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
@@ -14,6 +15,7 @@ const root = createRoot(rootElement);
 root.render(
   <BrowserRouter basename={baseUrl ?? undefined}>
     <DevTools/>
+    <DebugMenu/>
     <App/>
   </BrowserRouter>);
 

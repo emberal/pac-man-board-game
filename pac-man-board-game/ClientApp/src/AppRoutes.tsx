@@ -1,13 +1,14 @@
 import React from "react";
 import {Counter} from "./pages/counter";
-import Game from "./pages/game";
+import GamePage from "./pages/game";
 import LobbyPage from "./pages/lobby";
-import Login from "./pages/login";
+import LoginPage from "./pages/login";
+import HomePage from "./pages/home";
 
 const AppRoutes = [
   {
     index: true,
-    element: <LobbyPage/> // TODO change to home page
+    element: <HomePage/>
   },
   {
     path: "/counter",
@@ -15,7 +16,7 @@ const AppRoutes = [
   },
   {
     path: "/game/:id",
-    element: <Game/>,
+    element: <GamePage/>,
     secured: true
   },
   {
@@ -25,7 +26,7 @@ const AppRoutes = [
   },
   {
     path: "/login",
-    element: <Login/>
+    element: <LoginPage/>
   }
 ];
 

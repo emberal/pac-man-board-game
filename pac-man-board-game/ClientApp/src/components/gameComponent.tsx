@@ -18,7 +18,11 @@ const wsService = new WebSocketService(import.meta.env.VITE_API_WS);
 // TODO bug, first player can sometimes roll dice twice
 // TODO bug, when refreshing page, some data is missing until other clients make a move
 // TODO bug, stolen pellets are only updated on the client that stole them
+// TODO bug, when navigating to lobby from the navbar while not logged in, the page is blank instead of redirecting to login
 
+// TODO spawns should be the same color as the player
+// TODO better front page
+// TODO smaller map to fit button and dice on screen
 // TODO guest users
 // TODO store map in backend and save it in state on each client
 // TODO add debug menu on dev, for testing and cheating

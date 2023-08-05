@@ -9,10 +9,11 @@ import {Colour} from "../game/colour";
 export enum GameAction {
   rollDice,
   moveCharacter,
-  playerInfo,
+  playerInfo, // TODO rename to joinGame
   ready,
   nextPlayer,
   disconnect,
+  // TODO add updatePellets
 }
 
 const store = getDefaultStore();

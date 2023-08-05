@@ -7,7 +7,7 @@ import Player from "../game/player";
 import {useNavigate} from "react-router-dom";
 import {postData} from "../utils/api";
 
-const Login: FC = () => {
+const LoginPage: FC = () => {
 
   const setThisPlayer = useSetAtom(thisPlayerAtom);
   const navigate = useNavigate();
@@ -57,4 +57,4 @@ const Login: FC = () => {
   );
 }
 
-export default Login;
+export default LoginPage;

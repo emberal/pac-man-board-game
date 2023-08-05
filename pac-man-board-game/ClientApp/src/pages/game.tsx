@@ -3,7 +3,7 @@ import {GameComponent} from "../components/gameComponent";
 import {useAtomValue} from "jotai";
 import {selectedMapAtom, thisPlayerAtom} from "../utils/state";
 
-const Game: FC = () => {
+const GamePage: FC = () => {
   const player = useAtomValue(thisPlayerAtom);
   const map = useAtomValue(selectedMapAtom);
 
@@ -14,4 +14,4 @@ const Game: FC = () => {
   }
 };
 
-export default Game;
+export default GamePage;
