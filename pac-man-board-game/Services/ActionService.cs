@@ -10,7 +10,7 @@ namespace pacMan.Services;
 public interface IActionService
 {
     Player Player { set; }
-    Game Game { set; }
+    Game? Game { get; set; }
     WebSocket? WebSocket { set; }
     void DoAction(ActionMessage message);
     List<int> RollDice();
@@ -68,7 +68,7 @@ public class ActionService : IActionService
         if (Game != null && jsonElement.HasValue)
         {
             Game.Ghosts = jsonElement.Value.GetProperty("ghosts").Deserialize<List<Character>>() ??
-                          throw new JsonException("Ghosts is null");
+                          throw new NullReferenceException("Ghosts is null");
             Game.Players = jsonElement.Value.GetProperty("players").Deserialize<List<Player>>() ??
                            throw new NullReferenceException("Players is null");
         }
@@ -82,10 +82,10 @@ public class ActionService : IActionService
         var data = jsonElement?.Deserialize<JoinGameData>() ?? throw new NullReferenceException("Data is null");
 
         var game = _gameService.Games.FirstOrDefault(game => game.Id == data.GameId) ??
-                   throw new GameNotFoundException();
+                   throw new GameNotFoundException($"Game was not found, id \"{data.GameId}\" does not exist");
 
         var player = game.Players.Find(p => p.Username == data.Username)
-                     ?? throw new PlayerNotFoundException("Player was not found in game");
+                     ?? throw new PlayerNotFoundException($"Player \"{data.Username}\" was not found in game");
 
         player.State = game.IsGameStarted ? State.InGame : State.WaitingForPlayers; // TODO doesn't work anymore
         Player = player;

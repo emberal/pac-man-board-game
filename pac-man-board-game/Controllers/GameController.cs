@@ -79,11 +79,26 @@ public class GameController : GenericController
         Logger.Log(LogLevel.Information, "Received: {}", stringResult);
         var action = ActionMessage.FromJson(stringResult);
 
-        _actionService.DoAction(action);
+        try
+        {
+            _actionService.DoAction(action);
+        }
+        catch (Exception e)
+        {
+            Logger.Log(LogLevel.Error, "{}", e.Message);
+            action = new ActionMessage { Action = GameAction.Error, Data = e.Message };
+        }
+
         return action.ToArraySegment();
     }
 
-    protected override void Send(ArraySegment<byte> segment) => _actionService.SendToAll(segment);
+    protected override async void Send(ArraySegment<byte> segment)
+    {
+        if (_actionService.Game is not null)
+            _actionService.SendToAll(segment);
+        else if (WebSocket is not null)
+            await _gameService.Send(WebSocket, segment);
+    }
 
     protected override ArraySegment<byte>? Disconnect() =>
         new ActionMessage { Action = GameAction.Disconnect, Data = _actionService.Disconnect() }

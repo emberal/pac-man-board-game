@@ -5,6 +5,7 @@ namespace pacMan.GameStuff;
 
 public enum GameAction
 {
+    Error,
     RollDice,
     MoveCharacter,
     JoinGame,

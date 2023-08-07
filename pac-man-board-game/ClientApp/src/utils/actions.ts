@@ -7,6 +7,7 @@ import {currentPlayerNameAtom, diceAtom, ghostsAtom, playersAtom, rollDiceButton
 import {Colour} from "../game/colour";
 
 export enum GameAction {
+  error,
   rollDice,
   moveCharacter,
   joinGame,
@@ -37,6 +38,9 @@ export const doAction: MessageEventFunction<string> = (event): void => {
   console.debug("Received message:", message);
 
   switch (message.action as GameAction) {
+    case GameAction.error:
+      console.error("Error:", message.data); // TODO show error to user
+      break;
     case GameAction.rollDice:
       setDice(message.data);
       break;

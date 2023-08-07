@@ -84,7 +84,7 @@ const Tile: FC<TileProps> = (
       case TileType.ghostSpawn:
         return "bg-red-500";
       case TileType.pacmanSpawn:
-        return "bg-green-500";
+        return "bg-green-500"; // TODO should be the colour of the player
       default:
         return "bg-black";
     }
