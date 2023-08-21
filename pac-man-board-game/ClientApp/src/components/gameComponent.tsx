@@ -10,28 +10,9 @@ import {diceAtom, ghostsAtom, playersAtom, rollDiceButtonAtom, selectedDiceAtom}
 import GameButton from "./gameButton";
 import {Button} from "./button";
 import {useNavigate, useParams} from "react-router-dom";
+import {getData} from "../utils/api";
 
 const wsService = new WebSocketService(import.meta.env.VITE_API_WS);
-
-// TODO bug, when taking player on last dice, the currentPlayer changes and the wrong character gets to steal
-// TODO bug, first player can sometimes roll dice twice
-// TODO bug, when refreshing page, some data is missing until other clients make a move
-// TODO bug, stolen pellets are only updated on the client that stole them
-// TODO bug, when navigating to lobby from the navbar while not logged in, the page is blank instead of redirecting to login
-// TODO bug, when refreshing page, the player's button show ready, instead of roll dice or waiting
-
-// TODO spawns should be the same color as the player
-// TODO better front page
-// TODO smaller map to fit button and dice on screen
-// TODO guest users
-// TODO store map in backend and save it in state on each client
-// TODO add debug menu on dev, for testing and cheating
-// TODO sign up player page
-// TODO show box with collected pellets
-// TODO layout
-// TODO end game when all pellets are eaten
-// TODO store stats in backend
-// TODO check if game exists on load, if not redirect to lobby
 
 export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map}) => {
 
@@ -84,7 +65,7 @@ export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map
    * Joins a game by sending a WebSocket request to the server.
    */
   function joinGame(): void {
-    wsService.send({ // TODO if returns exception, navigate to lobby
+    wsService.send({
       action: GameAction.joinGame,
       data: {
         username: player.username,
@@ -117,10 +98,17 @@ export const GameComponent: FC<{ player: Player, map: GameMap }> = ({player, map
   }
 
   useEffect(() => {
-    wsService.onReceive = doAction;
-    wsService.open();
 
-    wsService.waitForOpen().then(() => joinGame());
+    getData(`/game/exists/${id}`)
+      .then(res => {
+        if (!res.ok) {
+          return navigate("/lobby");
+        }
+        wsService.onReceive = doAction;
+        wsService.open();
+
+        wsService.waitForOpen().then(() => joinGame());
+      })
 
     return () => wsService.close();
   }, []);

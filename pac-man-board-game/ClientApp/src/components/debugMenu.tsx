@@ -33,15 +33,15 @@ const DebugOptions: FC = () => {
     sessionStorage.clear();
   }
 
-  function resetMap() {
+  function restartGame(): void {
     // TODO
   }
 
   return (
     <div className={"fixed w-max right-2 bottom-16 border-2 z-50 bg-white rounded-xl p-2"}>
       <button onClick={clearSessionStorage}>Clear sessionstorage</button>
-      <br/>
-      <button onClick={resetMap}>Reset map</button>
+      {/*<br/>*/}
+      {/*<button onClick={restartGame}>Restart game</button>*/}
     </div>
   )
 }

@@ -51,6 +51,13 @@ public class GameController : GenericController
         }
     }
 
+    [HttpGet("exists/{gameId:guid}")]
+    public IActionResult GameExists(Guid gameId)
+    {
+        Logger.Log(LogLevel.Debug, "Checking if game {} exists", gameId);
+        return _gameService.Games.Any(game => game.Id == gameId) ? Ok() : NotFound();
+    }
+
     [HttpPost("create")]
     public IActionResult CreateGame([FromBody] CreateGameData data)
     {
