@@ -83,7 +83,7 @@ export class Ghost extends Character implements CharacterProps {
 
 export class Dummy extends Character implements CharacterProps {
 
-  public constructor(position: Path) { // TODO see-through
+  public constructor(position: Path) {
     super({
       colour: Colour.grey,
       position: position,

@@ -39,7 +39,7 @@ export const doAction: MessageEventFunction<string> = (event): void => {
 
   switch (message.action as GameAction) {
     case GameAction.error:
-      console.error("Error:", message.data); // TODO show error to user
+      console.error("Error:", message.data);
       break;
     case GameAction.rollDice:
       setDice(message.data);

@@ -25,7 +25,7 @@ const Board: FC<BoardProps> = (
   const characters = useAtomValue(allCharactersAtom);
   const selectedDice = useAtomValue(selectedDiceAtom);
   const [selectedCharacter, setSelectedCharacter] = useState<Character>();
-  const [possiblePositions, setPossiblePositions] = useState<Path[]>([]); // TODO reset when other client moves a character
+  const [possiblePositions, setPossiblePositions] = useState<Path[]>([]);
   const [hoveredPosition, setHoveredPosition] = useState<Path>();
   const setModalOpen = useSetAtom(modalOpenAtom);
 

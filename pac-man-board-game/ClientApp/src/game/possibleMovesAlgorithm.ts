@@ -2,8 +2,6 @@ import {TileType} from "./tileType";
 import {Character} from "./character";
 import {Direction, getDirections} from "./direction";
 
-// TODO if a Pac-Man with a powerpellet hits a ghost, the Pac-Man can't walk further
-
 /**
  * Finds all the possible positions for the character to move to
  * @param board The board the character is on
@@ -24,7 +22,7 @@ export default function findPossiblePositions(board: GameMap, character: Charact
  * @param steps The number of steps the character can move
  * @param character The current character
  * @param characters All the characters on the map
- * @returns An array of paths the character can move to
+ * @returns {Path[]} An array of paths the character can move to
  */
 function findPossibleRecursive(map: GameMap, currentPath: Path, steps: number, character: Character, characters: Character[]): Path[] {
 
@@ -64,7 +62,7 @@ function findPossibleRecursive(map: GameMap, currentPath: Path, steps: number, c
  * Checks if the current character is on its spawn
  * @param currentPath The current path the character is on
  * @param character The current character
- * @returns True if the character is on its spawn, otherwise false
+ * @returns {boolean} True if the character is on its spawn, otherwise false
  */
 function isCharactersSpawn(currentPath: Path, character: Character): boolean {
   return character.spawnPosition?.at.x === currentPath.end.x && character.spawnPosition.at.y === currentPath.end.y;
@@ -75,7 +73,7 @@ function isCharactersSpawn(currentPath: Path, character: Character): boolean {
  * @param character The current character
  * @param currentPath The current path the character is on
  * @param characters All the characters on the board
- * @returns True if the character is a ghost and hits Pac-Man, otherwise false
+ * @returns {boolean} True if the character is a ghost and hits Pac-Man, otherwise false
  */
 function ghostHitsPacMan(character: Character, currentPath: Path, characters: Character[]): Character | undefined | false {
   return character.isGhost() && characters.find(c => c.isPacMan() && c.isAt(currentPath.end));
@@ -86,7 +84,7 @@ function ghostHitsPacMan(character: Character, currentPath: Path, characters: Ch
  * @param character The current character
  * @param currentPath The current path the character is on
  * @param characters All the characters on the board
- * @returns True if the character hits another character, otherwise false
+ * @returns {boolean} True if the character hits another character, otherwise false
  */
 function characterHitsAnotherCharacter(character: Character, currentPath: Path, characters: Character[]): boolean {
   return characters.find(c => c !== character && c.isAt(currentPath.end)) !== undefined;
@@ -143,7 +141,6 @@ function tryMove(board: GameMap, path: Path, direction: Direction, steps: number
   }
 
   if (path.direction !== (direction + 2) % 4) {
-    // TODO getNewPosition() and check if a character is on the new position
     return findPossibleRecursive(board, {
       end: getNewPosition(), direction: direction, path: path.path
     }, steps, character, characters);
@@ -158,13 +155,18 @@ function tryMove(board: GameMap, path: Path, direction: Direction, steps: number
  * @param steps The number of steps the character can move
  * @param character The current character
  * @param characters All the characters on the map
+ * @returns {Path[]} An array of paths the character can move to
  */
 function addTeleportationTiles(board: GameMap, currentPath: Path, steps: number, character: Character, characters: Character[]): Path[] {
   const possiblePositions = findTeleportationTiles(board);
   const paths: Path[] = [];
   for (const pos of possiblePositions) {
-    if (pos.end.x !== interval(0, board.length - 1, currentPath.end.x) ||
-      pos.end.y !== interval(0, board.length - 1, currentPath.end.y)) {
+
+    function inInterval(coordinate: "x" | "y"): boolean {
+      return pos.end[coordinate] !== interval(0, board.length - 1, currentPath.end[coordinate])
+    }
+
+    if (inInterval("x") || inInterval("y")) {
 
       pos.path = currentPath.path;
       paths.push(...findPossibleRecursive(board, pos, steps, character, characters));
@@ -178,7 +180,7 @@ function addTeleportationTiles(board: GameMap, currentPath: Path, steps: number,
  * @param lower The lower bound
  * @param upper The upper bound
  * @param value The value to check
- * @returns The value if it's between the lower and upper bounds, otherwise it returns the lower or upper bound
+ * @returns {number} The value if it's between the lower and upper bounds, otherwise it returns the lower or upper bound
  */
 function interval(lower: number, upper: number, value: number): number {
   return Math.max(Math.min(value, upper), lower);
