@@ -37,8 +37,7 @@ public class Game
 
     [JsonInclude] public int Count => Players.Count;
 
-    [JsonInclude]
-    public bool IsGameStarted => Count > 0 && Players.All(player => player.State is State.InGame or State.Disconnected);
+    [JsonInclude] public bool IsGameStarted => Count > 0 && Players.Any(player => player.State is State.InGame);
 
     public Player NextPlayer()
     {
@@ -48,7 +47,7 @@ public class Game
         }
         catch (DivideByZeroException)
         {
-            throw new InvalidOperationException("There are no players in the game group.");
+            throw new InvalidOperationException("There are no players in the game.");
         }
 
         return Players[_currentPlayerIndex];
