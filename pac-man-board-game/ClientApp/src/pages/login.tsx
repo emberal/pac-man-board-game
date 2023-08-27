@@ -49,9 +49,10 @@ const LoginPage: FC = () => {
       <h1 className={"my-5"}>Login</h1>
       {error && <p className={"text-red-500"}>{error}</p>}
       <label htmlFor={username}>Username:</label>
-      <Input id={username} name={username} placeholder={"Username"} required/>
+      <Input id={username} name={username} placeholder={"Username"} autoComplete={"username"} required/>
       <label htmlFor={password}>Password:</label>
-      <Input id={password} name={password} type={"password"} placeholder={"Password"} required/>
+      <Input id={password} name={password} type={"password"} placeholder={"Password"}
+             autoComplete={"current-password"} required/>
       <Button type={"submit"}>Login</Button>
     </form>
   );

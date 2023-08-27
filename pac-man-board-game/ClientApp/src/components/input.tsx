@@ -8,8 +8,10 @@ const Input: FRComponent<InputProps, HTMLInputElement> = forwardRef((
     placeholder,
     required = false,
     name,
+    autoComplete = "off",
   }, ref) => (
   <input type={type}
+         autoComplete={autoComplete}
          ref={ref}
          id={id}
          name={name}

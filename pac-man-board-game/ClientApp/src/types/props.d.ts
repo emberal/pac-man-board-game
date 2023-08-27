@@ -23,10 +23,11 @@ interface ButtonProps extends ChildProps {
 }
 
 interface InputProps extends ComponentProps {
-  type?: string,
-  placeholder?: string,
-  required?: boolean,
-  name?: string,
+  type?: string
+  placeholder?: string
+  required?: boolean
+  name?: string
+  autoComplete?: string
 }
 
 interface CharacterProps {

@@ -15,12 +15,14 @@ const NavMenu: FC = () => {
 
         <ul className="inline-flex gap-2 items-center mr-5 relative">
           <NavItem to="/">Home</NavItem>
-          <NavItem to={"/lobby"}>Lobby</NavItem>
           {
             player === undefined ?
               <NavItem className={"mx-2"} to={"/login"}>Login</NavItem>
               :
-              <ProfileDropdown className={"mx-2"}/>
+              <>
+                <NavItem to={"/lobby"}>Lobby</NavItem>
+                <ProfileDropdown className={"mx-2"}/>
+              </>
           }
         </ul>
       </nav>

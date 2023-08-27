@@ -78,7 +78,6 @@ public class ActionService : IActionService
 
     public List<Player> FindGame(JsonElement? jsonElement)
     {
-        // TODO Receive Username and GameId
         var data = jsonElement?.Deserialize<JoinGameData>() ?? throw new NullReferenceException("Data is null");
 
         var game = _gameService.Games.FirstOrDefault(game => game.Id == data.GameId) ??

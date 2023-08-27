@@ -5,7 +5,7 @@ using pacMan.GameStuff.Items;
 
 namespace pacMan.Services;
 
-public class Game // TODO handle disconnects and reconnects
+public class Game
 {
     private readonly Random _random = new();
     private int _currentPlayerIndex;
@@ -29,11 +29,11 @@ public class Game // TODO handle disconnects and reconnects
             }).ToList();
     }
 
-    [JsonIgnore] public List<Character> Ghosts { get; set; } = new();
+    [JsonIgnore] public List<Character> Ghosts { get; set; } = new(); // TODO include
 
     [JsonIgnore] private Queue<DirectionalPosition> Spawns { get; }
 
-    [JsonIgnore] public DiceCup DiceCup { get; } = new();
+    [JsonIgnore] public DiceCup DiceCup { get; } = new(); // TODO include
 
     [JsonInclude] public int Count => Players.Count;
 

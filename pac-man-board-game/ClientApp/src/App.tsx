@@ -32,7 +32,7 @@ const Secured: FC<{ secured: boolean } & ChildProps> = ({children, secured}) => 
     if (redirect) {
       navigate("/login");
     }
-  }, []);
+  });
 
   if (!redirect) {
     return (
