@@ -16,7 +16,7 @@ public interface IActionService
     List<int> RollDice();
     List<Player> FindGame(JsonElement? jsonElement);
     object? HandleMoveCharacter(JsonElement? jsonElement);
-    object Ready();
+    ReadyData Ready();
     string FindNextPlayer();
     List<Player> LeaveGame();
     void SendToAll(ArraySegment<byte> segment);
@@ -94,27 +94,20 @@ public class ActionService : IActionService
         return Game.Players;
     }
 
-    public object Ready()
+    public ReadyData Ready()
     {
-        object data;
-        if (Player != null && Game != null)
-        {
-            var players = Game.SetReady(Player.Username).ToArray();
-            // TODO roll to start
-            Game.Shuffle();
-            var allReady = players.All(p => p.State == State.Ready);
-            if (allReady) Game.SetAllInGame();
-            data = new ReadyData { AllReady = allReady, Players = players };
-        }
-        else
-        {
-            data = "Player not found, please create a new player";
-        }
+        if (Player == null || Game == null)
+            throw new PlayerNotFoundException("Player not found, please create a new player");
 
-        return data;
+        var players = Game.SetReady(Player.Username).ToArray();
+        // TODO roll to start
+        Game.Shuffle();
+        var allReady = players.All(p => p.State == State.Ready);
+        if (allReady) Game.SetAllInGame();
+        return new ReadyData { AllReady = allReady, Players = players };
     }
 
-    public string FindNextPlayer() => Game?.NextPlayer().Username ?? "Error: No group found";
+    public string FindNextPlayer() => Game?.NextPlayer().Username ?? throw new GameNotFoundException();
 
     public List<Player> LeaveGame()
     {

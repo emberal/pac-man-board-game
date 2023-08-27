@@ -2,6 +2,7 @@ using System.Text.Json;
 using BackendTests.TestUtils;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using pacMan.Exceptions;
 using pacMan.GameStuff;
 using pacMan.GameStuff.Items;
 using pacMan.Services;
@@ -143,8 +144,7 @@ public class ActionServiceTests
     [Test]
     public void Ready_PlayerIsNull()
     {
-        var result = _service.Ready();
-        Assert.That(result, Is.InstanceOf<string>());
+        Assert.Throws<PlayerNotFoundException>(() => _service.Ready());
     }
 
     [Test]
@@ -157,19 +157,13 @@ public class ActionServiceTests
         _service.FindGame(_whiteMessage.Data); // Sets white to ready
 
         var result = _service.Ready();
-        if (result is ReadyData r1)
-            Assert.That(r1.AllReady, Is.False);
-        else
-            Assert.Fail("Result should be ReadyData");
+        Assert.That(result.AllReady, Is.False);
 
         _gameService.JoinById(game.Id, _redPlayer);
         _service.FindGame(_redMessage.Data); // Sets red to ready
 
         result = _service.Ready();
-        if (result is ReadyData r2)
-            Assert.That(r2.AllReady, Is.False);
-        else
-            Assert.Fail("Result should be ReadyData");
+        Assert.That(result.AllReady, Is.False);
     }
 
     [Test]
