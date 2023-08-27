@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using pacMan.Exceptions;
 using pacMan.GameStuff;
+using pacMan.GameStuff.Items;
 using pacMan.Services;
 
 namespace BackendTests.Services;
@@ -60,7 +61,7 @@ public class GameServiceTests
     public void JoinById_WhenIdNotExists()
     {
         var player = Players.Create("white");
-        _service.AddPlayer(player, _spawns); // TODO obsolete
+        _service.Games.Add(new pacMan.Services.Game(_spawns) { Players = new List<Player> { player } });
 
         Assert.Throws<GameNotFoundException>(() => _service.JoinById(Guid.NewGuid(), player));
     }
@@ -69,56 +70,18 @@ public class GameServiceTests
     public void JoinById_WhenIdExists()
     {
         var player = Players.Create("white");
-        var group = _service.AddPlayer(player, _spawns); // TODO obsolete
+        var game = new pacMan.Services.Game(_spawns) { Players = new List<Player> { player } };
+        _service.Games.Add(game);
+
 
         var player2 = Players.Create("black");
-        var result = _service.JoinById(group.Id, player2);
+        var result = _service.JoinById(_service.Games[0].Id, player2);
 
         Assert.Multiple(() =>
         {
-            Assert.That(result, Is.EqualTo(group));
-            Assert.That(group.Players, Has.Count.EqualTo(2));
+            Assert.That(result, Is.EqualTo(game));
+            Assert.That(game.Players, Has.Count.EqualTo(2));
             Assert.That(_service.Games, Has.Count.EqualTo(1));
-        });
-    }
-
-    #endregion
-
-    #region AddPlayer(IPlayer)
-
-    [Test]
-    public void AddPlayer_ToEmptyGroup()
-    {
-        var player = Players.Create("white");
-        var group = _service.AddPlayer(player, _spawns); // TODO obsolete
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(group.Players, Has.Count.EqualTo(1));
-            Assert.That(group.NextPlayer, Is.EqualTo(player));
-            Assert.That(_service.Games, Has.Count.EqualTo(1));
-        });
-    }
-
-    [Test]
-    public void AddPlayer_ToFullGroup()
-    {
-        for (var i = 0; i < 4; i++)
-        {
-            var player = Players.Create(i.ToString());
-            _service.AddPlayer(player, _spawns); // TODO obsolete
-        }
-
-        var player5 = Players.Create("white");
-
-        var group = _service.AddPlayer(player5, new Queue<DirectionalPosition>(new[] { _spawn3By3Up }));
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(group.Players, Has.Count.EqualTo(1));
-            Assert.That(group.NextPlayer, Is.EqualTo(player5));
-            Assert.That(_service.Games, Has.Count.EqualTo(2));
-            Assert.That(_service.Games.First(), Has.Count.EqualTo(Rules.MaxPlayers));
         });
     }
 

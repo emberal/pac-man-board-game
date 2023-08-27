@@ -61,13 +61,54 @@ public class GameTests
 
     #endregion
 
+    #region IsGameStarted
+
+    [Test]
+    public void IsGameStarted_WhenEmpty()
+    {
+        Assert.That(_game.IsGameStarted, Is.False);
+    }
+
+    [Test]
+    public void IsGameStarted_WhenNotAllInGame()
+    {
+        AddFullParty();
+        Assert.That(_game.IsGameStarted, Is.False);
+    }
+
+    [Test]
+    public void IsGameStarted_WhenAllInGame()
+    {
+        AddFullParty();
+        _game.Players.ForEach(player => player.State = State.InGame);
+        Assert.That(_game.IsGameStarted, Is.True);
+    }
+
+    [Test]
+    public void IsGameStared_WhenAllDisconnected()
+    {
+        AddFullParty();
+        _game.Players.ForEach(player => player.State = State.Disconnected);
+        Assert.That(_game.IsGameStarted, Is.False);
+    }
+
+    [Test]
+    public void IsGameStarted_WhenHalfInGame()
+    {
+        AddFullParty();
+        _game.Players.ForEach(player =>
+            player.State = _game.Players.IndexOf(player) % 2 == 0 ? State.InGame : State.Disconnected);
+        Assert.That(_game.IsGameStarted, Is.True);
+    }
+
+    #endregion
+
     #region AddPlayer(Player player)
 
     [Test]
     public void AddPlayer_WhenEmpty()
     {
-        var added = _game.AddPlayer(_redPlayer);
-        Assert.That(added, Is.True);
+        Assert.DoesNotThrow(() => _game.AddPlayer(_redPlayer));
     }
 
     [Test]
@@ -75,8 +116,8 @@ public class GameTests
         Assert.Multiple(() =>
         {
             AddFullParty();
-            Assert.That(_game.Players.Count, Is.EqualTo(Rules.MaxPlayers));
-            Assert.That(_game.AddPlayer(_purplePlayer), Is.False);
+            Assert.That(_game.Players, Has.Count.EqualTo(Rules.MaxPlayers));
+            Assert.Throws<GameNotPlayableException>(() => _game.AddPlayer(_purplePlayer));
         });
 
     [Test]
@@ -84,8 +125,7 @@ public class GameTests
     {
         var redClone = _redPlayer.Clone();
         _game.AddPlayer(_redPlayer);
-        var added = _game.AddPlayer(redClone);
-        Assert.That(added, Is.True);
+        Assert.DoesNotThrow(() => _game.AddPlayer(redClone));
     }
 
     [Test]
@@ -114,7 +154,7 @@ public class GameTests
         _game.SetReady(_bluePlayer.Username);
         _game.SetAllInGame();
 
-        Assert.That(_game.AddPlayer(_greenPlayer), Is.False);
+        Assert.Throws<GameNotPlayableException>(() => _game.AddPlayer(_greenPlayer));
     }
 
     #endregion

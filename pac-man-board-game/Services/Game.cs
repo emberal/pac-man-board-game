@@ -19,14 +19,19 @@ public class Game
     public List<Player> Players
     {
         get => _players;
-        set =>
-            _players = _players.Select((player, index) =>
-            {
-                player.State = value[index].State;
-                player.PacMan = value[index].PacMan;
-                player.Box = value[index].Box;
-                return player;
-            }).ToList();
+        set
+        {
+            if (_players.Count > 0)
+                _players = _players.Select((player, index) =>
+                {
+                    player.State = value[index].State;
+                    player.PacMan = value[index].PacMan;
+                    player.Box = value[index].Box;
+                    return player;
+                }).ToList();
+            else
+                _players = value;
+        }
     }
 
     [JsonIgnore] public List<Character> Ghosts { get; set; } = new(); // TODO include
@@ -37,6 +42,7 @@ public class Game
 
     [JsonInclude] public int Count => Players.Count;
 
+    // TODO edge-case when game has started but all players have disconnected, Disconnected property?
     [JsonInclude] public bool IsGameStarted => Count > 0 && Players.Any(player => player.State is State.InGame);
 
     public Player NextPlayer()
@@ -57,21 +63,18 @@ public class Game
 
     public event Func<ArraySegment<byte>, Task>? Connections;
 
-    public bool AddPlayer(Player player)
+    public void AddPlayer(Player player)
     {
-        if (Players.Count >= Rules.MaxPlayers || IsGameStarted) return false;
-        /* TODO remove above and uncomment below
-          if (Players.Count >= Rules.MaxPlayers)
+        if (Players.Count >= Rules.MaxPlayers)
             throw new GameNotPlayableException("Game is full");
         if (IsGameStarted)
             throw new GameNotPlayableException("Game has already started");
-         */
 
         player.State = State.WaitingForPlayers;
-        if (Players.Exists(p => p.Username == player.Username)) return true; // TODO change to false
+        if (Players.Exists(p => p.Username == player.Username)) return;
+
         Players.Add(player);
         if (player.PacMan.SpawnPosition is null) SetSpawn(player);
-        return true;
     }
 
     public Player? RemovePlayer(string username)

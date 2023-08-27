@@ -19,24 +19,6 @@ public class GameService : WebSocketService
     /// </summary>
     public SynchronizedCollection<Game> Games { get; } = new();
 
-    [Obsolete("Use CreateAndJoin instead")]
-    public Game AddPlayer(Player player, Queue<DirectionalPosition> spawns)
-    {
-        var index = 0;
-        try
-        {
-            while (!Games[index].AddPlayer(player)) index++;
-        }
-        catch (ArgumentOutOfRangeException)
-        {
-            var game = new Game(spawns);
-            game.AddPlayer(player);
-            Games.Add(game);
-        }
-
-        return Games[index];
-    }
-
     /// <summary>
     ///     This method tries to find a game with the specified id, add a player to it and return the updated game.
     /// </summary>
