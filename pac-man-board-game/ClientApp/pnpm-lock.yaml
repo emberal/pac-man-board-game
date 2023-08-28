@@ -8,86 +8,84 @@ overrides:
   css-what: ^5.0.1
   nth-check: ^3.0.1
 
-importers:
+dependencies:
+  '@emotion/react':
+    specifier: ^11.11.1
+    version: 11.11.1(@types/react@18.2.20)(react@18.2.0)
+  '@headlessui/react':
+    specifier: ^1.7.17
+    version: 1.7.17(react-dom@18.2.0)(react@18.2.0)
+  '@heroicons/react':
+    specifier: ^2.0.18
+    version: 2.0.18(react@18.2.0)
+  jotai:
+    specifier: ^2.3.1
+    version: 2.3.1(@types/react@18.2.20)(react@18.2.0)
+  jotai-devtools:
+    specifier: ^0.6.2
+    version: 0.6.2(@emotion/react@11.11.1)(@types/react@18.2.20)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
+  oidc-client:
+    specifier: ^1.11.5
+    version: 1.11.5
+  react:
+    specifier: ^18.2.0
+    version: 18.2.0
+  react-dom:
+    specifier: ^18.2.0
+    version: 18.2.0(react@18.2.0)
+  react-router-dom:
+    specifier: ^6.15.0
+    version: 6.15.0(react-dom@18.2.0)(react@18.2.0)
+  web-vitals:
+    specifier: ^3.4.0
+    version: 3.4.0
 
-  .:
-    dependencies:
-      '@emotion/react':
-        specifier: ^11.11.1
-        version: 11.11.1(@types/react@18.2.20)(react@18.2.0)
-      '@headlessui/react':
-        specifier: ^1.7.17
-        version: 1.7.17(react-dom@18.2.0)(react@18.2.0)
-      '@heroicons/react':
-        specifier: ^2.0.18
-        version: 2.0.18(react@18.2.0)
-      jotai:
-        specifier: ^2.3.1
-        version: 2.3.1(@types/react@18.2.20)(react@18.2.0)
-      jotai-devtools:
-        specifier: ^0.6.2
-        version: 0.6.2(@emotion/react@11.11.1)(@types/react@18.2.20)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
-      oidc-client:
-        specifier: ^1.11.5
-        version: 1.11.5
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: ^18.2.0
-        version: 18.2.0(react@18.2.0)
-      react-router-dom:
-        specifier: ^6.15.0
-        version: 6.15.0(react-dom@18.2.0)(react@18.2.0)
-      web-vitals:
-        specifier: ^3.4.0
-        version: 3.4.0
-    devDependencies:
-      '@types/react':
-        specifier: ^18.2.20
-        version: 18.2.20
-      '@types/react-dom':
-        specifier: ^18.2.7
-        version: 18.2.7
-      '@vitejs/plugin-react':
-        specifier: ^4.0.4
-        version: 4.0.4(vite@4.4.9)
-      '@vitest/coverage-c8':
-        specifier: ^0.33.0
-        version: 0.33.0(vitest@0.34.2)
-      autoprefixer:
-        specifier: ^10.4.15
-        version: 10.4.15(postcss@8.4.28)
-      cross-env:
-        specifier: ^7.0.3
-        version: 7.0.3
-      happy-dom:
-        specifier: ^10.10.4
-        version: 10.10.4
-      postcss:
-        specifier: ^8.4.28
-        version: 8.4.28
-      tailwindcss:
-        specifier: ^3.3.3
-        version: 3.3.3
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-      vite:
-        specifier: ^4.4.9
-        version: 4.4.9(@types/node@20.4.5)
-      vite-plugin-node-polyfills:
-        specifier: ^0.11.2
-        version: 0.11.2(vite@4.4.9)
-      vite-plugin-svgr:
-        specifier: ^3.2.0
-        version: 3.2.0(vite@4.4.9)
-      vite-tsconfig-paths:
-        specifier: ^4.2.0
-        version: 4.2.0(typescript@5.1.6)(vite@4.4.9)
-      vitest:
-        specifier: ^0.34.2
-        version: 0.34.2(happy-dom@10.10.4)
+devDependencies:
+  '@types/react':
+    specifier: ^18.2.20
+    version: 18.2.20
+  '@types/react-dom':
+    specifier: ^18.2.7
+    version: 18.2.7
+  '@vitejs/plugin-react':
+    specifier: ^4.0.4
+    version: 4.0.4(vite@4.4.9)
+  '@vitest/coverage-c8':
+    specifier: ^0.33.0
+    version: 0.33.0(vitest@0.34.2)
+  autoprefixer:
+    specifier: ^10.4.15
+    version: 10.4.15(postcss@8.4.28)
+  cross-env:
+    specifier: ^7.0.3
+    version: 7.0.3
+  happy-dom:
+    specifier: ^10.10.4
+    version: 10.10.4
+  postcss:
+    specifier: ^8.4.28
+    version: 8.4.28
+  tailwindcss:
+    specifier: ^3.3.3
+    version: 3.3.3
+  typescript:
+    specifier: ^5.2.2
+    version: 5.2.2
+  vite:
+    specifier: ^4.4.9
+    version: 4.4.9(@types/node@20.4.5)
+  vite-plugin-node-polyfills:
+    specifier: ^0.11.2
+    version: 0.11.2(vite@4.4.9)
+  vite-plugin-svgr:
+    specifier: ^3.2.0
+    version: 3.2.0(vite@4.4.9)
+  vite-tsconfig-paths:
+    specifier: ^4.2.0
+    version: 4.2.0(typescript@5.2.2)(vite@4.4.9)
+  vitest:
+    specifier: ^0.34.2
+    version: 0.34.2(happy-dom@10.10.4)
 
 packages:
 
@@ -2374,6 +2372,7 @@ packages:
       chalk: 3.0.0
       diff-match-patch: 1.0.5
     dev: false
+    bundledDependencies: []
 
   /lilconfig@2.1.0:
     resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}
@@ -3390,7 +3389,7 @@ packages:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
     dev: true
 
-  /tsconfck@2.1.2(typescript@5.1.6):
+  /tsconfck@2.1.2(typescript@5.2.2):
     resolution: {integrity: sha512-ghqN1b0puy3MhhviwO2kGF8SeMDNhEbnKxjK7h6+fvY9JAxqvXi8y5NAHSQv687OVboS2uZIByzGd45/YxrRHg==}
     engines: {node: ^14.13.1 || ^16 || >=18}
     hasBin: true
@@ -3400,7 +3399,7 @@ packages:
       typescript:
         optional: true
     dependencies:
-      typescript: 5.1.6
+      typescript: 5.2.2
     dev: true
 
   /tslib@2.6.1:
@@ -3416,8 +3415,8 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /typescript@5.1.6:
-    resolution: {integrity: sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==}
+  /typescript@5.2.2:
+    resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}
     engines: {node: '>=14.17'}
     hasBin: true
     dev: true
@@ -3583,7 +3582,7 @@ packages:
       - supports-color
     dev: true
 
-  /vite-tsconfig-paths@4.2.0(typescript@5.1.6)(vite@4.4.9):
+  /vite-tsconfig-paths@4.2.0(typescript@5.2.2)(vite@4.4.9):
     resolution: {integrity: sha512-jGpus0eUy5qbbMVGiTxCL1iB9ZGN6Bd37VGLJU39kTDD6ZfULTTb1bcc5IeTWqWJKiWV5YihCaibeASPiGi8kw==}
     peerDependencies:
       vite: '*'
@@ -3593,7 +3592,7 @@ packages:
     dependencies:
       debug: 4.3.4
       globrex: 0.1.2
-      tsconfck: 2.1.2(typescript@5.1.6)
+      tsconfck: 2.1.2(typescript@5.2.2)
       vite: 4.4.9(@types/node@20.4.5)
     transitivePeerDependencies:
       - supports-color
