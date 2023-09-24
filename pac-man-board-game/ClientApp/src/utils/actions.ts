@@ -105,17 +105,15 @@ function joinGame(data?: PlayerProps[]): void { // TODO missing data when refres
   store.set(playersAtom, playerProps.map(p => new Player(p)));
 }
 
-type ReadyData = { allReady: boolean, players: PlayerProps[] } | string;
+type ReadyData = { allReady: boolean, players: PlayerProps[] };
 
 function ready(data?: ReadyData): void {
-  if (data && typeof data !== "string") {
+  if (data) {
     const players = data.players.map(p => new Player(p));
     store.set(playersAtom, players);
     if (data.allReady) {
       store.set(currentPlayerNameAtom, data.players[0].username);
     }
-  } else {
-    console.error("Error:", data);
   }
 }
 
