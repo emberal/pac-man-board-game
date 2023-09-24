@@ -52,7 +52,8 @@ public abstract class GenericController : ControllerBase
             } while (true);
 
             var disconnectSegment = Disconnect();
-            if (disconnectSegment != null) SendDisconnectMessage((ArraySegment<byte>)disconnectSegment);
+            if (disconnectSegment != null) 
+                SendDisconnectMessage((ArraySegment<byte>)disconnectSegment);
 
             await _webSocketService.Close(WebSocket, result.CloseStatus.Value, result.CloseStatusDescription);
         }
