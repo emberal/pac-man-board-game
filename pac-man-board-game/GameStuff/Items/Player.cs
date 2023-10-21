@@ -11,7 +11,7 @@ public enum State
     Disconnected
 }
 
-public class Player : IEquatable<Player>
+public class Player : IEquatable<Player>, ICloneable
 {
     [JsonPropertyName("username")] public required string Username { get; init; }
 
@@ -22,6 +22,12 @@ public class Player : IEquatable<Player>
     [JsonPropertyName("box")] public Box? Box { get; set; }
 
     [JsonPropertyName("state")] public State State { get; set; } = State.WaitingForPlayers;
+
+    public object Clone() =>
+        new Player
+        {
+            Username = Username, Colour = Colour, PacMan = PacMan, Box = Box, State = State
+        };
 
     public bool Equals(Player? other)
     {

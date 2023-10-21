@@ -123,9 +123,9 @@ public class GameTests
     [Test]
     public void AddPlayer_WhenNameExists()
     {
-        var redClone = _redPlayer.Clone();
+        var redClone = _redPlayer.Clone() as Player;
         _game.AddPlayer(_redPlayer);
-        Assert.DoesNotThrow(() => _game.AddPlayer(redClone));
+        Assert.DoesNotThrow(() => _game.AddPlayer(redClone!));
     }
 
     [Test]
