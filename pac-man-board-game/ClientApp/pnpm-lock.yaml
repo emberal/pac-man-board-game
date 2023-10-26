@@ -54,8 +54,8 @@ devDependencies:
     specifier: ^0.33.0
     version: 0.33.0(vitest@0.34.6)
   autoprefixer:
-    specifier: ^10.4.15
-    version: 10.4.15(postcss@8.4.31)
+    specifier: ^10.4.16
+    version: 10.4.16(postcss@8.4.31)
   cross-env:
     specifier: ^7.0.3
     version: 7.0.3
@@ -1357,16 +1357,16 @@ packages:
     resolution: {integrity: sha512-jgsaNduz+ndvGyFt3uSuWqvy4lCnIJiovtouQN5JZHOKCS2QuhEdbcQHFhVksz2N2U9hXJo8odG7ETyWlEeuDw==}
     dev: true
 
-  /autoprefixer@10.4.15(postcss@8.4.31):
-    resolution: {integrity: sha512-KCuPB8ZCIqFdA4HwKXsvz7j6gvSDNhDP7WnUjBleRkKjPdvCmHFuQ77ocavI8FT6NdvlBnE2UFr2H4Mycn8Vew==}
+  /autoprefixer@10.4.16(postcss@8.4.31):
+    resolution: {integrity: sha512-7vd3UC6xKp0HLfua5IjZlcXvGAGy7cBAXTg2lyQ/8WpNhd6SiZ8Be+xm3FyBSYJx5GKcpRCzBh7RH4/0dnY+uQ==}
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
       browserslist: 4.21.10
-      caniuse-lite: 1.0.30001520
-      fraction.js: 4.2.0
+      caniuse-lite: 1.0.30001554
+      fraction.js: 4.3.7
       normalize-range: 0.1.2
       picocolors: 1.0.0
       postcss: 8.4.31
@@ -1496,7 +1496,7 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001520
+      caniuse-lite: 1.0.30001554
       electron-to-chromium: 1.4.477
       node-releases: 2.0.13
       update-browserslist-db: 1.0.11(browserslist@4.21.10)
@@ -1569,8 +1569,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /caniuse-lite@1.0.30001520:
-    resolution: {integrity: sha512-tahF5O9EiiTzwTUqAeFjIZbn4Dnqxzz7ktrgGlMYNLH43Ul26IgTMH/zvL3DG0lZxBYnlT04axvInszUsZULdA==}
+  /caniuse-lite@1.0.30001554:
+    resolution: {integrity: sha512-A2E3U//MBwbJVzebddm1YfNp7Nud5Ip+IPn4BozBmn4KqVX7AvluoIDFWjsv5OkGnKUXQVmMSoMKLa3ScCblcQ==}
     dev: true
 
   /chai@4.3.10:
@@ -2022,8 +2022,8 @@ packages:
       signal-exit: 3.0.7
     dev: true
 
-  /fraction.js@4.2.0:
-    resolution: {integrity: sha512-MhLuK+2gUcnZe8ZHlaaINnQLl0xRIGRfcGk2yl8xoQAfHrSsL3rYu6FCmBdkdbhc9EPlwyGHewaRsvwRMJtAlA==}
+  /fraction.js@4.3.7:
+    resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
     dev: true
 
   /fs.realpath@1.0.0:
