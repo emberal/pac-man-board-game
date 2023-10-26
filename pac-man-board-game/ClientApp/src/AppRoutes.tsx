@@ -27,6 +27,10 @@ const AppRoutes = [
   {
     path: "/login",
     element: <LoginPage/>
+  },
+  {
+    path: "*",
+    element: <p>Page not found</p>
   }
 ];
 

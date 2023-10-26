@@ -29,30 +29,17 @@ public class ActionServiceTests
     {
         _spawns = CreateQueue();
         _game = new pacMan.Services.Game(_spawns);
-        _whiteMessage = new ActionMessage
-        {
-            Action = GameAction.JoinGame,
-            Data = SerializeData(_whitePlayer.Username)
-        };
-        _blackMessage = new ActionMessage
-        {
-            Action = GameAction.JoinGame,
-            Data = SerializeData(_blackPlayer.Username)
-        };
-        _redMessage = new ActionMessage
-        {
-            Action = GameAction.JoinGame,
-            Data = SerializeData(_redPlayer.Username)
-        };
+        _whiteMessage = new ActionMessage { Action = GameAction.JoinGame, Data = SerializeData(_whitePlayer.Username) };
+        _blackMessage = new ActionMessage { Action = GameAction.JoinGame, Data = SerializeData(_blackPlayer.Username) };
+        _redMessage = new ActionMessage { Action = GameAction.JoinGame, Data = SerializeData(_redPlayer.Username) };
         _gameService = Substitute.For<GameService>(Substitute.For<ILogger<GameService>>());
         _service = new ActionService(Substitute.For<ILogger<ActionService>>(), _gameService);
     }
 
     private JsonElement SerializeData(string username) =>
         JsonDocument.Parse(JsonSerializer.Serialize(
-                new JoinGameData { Username = username, GameId = _game.Id }
-            )
-        ).RootElement;
+            new JoinGameData { Username = username, GameId = _game.Id }
+        )).RootElement;
 
     private static Queue<DirectionalPosition> CreateQueue() =>
         new(new[]
@@ -94,13 +81,8 @@ public class ActionServiceTests
     [Test]
     public void PlayerInfo_DataIsNotJoinGameData()
     {
-        var serialized =
-            JsonDocument.Parse(JsonSerializer.Serialize(new Box { Colour = "white" }));
-        var message = new ActionMessage
-        {
-            Action = GameAction.JoinGame,
-            Data = serialized.RootElement
-        };
+        var serialized = JsonDocument.Parse(JsonSerializer.Serialize(new Box { Colour = "white" }));
+        var message = new ActionMessage { Action = GameAction.JoinGame, Data = serialized.RootElement };
         Assert.Throws<JsonException>(() => _service.FindGame(message.Data));
     }
 
@@ -176,28 +158,29 @@ public class ActionServiceTests
         var result = _service.Ready();
         // If selected the state is changed to InGame
         _whitePlayer.State = State.InGame;
-        var players = result.GetType().GetProperty("Players")?.GetValue(result) as IEnumerable<Player>;
-        Assert.That(players?.First().Username, Is.EqualTo(_whitePlayer.Username));
+        Assert.That(result.Players.First().Username, Is.EqualTo(_whitePlayer.Username));
     }
 
     [Test]
     public void Ready_TwoReady()
     {
         var group = new pacMan.Services.Game(new Queue<DirectionalPosition>())
-            { Players = { _blackPlayer, _whitePlayer } };
+        {
+            Players = { _blackPlayer, _whitePlayer }
+        };
         _service.Game = group;
         _service.Player = _blackPlayer;
 
         var result = _service.Ready();
 
-        Assert.That(result.GetType().GetProperty("AllReady")?.GetValue(result), Is.EqualTo(false));
+        Assert.That(result.AllReady, Is.EqualTo(false));
 
         _service.Player = _whitePlayer;
 
         result = _service.Ready();
 
-        var players = result.GetType().GetProperty("Players")?.GetValue(result) as IEnumerable<Player>;
-        Assert.That(players?.First().Username, Is.EqualTo(_blackPlayer.Username).Or.EqualTo(_whitePlayer.Username));
+        Assert.That(result.Players.First().Username,
+            Is.EqualTo(_blackPlayer.Username).Or.EqualTo(_whitePlayer.Username));
     }
 
     #endregion
@@ -216,8 +199,8 @@ public class ActionServiceTests
     {
         _service.Game =
             new pacMan.Services.Game(new Queue<DirectionalPosition>(
-                    new[] { new DirectionalPosition { At = new Position { X = 3, Y = 3 }, Direction = Direction.Up } }))
-                { Players = { _whitePlayer } };
+                new[] { new DirectionalPosition { At = new Position { X = 3, Y = 3 }, Direction = Direction.Up } }
+            )) { Players = { _whitePlayer } };
 
         var name = _service.FindNextPlayer();
         Assert.That(name, Is.EqualTo(_whitePlayer.Username));
