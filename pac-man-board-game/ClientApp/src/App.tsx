@@ -1,5 +1,5 @@
-import React, {FC, useEffect} from "react";
-import {Route, Routes, useNavigate} from "react-router-dom";
+import React, {FC} from "react";
+import {Navigate, Route, Routes} from "react-router-dom";
 import Layout from "./components/layout";
 import AppRoutes from "./AppRoutes";
 import "./index.css";
@@ -23,20 +23,14 @@ export const App: FC = () => (
  * @param secured Whether or not the page is secured.
  * @constructor The Secured component.
  */
-const Secured: FC<{ secured: boolean } & ChildProps> = ({children, secured}) => {
+const Secured: FC<{
+  secured: boolean
+} & ChildProps> = ({children, secured}) => {
   const player = useAtomValue(thisPlayerAtom);
-  const navigate = useNavigate();
-  const redirect = secured && player === undefined
 
-  useEffect(() => {
-    if (redirect) {
-      navigate("/login");
-    }
-  });
-
-  if (!redirect) {
-    return (
-      <>{children}</>
-    )
+  if (secured && player === undefined) {
+    return <Navigate to={"/login"} replace/>
   }
+
+  return <>{children}</>
 }

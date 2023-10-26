@@ -26,13 +26,4 @@ internal static class Players
         {
             Colour = colour
         };
-
-    internal static Player Clone(this Player player) =>
-        new()
-        {
-            Box = player.Box,
-            Colour = player.Colour,
-            Username = player.Username,
-            PacMan = player.PacMan
-        };
 }

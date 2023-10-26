@@ -33,6 +33,7 @@ type DirectionalPosition = {
 
 type Path = {
   path?: Position[] | null,
+  // TODO replace with DirectionalPosition
   end: Position,
   direction: import("../game/direction").Direction
 }
