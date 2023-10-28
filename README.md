@@ -11,6 +11,11 @@ cd ..
 dotnet run
 ```
 
+### Log in
+For testing there are currently two users available:
+- Username: `Firefox`, Password: `Firefox`
+- Username: `Chrome`, Password: `Chrome`
+
 ## Stack
 
 - Frontend
