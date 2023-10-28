@@ -5,14 +5,14 @@
  * @returns A promise that resolves when the predicate is true.
  */
 export function wait(predicate: Predicate<void>, timeout: number = 50): Promise<void> {
-  return new Promise<void>((resolve) => {
+  return new Promise<void>(resolve => {
     const f = () => {
       if (predicate()) {
-        return resolve();
+        return resolve()
       }
-      setTimeout(f, timeout);
-    };
+      setTimeout(f, timeout)
+    }
 
-    f();
-  });
+    f()
+  })
 }

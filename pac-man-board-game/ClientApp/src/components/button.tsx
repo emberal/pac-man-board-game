@@ -1,16 +1,15 @@
-import React, {FC} from "react";
+import React, { FC } from "react"
 
-export const Button: FC<ButtonProps> = (
-  {
-    className,
-    onClick,
-    style,
-    title,
-    id,
-    disabled = false,
-    children,
-    type = "button",
-  }) => {
+export const Button: FC<ButtonProps> = ({
+  className,
+  onClick,
+  style,
+  title,
+  id,
+  disabled = false,
+  children,
+  type = "button",
+}) => {
   return (
     <button
       id={id}

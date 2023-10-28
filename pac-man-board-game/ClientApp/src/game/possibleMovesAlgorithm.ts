@@ -1,6 +1,6 @@
-import {TileType} from "./tileType";
-import {Character} from "./character";
-import {Direction, getDirections} from "./direction";
+import { TileType } from "./tileType"
+import { Character } from "./character"
+import { Direction, getDirections } from "./direction"
 
 /**
  * Finds all the possible positions for the character to move to
@@ -10,10 +10,15 @@ import {Direction, getDirections} from "./direction";
  * @param characters All the characters on the map
  * @returns An array of paths the character can move to
  */
-export default function findPossiblePositions(board: GameMap, character: Character, steps: number, characters: Character[]): Path[] {
-  if (!character.position || !character.spawnPosition) throw new Error("Character has no position or spawn position");
-  return findPossibleRecursive(board, character.position, steps, character, characters);
-};
+export default function findPossiblePositions(
+  board: GameMap,
+  character: Character,
+  steps: number,
+  characters: Character[],
+): Path[] {
+  if (!character.position || !character.spawnPosition) throw new Error("Character has no position or spawn position")
+  return findPossibleRecursive(board, character.position, steps, character, characters)
+}
 
 /**
  * Uses recursion to move through the map and find all the possible positions
@@ -24,38 +29,40 @@ export default function findPossiblePositions(board: GameMap, character: Charact
  * @param characters All the characters on the map
  * @returns {Path[]} An array of paths the character can move to
  */
-function findPossibleRecursive(map: GameMap, currentPath: Path, steps: number, character: Character, characters: Character[]): Path[] {
-
-  const paths: Path[] = [];
+function findPossibleRecursive(
+  map: GameMap,
+  currentPath: Path,
+  steps: number,
+  character: Character,
+  characters: Character[],
+): Path[] {
+  const paths: Path[] = []
   if (isOutsideBoard(currentPath, map.length)) {
     if (character.isPacMan()) {
-      return addTeleportationTiles(map, currentPath, steps, character, characters);
+      return addTeleportationTiles(map, currentPath, steps, character, characters)
     }
   } else if (!isWall(map, currentPath)) {
-
     if (!characterHitsAnotherCharacter(character, currentPath, characters)) {
       if (steps <= 0) {
         if (!(isSpawn(map, currentPath) && !isOwnSpawn(currentPath, character))) {
-          paths.push(currentPath);
+          paths.push(currentPath)
         }
-
       } else {
+        tryAddToPath(currentPath)
 
-        tryAddToPath(currentPath);
-
-        steps--;
+        steps--
         for (const direction of getDirections()) {
-          paths.push(...tryMove(map, currentPath, direction, steps, character, characters));
+          paths.push(...tryMove(map, currentPath, direction, steps, character, characters))
         }
       }
     } else {
-      const pacMan = ghostHitsPacMan(character, currentPath, characters);
+      const pacMan = ghostHitsPacMan(character, currentPath, characters)
       if (pacMan instanceof Character && !isCharactersSpawn(currentPath, pacMan)) {
-        paths.push(currentPath);
+        paths.push(currentPath)
       }
     }
   }
-  return paths;
+  return paths
 }
 
 /**
@@ -65,7 +72,7 @@ function findPossibleRecursive(map: GameMap, currentPath: Path, steps: number, c
  * @returns {boolean} True if the character is on its spawn, otherwise false
  */
 function isCharactersSpawn(currentPath: Path, character: Character): boolean {
-  return character.spawnPosition?.at.x === currentPath.end.x && character.spawnPosition.at.y === currentPath.end.y;
+  return character.spawnPosition?.at.x === currentPath.end.x && character.spawnPosition.at.y === currentPath.end.y
 }
 
 /**
@@ -75,8 +82,12 @@ function isCharactersSpawn(currentPath: Path, character: Character): boolean {
  * @param characters All the characters on the board
  * @returns {boolean} True if the character is a ghost and hits Pac-Man, otherwise false
  */
-function ghostHitsPacMan(character: Character, currentPath: Path, characters: Character[]): Character | undefined | false {
-  return character.isGhost() && characters.find(c => c.isPacMan() && c.isAt(currentPath.end));
+function ghostHitsPacMan(
+  character: Character,
+  currentPath: Path,
+  characters: Character[],
+): Character | undefined | false {
+  return character.isGhost() && characters.find(c => c.isPacMan() && c.isAt(currentPath.end))
 }
 
 /**
@@ -87,7 +98,7 @@ function ghostHitsPacMan(character: Character, currentPath: Path, characters: Ch
  * @returns {boolean} True if the character hits another character, otherwise false
  */
 function characterHitsAnotherCharacter(character: Character, currentPath: Path, characters: Character[]): boolean {
-  return characters.find(c => c !== character && c.isAt(currentPath.end)) !== undefined;
+  return characters.find(c => c !== character && c.isAt(currentPath.end)) !== undefined
 }
 
 /**
@@ -96,9 +107,9 @@ function characterHitsAnotherCharacter(character: Character, currentPath: Path, 
  */
 function tryAddToPath(currentPos: Path): void {
   if (!currentPos.path) {
-    currentPos.path = [];
+    currentPos.path = []
   } else if (!currentPos.path.includes(currentPos.end)) {
-    currentPos.path = [...currentPos.path, currentPos.end];
+    currentPos.path = [...currentPos.path, currentPos.end]
   }
 }
 
@@ -113,39 +124,53 @@ function tryAddToPath(currentPos: Path): void {
  * @param characters All the characters on the board
  * @returns An array of paths the character can move to
  */
-function tryMove(board: GameMap, path: Path, direction: Direction, steps: number, character: Character, characters: Character[]): Path[] {
-
+function tryMove(
+  board: GameMap,
+  path: Path,
+  direction: Direction,
+  steps: number,
+  character: Character,
+  characters: Character[],
+): Path[] {
   function getNewPosition(): Position {
     switch (direction) {
       case Direction.left:
         return {
           x: path.end.x - 1,
-          y: path.end.y
-        };
+          y: path.end.y,
+        }
       case Direction.up:
         return {
           x: path.end.x,
-          y: path.end.y - 1
-        };
+          y: path.end.y - 1,
+        }
       case Direction.right:
         return {
           x: path.end.x + 1,
-          y: path.end.y
-        };
+          y: path.end.y,
+        }
       case Direction.down:
         return {
           x: path.end.x,
-          y: path.end.y + 1
-        };
+          y: path.end.y + 1,
+        }
     }
   }
 
   if (path.direction !== (direction + 2) % 4) {
-    return findPossibleRecursive(board, {
-      end: getNewPosition(), direction: direction, path: path.path
-    }, steps, character, characters);
+    return findPossibleRecursive(
+      board,
+      {
+        end: getNewPosition(),
+        direction: direction,
+        path: path.path,
+      },
+      steps,
+      character,
+      characters,
+    )
   }
-  return [];
+  return []
 }
 
 /**
@@ -157,22 +182,26 @@ function tryMove(board: GameMap, path: Path, direction: Direction, steps: number
  * @param characters All the characters on the map
  * @returns {Path[]} An array of paths the character can move to
  */
-function addTeleportationTiles(board: GameMap, currentPath: Path, steps: number, character: Character, characters: Character[]): Path[] {
-  const possiblePositions = findTeleportationTiles(board);
-  const paths: Path[] = [];
+function addTeleportationTiles(
+  board: GameMap,
+  currentPath: Path,
+  steps: number,
+  character: Character,
+  characters: Character[],
+): Path[] {
+  const possiblePositions = findTeleportationTiles(board)
+  const paths: Path[] = []
   for (const pos of possiblePositions) {
-
     function inInterval(coordinate: "x" | "y"): boolean {
       return pos.end[coordinate] !== interval(0, board.length - 1, currentPath.end[coordinate])
     }
 
     if (inInterval("x") || inInterval("y")) {
-
-      pos.path = currentPath.path;
-      paths.push(...findPossibleRecursive(board, pos, steps, character, characters));
+      pos.path = currentPath.path
+      paths.push(...findPossibleRecursive(board, pos, steps, character, characters))
     }
   }
-  return paths;
+  return paths
 }
 
 /**
@@ -183,7 +212,7 @@ function addTeleportationTiles(board: GameMap, currentPath: Path, steps: number,
  * @returns {number} The value if it's between the lower and upper bounds, otherwise it returns the lower or upper bound
  */
 function interval(lower: number, upper: number, value: number): number {
-  return Math.max(Math.min(value, upper), lower);
+  return Math.max(Math.min(value, upper), lower)
 }
 
 /**
@@ -192,18 +221,17 @@ function interval(lower: number, upper: number, value: number): number {
  * @returns An array of paths containing the teleportation tiles
  */
 function findTeleportationTiles(map: GameMap): Path[] {
-  const possiblePositions: Path[] = [];
-  const edge = [0, map.length - 1];
+  const possiblePositions: Path[] = []
+  const edge = [0, map.length - 1]
 
   for (const e of edge) {
     for (let i = 0; i < map[e].length; i++) {
-
-      pushPath(map, possiblePositions, i, e);
-      pushPath(map, possiblePositions, e, i);
+      pushPath(map, possiblePositions, i, e)
+      pushPath(map, possiblePositions, e, i)
     }
   }
 
-  return possiblePositions;
+  return possiblePositions
 }
 
 /**
@@ -215,7 +243,10 @@ function findTeleportationTiles(map: GameMap): Path[] {
  */
 function pushPath(board: GameMap, possiblePositions: Path[], x: number, y: number): void {
   if (board[y] && board[y][x] !== TileType.wall) {
-    possiblePositions.push({end: {x: x, y: y}, direction: findDirection(x, y, board.length)});
+    possiblePositions.push({
+      end: { x: x, y: y },
+      direction: findDirection(x, y, board.length),
+    })
   }
 }
 
@@ -226,17 +257,17 @@ function pushPath(board: GameMap, possiblePositions: Path[], x: number, y: numbe
  * @param boardSize The length of the board
  */
 function findDirection(x: number, y: number, boardSize: number): Direction {
-  let direction: Direction;
+  let direction: Direction
   if (x === 0) {
-    direction = Direction.right;
+    direction = Direction.right
   } else if (y === 0) {
-    direction = Direction.down;
+    direction = Direction.down
   } else if (x === boardSize - 1) {
-    direction = Direction.left;
+    direction = Direction.left
   } else {
-    direction = Direction.up;
+    direction = Direction.up
   }
-  return direction;
+  return direction
 }
 
 /**
@@ -245,8 +276,8 @@ function findDirection(x: number, y: number, boardSize: number): Direction {
  * @param boardSize The size of the board
  */
 function isOutsideBoard(currentPos: Path, boardSize: number): boolean {
-  const pos = currentPos.end;
-  return pos.x < 0 || pos.x >= boardSize || pos.y < 0 || pos.y >= boardSize;
+  const pos = currentPos.end
+  return pos.x < 0 || pos.x >= boardSize || pos.y < 0 || pos.y >= boardSize
 }
 
 /**
@@ -255,8 +286,8 @@ function isOutsideBoard(currentPos: Path, boardSize: number): boolean {
  * @param currentPos The current position of the character
  */
 function isWall(board: GameMap, currentPos: Path): boolean {
-  const pos = currentPos.end;
-  return board[pos.y][pos.x] === TileType.wall; // Shouldn't work, but it does
+  const pos = currentPos.end
+  return board[pos.y][pos.x] === TileType.wall // Shouldn't work, but it does
 }
 
 /**
@@ -265,8 +296,8 @@ function isWall(board: GameMap, currentPos: Path): boolean {
  * @param currentPos The current position of the character
  */
 function isSpawn(board: GameMap, currentPos: Path) {
-  const pos = currentPos.end;
-  return board[pos.y][pos.x] === TileType.pacmanSpawn || board[pos.y][pos.x] === TileType.ghostSpawn;
+  const pos = currentPos.end
+  return board[pos.y][pos.x] === TileType.pacmanSpawn || board[pos.y][pos.x] === TileType.ghostSpawn
 }
 
 /**
@@ -275,8 +306,7 @@ function isSpawn(board: GameMap, currentPos: Path) {
  * @param character The current character
  */
 function isOwnSpawn(currentPos: Path, character: Character): boolean {
-  const pos = currentPos.end;
-  const charPos = character.spawnPosition!.at;
-  return charPos.x === pos.x && charPos.y === pos.y;
+  const pos = currentPos.end
+  const charPos = character.spawnPosition!.at
+  return charPos.x === pos.x && charPos.y === pos.y
 }
-

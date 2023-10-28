@@ -1,36 +1,34 @@
-import React, {FC} from "react";
-import useToggle from "../hooks/useToggle";
-import {BugAntIcon} from "@heroicons/react/20/solid";
-import {selectedMapAtom} from "../utils/state";
-import {useAtom} from "jotai";
+import React, { FC } from "react"
+import useToggle from "../hooks/useToggle"
+import { BugAntIcon } from "@heroicons/react/20/solid"
+import { selectedMapAtom } from "../utils/state"
+import { useAtom } from "jotai"
 
 const DebugMenu: FC = () => {
-
-  const [open, toggleOpen] = useToggle();
+  const [open, toggleOpen] = useToggle()
 
   if (import.meta.env.DEV) {
     return (
       <div>
-        {open && <DebugOptions/>}
-        <button className={"fixed bottom-2 right-2 bg-gray-800 text-white p-2 z-50 rounded-full"}
-                title={"Debug menu"}
-                onClick={() => toggleOpen()}>
-          <BugAntIcon className={"w-8 m-1"}/>
+        {open && <DebugOptions />}
+        <button
+          className={"fixed bottom-2 right-2 bg-gray-800 text-white p-2 z-50 rounded-full"}
+          title={"Debug menu"}
+          onClick={() => toggleOpen()}>
+          <BugAntIcon className={"w-8 m-1"} />
         </button>
       </div>
-
-    );
+    )
   }
 }
 
-export default DebugMenu;
+export default DebugMenu
 
 const DebugOptions: FC = () => {
-
-  const [map, setMap] = useAtom(selectedMapAtom);
+  const [map, setMap] = useAtom(selectedMapAtom)
 
   function clearSessionStorage(): void {
-    sessionStorage.clear();
+    sessionStorage.clear()
   }
 
   function restartGame(): void {

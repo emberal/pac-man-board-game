@@ -69,7 +69,7 @@ public class GameController : GenericController
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message); // TODO not necessary?
+            return BadRequest(e.Message);
         }
     }
 

@@ -1,21 +1,21 @@
-import React, {FC} from "react";
-import {Navigate, Route, Routes} from "react-router-dom";
-import Layout from "./components/layout";
-import AppRoutes from "./AppRoutes";
-import "./index.css";
-import {useAtomValue} from "jotai";
-import {thisPlayerAtom} from "./utils/state";
+import React, { FC } from "react"
+import { Navigate, Route, Routes } from "react-router-dom"
+import Layout from "./components/layout"
+import AppRoutes from "./AppRoutes"
+import "./index.css"
+import { useAtomValue } from "jotai"
+import { thisPlayerAtom } from "./utils/state"
 
 export const App: FC = () => (
   <Layout>
     <Routes>
       {AppRoutes.map((route, index) => {
-        const {element, secured = false, ...rest} = route;
-        return <Route key={index} {...rest} element={<Secured secured={secured}>{element}</Secured>}/>;
+        const { element, secured = false, ...rest } = route
+        return <Route key={index} {...rest} element={<Secured secured={secured}>{element}</Secured>} />
       })}
     </Routes>
   </Layout>
-);
+)
 
 /**
  * This component is used to redirect the user to the login page if they are not logged in and the page is secured.
@@ -23,13 +23,15 @@ export const App: FC = () => (
  * @param secured Whether or not the page is secured.
  * @constructor The Secured component.
  */
-const Secured: FC<{
-  secured: boolean
-} & ChildProps> = ({children, secured}) => {
-  const player = useAtomValue(thisPlayerAtom);
+const Secured: FC<
+  {
+    secured: boolean
+  } & ChildProps
+> = ({ children, secured }) => {
+  const player = useAtomValue(thisPlayerAtom)
 
   if (secured && player === undefined) {
-    return <Navigate to={"/login"} replace/>
+    return <Navigate to={"/login"} replace />
   }
 
   return <>{children}</>

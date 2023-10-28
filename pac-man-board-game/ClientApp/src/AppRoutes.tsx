@@ -1,37 +1,37 @@
-import React from "react";
-import {Counter} from "./pages/counter";
-import GamePage from "./pages/game";
-import LobbyPage from "./pages/lobby";
-import LoginPage from "./pages/login";
-import HomePage from "./pages/home";
+import React from "react"
+import { Counter } from "./pages/counter"
+import GamePage from "./pages/game"
+import LobbyPage from "./pages/lobby"
+import LoginPage from "./pages/login"
+import HomePage from "./pages/home"
 
 const AppRoutes = [
   {
     index: true,
-    element: <HomePage/>
+    element: <HomePage />,
   },
   {
     path: "/counter",
-    element: <Counter/>
+    element: <Counter />,
   },
   {
     path: "/game/:id",
-    element: <GamePage/>,
-    secured: true
+    element: <GamePage />,
+    secured: true,
   },
   {
     path: "/lobby",
-    element: <LobbyPage/>,
-    secured: true
+    element: <LobbyPage />,
+    secured: true,
   },
   {
     path: "/login",
-    element: <LoginPage/>
+    element: <LoginPage />,
   },
   {
     path: "*",
-    element: <p>Page not found</p>
-  }
-];
+    element: <p>Page not found</p>,
+  },
+]
 
-export default AppRoutes;
+export default AppRoutes

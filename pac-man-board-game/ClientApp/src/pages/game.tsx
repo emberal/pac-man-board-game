@@ -1,17 +1,16 @@
-import React, {FC} from "react";
-import {GameComponent} from "../components/gameComponent";
-import {useAtomValue} from "jotai";
-import {selectedMapAtom, thisPlayerAtom} from "../utils/state";
+import React, { FC } from "react"
+import { GameComponent } from "../components/gameComponent"
+import { useAtomValue } from "jotai"
+import { selectedMapAtom, thisPlayerAtom } from "../utils/state"
 
 const GamePage: FC = () => {
-  const player = useAtomValue(thisPlayerAtom);
-  const map = useAtomValue(selectedMapAtom);
+  const player = useAtomValue(thisPlayerAtom)
+  const map = useAtomValue(selectedMapAtom)
 
   if (player && map) {
-    return <GameComponent player={player} map={map}/>;
-  } else {
-    return null;
+    return <GameComponent player={player} map={map} />
   }
-};
+  return null
+}
 
-export default GamePage;
+export default GamePage

@@ -8,4 +8,4 @@ export enum Colour {
   grey = "grey",
 }
 
-export const getColours = (): Colour[] => Object.values(Colour);
+export const getColours = (): Colour[] => Object.values(Colour)

@@ -2,8 +2,7 @@ export enum Direction {
   left,
   up,
   right,
-  down
+  down,
 }
 
-export const getDirections = () => Object.values(Direction)
-  .filter(d => !isNaN(Number(d))) as Direction[];
+export const getDirections = () => Object.values(Direction).filter(d => !isNaN(Number(d))) as Direction[]

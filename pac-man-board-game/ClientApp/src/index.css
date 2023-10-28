@@ -3,35 +3,37 @@
 @tailwind utilities;
 
 .debug {
-    @apply border border-red-500;
-    @apply after:content-['debug'] after:absolute;
+  @apply border border-red-500;
+  @apply after:content-['debug'] after:absolute;
 }
 
 .flex-center {
-    @apply flex justify-center items-center;
+  @apply flex justify-center items-center;
 }
 
 .inline-flex-center {
-    @apply inline-flex justify-center items-center;
+  @apply inline-flex justify-center items-center;
 }
 
 .wh-full {
-    @apply w-full h-full;
+  @apply w-full h-full;
 }
 
 h1 {
-    @apply text-4xl;
+  @apply text-4xl;
 }
 
 h2 {
-    @apply text-3xl;
+  @apply text-3xl;
 }
 
 br {
-    @apply my-2;
+  @apply my-2;
 }
 
-.button-default, button[type=submit], input[type=submit] {
-    @apply bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded;
-    @apply disabled:bg-gray-500;
+.button-default,
+button[type="submit"],
+input[type="submit"] {
+  @apply bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded;
+  @apply disabled:bg-gray-500;
 }

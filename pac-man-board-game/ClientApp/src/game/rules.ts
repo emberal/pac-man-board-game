@@ -4,4 +4,4 @@ const rules = {
   maxStealPellets: 2,
 }
 
-export default rules;
+export default rules
