@@ -13,6 +13,7 @@ export enum State {
 
 export default class Player implements PlayerProps {
   private static store = getDefaultStore()
+
   public readonly username
   public readonly pacMan
   public readonly colour
@@ -32,7 +33,7 @@ export default class Player implements PlayerProps {
     this.state = props.state ?? State.waitingForPlayers
   }
 
-  public isTurn(): boolean {
+  public get isTurn(): boolean {
     return Player.store.get(currentPlayerNameAtom) === this.username
   }
 

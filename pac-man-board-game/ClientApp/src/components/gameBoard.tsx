@@ -24,7 +24,7 @@ const Board: FC<BoardProps> = ({ className, onMove, map }) => {
   const setModalOpen = useSetAtom(modalOpenAtom)
 
   function handleSelectCharacter(character: Character): void {
-    if (character.isPacMan() && currentPlayer?.pacMan.colour !== character.colour) {
+    if (character.isPacMan && currentPlayer?.pacMan.colour !== character.colour) {
       return
     }
     setSelectedCharacter(character)
@@ -38,7 +38,7 @@ const Board: FC<BoardProps> = ({ className, onMove, map }) => {
     if (selectedCharacter) {
       setHoveredPosition(undefined)
 
-      if (selectedCharacter.isGhost()) {
+      if (selectedCharacter.isGhost) {
         tryMovePacManToSpawn(destination)
       }
 
@@ -51,7 +51,7 @@ const Board: FC<BoardProps> = ({ className, onMove, map }) => {
   }
 
   function tryMovePacManToSpawn(destination: Path): void {
-    const takenChar = characters.find(c => c.isPacMan() && c.isAt(destination.end))
+    const takenChar = characters.find(c => c.isPacMan && c.isAt(destination.end.at))
     if (takenChar) {
       takenChar.moveToSpawn()
       stealFromPlayer()
@@ -64,8 +64,8 @@ const Board: FC<BoardProps> = ({ className, onMove, map }) => {
 
   function pickUpPellets(destination: Path): Position[] {
     const positions: Position[] = []
-    if (selectedCharacter?.isPacMan()) {
-      for (const tile of [...(destination.path ?? []), destination.end]) {
+    if (selectedCharacter?.isPacMan) {
+      for (const tile of [...(destination.path ?? []), destination.end.at]) {
         const currentTile = map[tile.y][tile.x]
 
         function updateTileAndPlayerBox(isPowerPellet = false): void {
@@ -106,7 +106,7 @@ const Board: FC<BoardProps> = ({ className, onMove, map }) => {
             <GameTile
               key={colIndex + rowIndex * colIndex}
               type={tile}
-              possiblePath={possiblePositions.find(p => p.end.x === colIndex && p.end.y === rowIndex)}
+              possiblePath={possiblePositions.find(p => p.end.at.x === colIndex && p.end.at.y === rowIndex)}
               character={characters.find(c => c.isAt({ x: colIndex, y: rowIndex }))}
               isSelected={selectedCharacter?.isAt({ x: colIndex, y: rowIndex })}
               showPath={hoveredPosition?.path?.find(pos => pos.x === colIndex && pos.y === rowIndex) !== undefined}

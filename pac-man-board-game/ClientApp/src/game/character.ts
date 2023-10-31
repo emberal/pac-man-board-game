@@ -28,45 +28,41 @@ export class Character implements CharacterProps {
     if (position) {
       this.position = position
     } else {
-      this.position = spawnPosition
-        ? {
-            end: spawnPosition!.at,
-            direction: spawnPosition!.direction,
-          }
-        : null
+      this.position = spawnPosition ? { end: { ...spawnPosition } } : null
     }
 
     this.type = type
+  }
+
+  public get isPacMan(): boolean {
+    return this.type === CharacterType.pacMan
+  }
+
+  public get isGhost(): boolean {
+    return this.type === CharacterType.ghost
   }
 
   public follow(path: Path): void {
     if (!this.position) {
       this.position = path
     } else {
-      this.position.end = path.end
-      this.position.direction = path.direction
+      this.position.end = { ...path.end }
       this.position.path = undefined
     }
-  }
-
-  public isPacMan(): boolean {
-    return this.type === CharacterType.pacMan
-  }
-
-  public isGhost(): boolean {
-    return this.type === CharacterType.ghost
   }
 
   public moveToSpawn(): void {
     if (!this.spawnPosition) return
     this.follow({
-      end: this.spawnPosition.at,
-      direction: this.spawnPosition.direction,
+      end: {
+        ...this.spawnPosition,
+      },
     })
   }
 
   public isAt(position: Position): boolean {
-    return this.position !== null && this.position.end.x === position.x && this.position.end.y === position.y
+    console.debug("isAt", this.position, position)
+    return this.position !== null && this.position.end.at.x === position.x && this.position.end.at.y === position.y
   }
 }
 

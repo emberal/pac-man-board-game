@@ -7,7 +7,7 @@ export const Counter: FC = () => {
   const [currentCount, setCurrentCount] = React.useState(0)
 
   function incrementCounterAndSend() {
-    if (ws.isOpen()) {
+    if (ws.isOpen) {
       ws.send((currentCount + 1).toString())
     }
   }

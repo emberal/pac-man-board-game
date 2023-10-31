@@ -10,7 +10,7 @@ interface IWebSocket {
 /**
  * WebSocketService class provides a WebSocket client interface for easy communication with a WebSocket server.
  */
-export default class WebSocketService {
+export default class WebSocketService implements IWebSocket {
   private ws?: WebSocket
   private readonly _url: string
 
@@ -55,10 +55,36 @@ export default class WebSocketService {
   }
 
   /**
+   * Checks if the WebSocket is open.
+   * @returns {boolean} Returns true if the WebSocket is open, otherwise false.
+   */
+  public get isOpen(): boolean {
+    return this.ws?.readyState === WebSocket?.OPEN
+  }
+
+  /**
+   * Checks if the WebSocket connection is currently in the process of connecting.
+   *
+   * @returns {boolean} - Returns 'true' if the WebSocket is connecting, otherwise 'false'.
+   */
+  public get isConnecting(): boolean {
+    return this.ws?.readyState === WebSocket?.CONNECTING
+  }
+
+  /**
+   * Check if the WebSocket connection is closed.
+   *
+   * @returns {boolean} Returns true if the WebSocket connection is closed, false otherwise.
+   */
+  public get isClosed(): boolean {
+    return this.ws?.readyState === WebSocket?.CLOSED
+  }
+
+  /**
    * Opens a WebSocket connection with the specified URL and sets the event callbacks.
    */
   public open(): void {
-    if (typeof WebSocket === "undefined" || this.isConnecting()) return
+    if (typeof WebSocket === "undefined" || this.isConnecting) return
     this.ws = new WebSocket(this._url)
     if (this._onOpen) this.ws.onopen = this._onOpen
     if (this._onReceive) this.ws.onmessage = this._onReceive
@@ -72,7 +98,7 @@ export default class WebSocketService {
    * @returns {Promise<void>} - A promise that resolves when the "isOpen" condition is met.
    */
   public async waitForOpen(): Promise<void> {
-    await wait(() => this.isOpen())
+    await wait(() => this.isOpen)
     if (this._onOpen) this.onOpen = this._onOpen
   }
 
@@ -93,31 +119,5 @@ export default class WebSocketService {
    */
   public close(): void {
     this.ws?.close()
-  }
-
-  /**
-   * Checks if the WebSocket is open.
-   * @returns {boolean} Returns true if the WebSocket is open, otherwise false.
-   */
-  public isOpen(): boolean {
-    return this.ws?.readyState === WebSocket?.OPEN
-  }
-
-  /**
-   * Checks if the WebSocket connection is currently in the process of connecting.
-   *
-   * @returns {boolean} - Returns 'true' if the WebSocket is connecting, otherwise 'false'.
-   */
-  public isConnecting(): boolean {
-    return this.ws?.readyState === WebSocket?.CONNECTING
-  }
-
-  /**
-   * Check if the WebSocket connection is closed.
-   *
-   * @returns {boolean} Returns true if the WebSocket connection is closed, false otherwise.
-   */
-  public isClosed(): boolean {
-    return this.ws?.readyState === WebSocket?.CLOSED
   }
 }

@@ -28,7 +28,7 @@ export const GameComponent: FC<{ player: Player; map: GameMap }> = ({ player, ma
    * Rolls the dice for the current player's turn.
    */
   function rollDice(): void {
-    if (!player.isTurn()) return
+    if (!player.isTurn) return
 
     setSelectedDice(undefined)
     wsService.send({ action: GameAction.rollDice })

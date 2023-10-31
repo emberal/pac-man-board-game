@@ -22,7 +22,7 @@ const GameButton: FC<GameButtonProps> = ({ onReadyClick, onRollDiceClick }) => {
   ) {
     return <Button onClick={onReadyClick}>Ready</Button>
   }
-  if (!thisPlayer?.isTurn()) {
+  if (!thisPlayer?.isTurn) {
     // TODO also show when waiting for other players
     return <Button disabled>Please wait</Button>
   }

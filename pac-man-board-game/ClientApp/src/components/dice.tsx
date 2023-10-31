@@ -41,7 +41,7 @@ export const Dice: FC<DiceProps> = ({ className, value, onClick }) => {
   return (
     <Button
       className={`text-2xl bg-gray-400 px-4 m-1 ${className}`}
-      disabled={!thisPlayer?.isTurn()}
+      disabled={!thisPlayer?.isTurn}
       onClick={handleClick}>
       {value?.toString()}
     </Button>

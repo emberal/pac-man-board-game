@@ -124,7 +124,7 @@ interface CharacterComponentProps extends ComponentProps {
 
 const CharacterComponent: FC<CharacterComponentProps> = ({ character, onClick, className }) => {
   function getSide() {
-    switch (character?.position?.direction) {
+    switch (character?.position?.end?.direction) {
       case Direction.up:
         return "right-1/4 top-0"
       case Direction.down:
