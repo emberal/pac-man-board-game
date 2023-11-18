@@ -2,6 +2,7 @@ using System.Text.Json;
 using BackendTests.TestUtils;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using pacMan.DTOs;
 using pacMan.Exceptions;
 using pacMan.GameStuff;
 using pacMan.GameStuff.Items;
@@ -95,28 +96,6 @@ public class ActionServiceTests
 
         Assert.That(players, Is.InstanceOf<IEnumerable<Player>>());
         Assert.That(new List<Player> { _whitePlayer }, Is.EqualTo(players));
-    }
-
-    #endregion
-
-    #region DoAction(ActionMessage message)
-
-    [Test]
-    public void DoAction_NegativeAction()
-    {
-        const string data = "Nothing happens";
-        var message = new ActionMessage { Action = (GameAction)(-1), Data = data };
-        _service.DoAction(message);
-        Assert.That(message.Data, Is.EqualTo(data));
-    }
-
-    [Test]
-    public void DoAction_OutOfBoundsAction()
-    {
-        const string data = "Nothing happens";
-        var message = new ActionMessage { Action = (GameAction)100, Data = data };
-        _service.DoAction(message);
-        Assert.That(message.Data, Is.EqualTo(data));
     }
 
     #endregion

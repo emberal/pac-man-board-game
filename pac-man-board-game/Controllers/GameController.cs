@@ -1,5 +1,6 @@
 using System.Net.WebSockets;
 using Microsoft.AspNetCore.Mvc;
+using pacMan.DTOs;
 using pacMan.Exceptions;
 using pacMan.GameStuff;
 using pacMan.GameStuff.Items;
@@ -10,35 +11,26 @@ namespace pacMan.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class GameController : GenericController
+public class GameController(ILogger<GameController> logger, IGameService webSocketService, IActionService actionService)
+    : GenericController(logger, webSocketService)
 {
-    private readonly IActionService _actionService;
-    private readonly GameService _gameService;
+    [HttpGet("[action]")]
+    public override async Task Connect() => await base.Connect();
 
-    public GameController(ILogger<GameController> logger, GameService webSocketService, IActionService actionService) :
-        base(logger, webSocketService)
+    [HttpGet("[action]")]
+    public IEnumerable<Game> All()
     {
-        _gameService = webSocketService;
-        _actionService = actionService;
+        Logger.LogDebug("Returning all games");
+        return webSocketService.Games;
     }
 
-    [HttpGet("connect")]
-    public override async Task Accept() => await base.Accept();
-
-    [HttpGet("all")]
-    public IEnumerable<Game> GetAllGames()
+    [HttpPost("[action]/{gameId:guid}")]
+    public IActionResult Join(Guid gameId, [FromBody] Player player) // TODO what if player is in a game already?
     {
-        Logger.Log(LogLevel.Debug, "Returning all games");
-        return _gameService.Games;
-    }
-
-    [HttpPost("join/{gameId:guid}")]
-    public IActionResult JoinGame(Guid gameId, [FromBody] Player player) // TODO what if player is in a game already?
-    {
-        Logger.Log(LogLevel.Debug, "Joining game {}", gameId);
+        Logger.LogDebug("Joining game {}", gameId);
         try
         {
-            _gameService.JoinById(gameId, player);
+            webSocketService.JoinById(gameId, player);
             return Ok("Game joined successfully");
         }
         catch (GameNotFoundException e)
@@ -51,20 +43,20 @@ public class GameController : GenericController
         }
     }
 
-    [HttpGet("exists/{gameId:guid}")]
-    public IActionResult GameExists(Guid gameId)
+    [HttpGet("[action]/{gameId:guid}")]
+    public IActionResult Exists(Guid gameId)
     {
-        Logger.Log(LogLevel.Debug, "Checking if game {} exists", gameId);
-        return _gameService.Games.Any(game => game.Id == gameId) ? Ok() : NotFound();
+        Logger.LogDebug("Checking if game {} exists", gameId);
+        return webSocketService.Games.Any(game => game.Id == gameId) ? Ok() : NotFound();
     }
 
-    [HttpPost("create")]
-    public IActionResult CreateGame([FromBody] CreateGameData data)
+    [HttpPost("[action]")]
+    public IActionResult Create([FromBody] CreateGameData data)
     {
-        Logger.Log(LogLevel.Debug, "Creating game");
+        Logger.LogDebug("Creating game");
         try
         {
-            var game = _gameService.CreateAndJoin(data.Player, data.Spawns);
+            var game = webSocketService.CreateAndJoin(data.Player, data.Spawns);
             return Created($"/{game.Id}", game);
         }
         catch (Exception e)
@@ -75,7 +67,7 @@ public class GameController : GenericController
 
     protected override Task Echo()
     {
-        _actionService.WebSocket = WebSocket ?? throw new NullReferenceException("WebSocket is null");
+        actionService.WebSocket = WebSocket ?? throw new NullReferenceException("WebSocket is null");
         return base.Echo();
     }
 
@@ -83,16 +75,16 @@ public class GameController : GenericController
     {
         var stringResult = data.GetString(result.Count);
 
-        Logger.Log(LogLevel.Information, "Received: {}", stringResult);
+        Logger.LogInformation("Received: {}", stringResult);
         var action = ActionMessage.FromJson(stringResult);
 
         try
         {
-            _actionService.DoAction(action);
+            DoAction(action);
         }
         catch (Exception e)
         {
-            Logger.Log(LogLevel.Error, "{}", e.Message);
+            Logger.LogError("{}", e.Message);
             action = new ActionMessage { Action = GameAction.Error, Data = e.Message };
         }
 
@@ -101,15 +93,27 @@ public class GameController : GenericController
 
     protected override async void Send(ArraySegment<byte> segment)
     {
-        if (_actionService.Game is not null)
-            _actionService.SendToAll(segment);
+        if (actionService.Game is not null)
+            actionService.SendToAll(segment);
         else if (WebSocket is not null)
-            await _gameService.Send(WebSocket, segment);
+            await webSocketService.Send(WebSocket, segment);
     }
 
     protected override ArraySegment<byte>? Disconnect() =>
-        new ActionMessage { Action = GameAction.Disconnect, Data = _actionService.Disconnect() }
+        new ActionMessage { Action = GameAction.Disconnect, Data = actionService.Disconnect() }
             .ToArraySegment();
 
-    protected override void SendDisconnectMessage(ArraySegment<byte> segment) => _actionService.SendToAll(segment);
+    protected override void SendDisconnectMessage(ArraySegment<byte> segment) => actionService.SendToAll(segment);
+
+    public void DoAction(ActionMessage message) =>
+        message.Data = message.Action switch
+        {
+            GameAction.RollDice => actionService.RollDice(),
+            GameAction.MoveCharacter => actionService.HandleMoveCharacter(message.Data),
+            GameAction.JoinGame => actionService.FindGame(message.Data),
+            GameAction.Ready => actionService.Ready(),
+            GameAction.NextPlayer => actionService.FindNextPlayer(),
+            GameAction.Disconnect => actionService.LeaveGame(),
+            _ => message.Data
+        };
 }

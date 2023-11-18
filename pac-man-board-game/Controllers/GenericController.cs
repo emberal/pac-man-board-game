@@ -1,29 +1,22 @@
 using System.Net.WebSockets;
 using Microsoft.AspNetCore.Mvc;
-using pacMan.Interfaces;
+using pacMan.Services;
 
 namespace pacMan.Controllers;
 
-public abstract class GenericController : ControllerBase
+public abstract class GenericController(ILogger<GenericController> logger, IWebSocketService webSocketService)
+    : ControllerBase
 {
     private const int BufferSize = 1024 * 4;
-    private readonly IWebSocketService _webSocketService;
-    protected readonly ILogger<GenericController> Logger;
+    protected readonly ILogger<GenericController> Logger = logger;
     protected WebSocket? WebSocket;
 
-    protected GenericController(ILogger<GenericController> logger, IWebSocketService webSocketService)
-    {
-        Logger = logger;
-        _webSocketService = webSocketService;
-        Logger.Log(LogLevel.Debug, "WebSocket Controller created");
-    }
-
-    public virtual async Task Accept()
+    public virtual async Task Connect()
     {
         if (HttpContext.WebSockets.IsWebSocketRequest)
         {
             using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-            Logger.Log(LogLevel.Information, "WebSocket connection established to {}", HttpContext.Connection.Id);
+            Logger.LogInformation("WebSocket connection established to {}", HttpContext.Connection.Id);
             WebSocket = webSocket;
             await Echo();
         }
@@ -35,14 +28,14 @@ public abstract class GenericController : ControllerBase
 
     protected virtual async Task Echo()
     {
-        if (WebSocket == null) return;
+        if (WebSocket is null) return;
         try
         {
             WebSocketReceiveResult? result;
             do
             {
                 var buffer = new byte[BufferSize];
-                result = await _webSocketService.Receive(WebSocket, buffer);
+                result = await webSocketService.Receive(WebSocket, buffer);
 
                 if (result.CloseStatus.HasValue) break;
 
@@ -52,21 +45,21 @@ public abstract class GenericController : ControllerBase
             } while (true);
 
             var disconnectSegment = Disconnect();
-            if (disconnectSegment != null) 
+            if (disconnectSegment is not null)
                 SendDisconnectMessage((ArraySegment<byte>)disconnectSegment);
 
-            await _webSocketService.Close(WebSocket, result.CloseStatus.Value, result.CloseStatusDescription);
+            await webSocketService.Close(WebSocket, result.CloseStatus.Value, result.CloseStatusDescription);
         }
         catch (WebSocketException e)
         {
-            Logger.Log(LogLevel.Error, "{}", e.Message);
+            Logger.LogError("{}", e.Message);
         }
     }
 
     protected virtual async void Send(ArraySegment<byte> segment)
     {
-        if (WebSocket == null) return;
-        await _webSocketService.Send(WebSocket, segment);
+        if (WebSocket is null) return;
+        await webSocketService.Send(WebSocket, segment);
     }
 
     protected abstract ArraySegment<byte> Run(WebSocketReceiveResult result, byte[] data);

@@ -43,7 +43,7 @@
     "serve": "vite preview",
     "test": "cross-env CI=true vitest",
     "coverage": "vitest run --coverage",
-    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\""
   },
   "browserslist": {
     "production": [

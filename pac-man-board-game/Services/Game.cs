@@ -5,13 +5,11 @@ using pacMan.GameStuff.Items;
 
 namespace pacMan.Services;
 
-public class Game
+public class Game(Queue<DirectionalPosition> spawns)
 {
     private readonly Random _random = new();
     private int _currentPlayerIndex;
     private List<Player> _players = new();
-
-    public Game(Queue<DirectionalPosition> spawns) => Spawns = spawns;
 
     [JsonInclude] public Guid Id { get; } = Guid.NewGuid();
 
@@ -36,7 +34,7 @@ public class Game
 
     [JsonIgnore] public List<Character> Ghosts { get; set; } = new(); // TODO include
 
-    [JsonIgnore] private Queue<DirectionalPosition> Spawns { get; }
+    [JsonIgnore] private Queue<DirectionalPosition> Spawns { get; } = spawns;
 
     [JsonIgnore] public DiceCup DiceCup { get; } = new(); // TODO include
 
@@ -53,7 +51,7 @@ public class Game
         }
         catch (DivideByZeroException)
         {
-            throw new InvalidOperationException("There are no players in the game.");
+            throw new PlayerNotFoundException("There are no players in the game.");
         }
 
         return Players[_currentPlayerIndex];
@@ -107,9 +105,12 @@ public class Game
 
     public bool SetAllInGame()
     {
-        if (Players.Any(player => player.State != State.Ready)) return false;
+        if (Players.Any(player => player.State is not State.Ready)) return false;
 
         foreach (var player in Players) player.State = State.InGame;
         return true;
     }
+
+    public Player? FindPlayerByUsername(string username) =>
+        Players.FirstOrDefault(player => player.Username == username);
 }

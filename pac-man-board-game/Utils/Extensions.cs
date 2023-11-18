@@ -10,7 +10,7 @@ public static partial class Extensions
     {
         var s = Encoding.UTF8.GetString(bytes, 0, length);
         // Removes invalid characters from the string
-        return InvalidCharacters().Replace(s, "");
+        return InvalidCharacters().Replace(s, string.Empty);
     }
 
     public static ArraySegment<byte> ToArraySegment(this object obj)

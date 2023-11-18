@@ -4,14 +4,21 @@ using pacMan.GameStuff.Items;
 
 namespace pacMan.Services;
 
+public interface IGameService : IWebSocketService
+{
+    SynchronizedCollection<Game> Games { get; }
+    Game JoinById(Guid id, Player player);
+    Game CreateAndJoin(Player player, Queue<DirectionalPosition> spawns);
+    Game? FindGameById(Guid id);
+    Game? FindGameByUsername(string username);
+}
+
 /// <summary>
 ///     The GameService class provides functionality for managing games in a WebSocket environment. It inherits from the
 ///     WebSocketService class.
 /// </summary>
-public class GameService : WebSocketService
+public class GameService(ILogger logger) : WebSocketService(logger), IGameService
 {
-    public GameService(ILogger<GameService> logger) : base(logger) { }
-
     /// <summary>
     ///     A thread-safe collection (SynchronizedCollection) of "Game" objects. Utilized for managing multiple game instances
     ///     simultaneously.
@@ -55,6 +62,11 @@ public class GameService : WebSocketService
         Games.Add(game);
 
         return game;
+    }
+
+    public Game? FindGameById(Guid id)
+    {
+        return Games.FirstOrDefault(game => game.Id == id);
     }
 
     public Game? FindGameByUsername(string username)

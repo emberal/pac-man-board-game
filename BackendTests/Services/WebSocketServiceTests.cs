@@ -1,7 +1,6 @@
 using System.Net.WebSockets;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using pacMan.Interfaces;
 using pacMan.Services;
 using pacMan.Utils;
 

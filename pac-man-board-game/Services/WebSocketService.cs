@@ -1,20 +1,17 @@
 using System.Net.WebSockets;
-using pacMan.Interfaces;
 using pacMan.Utils;
 
 namespace pacMan.Services;
 
-
-public class WebSocketService : IWebSocketService
+public interface IWebSocketService
 {
-    protected readonly ILogger<WebSocketService> Logger;
+    Task Send(WebSocket webSocket, ArraySegment<byte> segment);
+    Task<WebSocketReceiveResult> Receive(WebSocket webSocket, byte[] buffer);
+    Task Close(WebSocket webSocket, WebSocketCloseStatus closeStatus, string? closeStatusDescription);
+}
 
-    public WebSocketService(ILogger<WebSocketService> logger)
-    {
-        Logger = logger;
-        logger.Log(LogLevel.Debug, "WebSocket Service created");
-    }
-
+public class WebSocketService(ILogger logger) : IWebSocketService
+{
     public async Task Send(WebSocket webSocket, ArraySegment<byte> segment)
     {
         await webSocket.SendAsync(
@@ -23,13 +20,13 @@ public class WebSocketService : IWebSocketService
             true,
             CancellationToken.None);
 
-        Logger.Log(LogLevel.Debug, "Message sent to WebSocket");
+        logger.LogDebug("Message sent through WebSocket");
     }
 
     public async Task<WebSocketReceiveResult> Receive(WebSocket webSocket, byte[] buffer)
     {
         var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-        Logger.Log(LogLevel.Debug,
+        logger.LogDebug(
             "Message \"{}\" received from WebSocket",
             buffer.GetString(result.Count));
         return result;
@@ -42,6 +39,6 @@ public class WebSocketService : IWebSocketService
             closeStatusDescription,
             CancellationToken.None);
 
-        Logger.Log(LogLevel.Information, "WebSocket connection closed");
+        logger.LogInformation("WebSocket connection closed");
     }
 }

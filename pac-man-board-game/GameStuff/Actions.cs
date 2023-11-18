@@ -23,4 +23,4 @@ public class ActionMessage<T>
     public static ActionMessage FromJson(string json) => JsonSerializer.Deserialize<ActionMessage>(json)!;
 }
 
-public class ActionMessage : ActionMessage<dynamic> { }
+public class ActionMessage : ActionMessage<dynamic>;
