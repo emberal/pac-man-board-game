@@ -64,13 +64,20 @@ public class GameService(ILogger logger) : WebSocketService(logger), IGameServic
         return game;
     }
 
-    public Game? FindGameById(Guid id)
-    {
-        return Games.FirstOrDefault(game => game.Id == id);
-    }
+    /// <summary>
+    ///     Finds a game by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the game.</param>
+    /// <returns>The game with the specified ID, or null if no game was found.</returns>
+    public Game? FindGameById(Guid id) => Games.FirstOrDefault(game => game.Id == id);
 
-    public Game? FindGameByUsername(string username)
-    {
-        return Games.FirstOrDefault(game => game.Players.Exists(player => player.Username == username));
-    }
+    /// <summary>
+    ///     Finds a game by the given username.
+    /// </summary>
+    /// <param name="username">The username to search for.</param>
+    /// <returns>
+    ///     The found game, if any. Returns null if no game is found.
+    /// </returns>
+    public Game? FindGameByUsername(string username) =>
+        Games.FirstOrDefault(game => game.Players.Exists(player => player.Username == username));
 }

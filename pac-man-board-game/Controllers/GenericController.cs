@@ -4,13 +4,33 @@ using pacMan.Services;
 
 namespace pacMan.Controllers;
 
+/// <summary>
+///     Represents a generic controller for handling WebSocket connections.
+/// </summary>
 public abstract class GenericController(ILogger<GenericController> logger, IWebSocketService webSocketService)
     : ControllerBase
 {
+    /// <summary>
+    ///     Buffer size used for processing data.
+    /// </summary>
     private const int BufferSize = 1024 * 4;
+
     protected readonly ILogger<GenericController> Logger = logger;
     protected WebSocket? WebSocket;
 
+    /// <summary>
+    ///     Establishes a WebSocket connection with the client.
+    /// </summary>
+    /// <remarks>
+    ///     This method checks if the HTTP request is a WebSocket request. If it is, it accepts the WebSocket connection, logs
+    ///     the connection establishment, and sets the WebSocket property to
+    ///     the accepted WebSocket instance.
+    ///     After the connection is established, the method calls the Echo method to start echoing messages.
+    ///     If the request is not a WebSocket request, it sets the HTTP response status code to 400 (BadRequest).
+    /// </remarks>
+    /// <returns>
+    ///     The task representing the asynchronous operation.
+    /// </returns>
     public virtual async Task Connect()
     {
         if (HttpContext.WebSockets.IsWebSocketRequest)
@@ -26,6 +46,11 @@ public abstract class GenericController(ILogger<GenericController> logger, IWebS
         }
     }
 
+    /// <summary>
+    ///     An asynchronous method that reads data from the WebSocket connection,
+    ///     processes it, and sends back the processed data.
+    /// </summary>
+    /// <returns>A Task representing the asynchronous operation.</returns>
     protected virtual async Task Echo()
     {
         if (WebSocket is null) return;
@@ -56,10 +81,15 @@ public abstract class GenericController(ILogger<GenericController> logger, IWebS
         }
     }
 
-    protected virtual async void Send(ArraySegment<byte> segment)
+    /// <summary>
+    ///     Sends the specified byte segment using the WebSocket connection.
+    ///     If the WebSocket connection is null, the method does nothing.
+    /// </summary>
+    /// <param name="segment">The byte segment to send.</param>
+    protected virtual void Send(ArraySegment<byte> segment)
     {
         if (WebSocket is null) return;
-        await webSocketService.Send(WebSocket, segment);
+        webSocketService.Send(WebSocket, segment);
     }
 
     protected abstract ArraySegment<byte> Run(WebSocketReceiveResult result, byte[] data);

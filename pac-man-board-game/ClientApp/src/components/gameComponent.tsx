@@ -14,6 +14,14 @@ import { getData } from "../utils/api"
 
 const wsService = new WebSocketService(import.meta.env.VITE_API_WS)
 
+/**
+ * Represents the main game component.
+ * @component
+ * @param player - The current player.
+ * @param map - The current game map.
+ *
+ * @returns The rendered game component.
+ */
 export const GameComponent: FC<{ player: Player; map: GameMap }> = ({ player, map }) => {
   const players = useAtomValue(playersAtom)
   const dice = useAtomValue(diceAtom)

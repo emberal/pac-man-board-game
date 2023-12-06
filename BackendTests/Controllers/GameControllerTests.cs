@@ -11,12 +11,10 @@ using pacMan.Utils;
 
 namespace BackendTests.Controllers;
 
+[TestFixture]
+[TestOf(nameof(GameController))]
 public class GameControllerTests
 {
-    private IActionService _actionService = null!;
-    private GameController _controller = null!;
-    private GameService _gameService = null!;
-
     [SetUp]
     public void Setup()
     {
@@ -26,6 +24,10 @@ public class GameControllerTests
         );
         _controller = new GameController(Substitute.For<ILogger<GameController>>(), _gameService, _actionService);
     }
+
+    private IActionService _actionService = null!;
+    private GameController _controller = null!;
+    private GameService _gameService = null!;
 
     [Test]
     public void Run_ReturnsSame()
@@ -52,8 +54,6 @@ public class GameControllerTests
             Assert.Fail("Result is not an ArraySegment<byte>");
     }
 
-    #region DoAction(ActionMessage message)
-
     [Test]
     public void DoAction_NegativeAction()
     {
@@ -71,6 +71,4 @@ public class GameControllerTests
         _controller.DoAction(message);
         Assert.That(message.Data, Is.EqualTo(data));
     }
-
-    #endregion
 }

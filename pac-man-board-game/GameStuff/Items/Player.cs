@@ -3,6 +3,9 @@ using DAL.Database.Models;
 
 namespace pacMan.GameStuff.Items;
 
+/// <summary>
+///     Represents the various states of a 'Player'.
+/// </summary>
 public enum State
 {
     WaitingForPlayers,
@@ -11,6 +14,9 @@ public enum State
     Disconnected
 }
 
+/// <summary>
+///     Represents a player in the game.
+/// </summary>
 public class Player : IEquatable<Player>, ICloneable
 {
     [JsonPropertyName("username")] public required string Username { get; init; }

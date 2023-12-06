@@ -6,17 +6,17 @@ using pacMan.Utils;
 
 namespace BackendTests.Services;
 
+[TestFixture]
+[TestOf(nameof(WebSocketService))]
 public class WebSocketServiceTests
 {
-    private IWebSocketService _service = null!;
-
     [SetUp]
     public void SetUp()
     {
         _service = new WebSocketService(Substitute.For<ILogger<WebSocketService>>());
     }
 
-    #region Send(Websocket, ArraySegment<byte>)
+    private IWebSocketService _service = null!;
 
     [Test]
     public void Send_OpenWebsocket()
@@ -46,10 +46,6 @@ public class WebSocketServiceTests
 
         webSocket.Received().SendAsync(segment, WebSocketMessageType.Text, true, CancellationToken.None);
     }
-
-    #endregion
-
-    #region Receive(Websocket, byte[])
 
     [Test]
     public void Receive_ExactBuffer()
@@ -89,10 +85,6 @@ public class WebSocketServiceTests
         webSocket.ReceivedWithAnyArgs().ReceiveAsync(default, CancellationToken.None);
     }
 
-    #endregion
-
-    #region Close(Websocket, WebSocketCloseStatus, string?)
-
     [Test]
     public void Close_OpenWebsocket()
     {
@@ -123,6 +115,4 @@ public class WebSocketServiceTests
 
         webSocket.ReceivedWithAnyArgs().CloseAsync(default, default, CancellationToken.None);
     }
-
-    #endregion
 }

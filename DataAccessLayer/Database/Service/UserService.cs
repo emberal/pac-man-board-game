@@ -4,8 +4,8 @@ namespace DAL.Database.Service;
 
 public class UserService
 {
-    private readonly List<User> _users = new()
-    {
+    private readonly List<User> _users =
+    [
         new User
         {
             Username = "Firefox",
@@ -18,10 +18,10 @@ public class UserService
             Password = "Chrome",
             Colour = "blue"
         }
-    };
+    ];
 
-    public async Task<User?> Login(string username, string password)
+    public Task<User?> Login(string username, string password)
     {
-        return await Task.Run(() => _users.FirstOrDefault(x => x.Username == username && x.Password == password));
+        return Task.Run(() => _users.FirstOrDefault(x => x.Username == username && x.Password == password));
     }
 }

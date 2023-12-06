@@ -3,9 +3,15 @@ using pacMan.Utils;
 
 namespace BackendTests.Utils;
 
+[TestFixture]
+[TestOf(nameof(Extensions))]
 public class ExtensionsTests
 {
-    #region ToArraySegment(this object obj)
+    [SetUp]
+    public void Setup()
+    {
+        _bytes = "Hello World!"u8.ToArray();
+    }
 
     [Test]
     public void ToArraySegmentValidObject()
@@ -24,17 +30,7 @@ public class ExtensionsTests
         Assert.That(segment, Has.Count.EqualTo(4));
     }
 
-    #endregion
-
-    #region GetString(this byte[] bytes, int length)
-
     private byte[] _bytes = null!;
-
-    [SetUp]
-    public void Setup()
-    {
-        _bytes = "Hello World!"u8.ToArray();
-    }
 
     [Test]
     public void GetString_ValidByteArray()
@@ -65,6 +61,4 @@ public class ExtensionsTests
     {
         Assert.That(_bytes.GetString(_bytes.Length / 2), Is.EqualTo("Hello "));
     }
-
-    #endregion
 }

@@ -1,5 +1,8 @@
 namespace pacMan.GameStuff;
 
+/// <summary>
+///     The Rules class holds constant values related to the game rules.
+/// </summary>
 public static class Rules
 {
     public const int MinPlayers = 2;

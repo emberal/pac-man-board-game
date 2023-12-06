@@ -9,6 +9,11 @@ namespace pacMan.Controllers;
 [Route("api/[controller]/[action]")]
 public class PlayerController(UserService userService) : ControllerBase
 {
+    /// <summary>
+    ///     Logs in a user.
+    /// </summary>
+    /// <param name="user">The user object containing the username and password.</param>
+    /// <returns>Returns an IActionResult indicating the login result.</returns>
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] User user)
     {
@@ -18,5 +23,5 @@ public class PlayerController(UserService userService) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Register([FromBody] User user) => throw new NotSupportedException();
+    public Task<IActionResult> Register([FromBody] User user) => throw new NotSupportedException();
 }

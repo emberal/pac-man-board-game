@@ -4,6 +4,11 @@ import { getDefaultStore } from "jotai"
 import { currentPlayerNameAtom, playersAtom } from "../utils/state"
 import rules from "./rules"
 
+/**
+ * Represents the different states of a game.
+ *
+ * @enum {number}
+ */
 export enum State {
   waitingForPlayers,
   ready,

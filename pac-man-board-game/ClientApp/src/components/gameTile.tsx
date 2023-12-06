@@ -28,7 +28,7 @@ export const GameTile: FC<TileWithCharacterProps> = ({
   showPath = false,
 }) => (
   <Tile
-    className={`${possiblePath?.end ? "border-4 border-white" : ""}`}
+    className={`${possiblePath?.end && "border-4 border-white"}`}
     type={type}
     onClick={possiblePath ? () => handleMoveCharacter?.(possiblePath) : undefined}
     onMouseEnter={possiblePath ? () => handleStartShowPath?.(possiblePath) : undefined}
