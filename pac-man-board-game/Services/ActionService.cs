@@ -24,7 +24,7 @@ public interface IActionService
 /// <summary>
 ///     Provides various actions that can be performed in a game
 /// </summary>
-public class ActionService(ILogger logger, IGameService gameService) : IActionService
+public class ActionService(ILogger<ActionService> logger, IGameService gameService) : IActionService
 {
     public WebSocket WebSocket { private get; set; } = null!;
 

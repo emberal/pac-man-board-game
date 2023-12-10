@@ -6,8 +6,7 @@ using pacMan.Utils;
 
 namespace BackendTests.Services;
 
-[TestFixture]
-[TestOf(nameof(pacMan.Services.Game))]
+[TestFixture, TestOf(nameof(pacMan.Services.Game))]
 public class GameTests
 {
     [SetUp]
@@ -56,7 +55,7 @@ public class GameTests
     [Test]
     public void NextPlayer_WhenEmpty()
     {
-        Assert.Throws<InvalidOperationException>(() => _game.NextPlayer());
+        Assert.Throws<PlayerNotFoundException>(() => _game.NextPlayer());
     }
 
     [Test]

@@ -5,11 +5,9 @@ using pacMan.GameStuff.Items;
 namespace pacMan.DTOs;
 
 public readonly record struct JoinGameData(
-    [property: JsonInclude]
-    [property: JsonPropertyName("username")]
+    [property: JsonInclude, JsonPropertyName("username"), JsonRequired]
     string Username,
-    [property: JsonInclude]
-    [property: JsonPropertyName("gameId")]
+    [property: JsonInclude, JsonPropertyName("gameId"), JsonRequired]
     Guid GameId
 )
 {
@@ -17,34 +15,26 @@ public readonly record struct JoinGameData(
 }
 
 public readonly record struct CreateGameData(
-    [property: JsonInclude]
-    [property: JsonPropertyName("player")]
+    [property: JsonInclude, JsonPropertyName("player"), JsonRequired]
     Player Player,
-    [property: JsonInclude]
-    [property: JsonPropertyName("spawns")]
+    [property: JsonInclude, JsonPropertyName("spawns"), JsonRequired]
     Queue<DirectionalPosition> Spawns
 );
 
 public readonly record struct ReadyData(
-    [property: JsonInclude]
-    [property: JsonPropertyName("allReady")]
+    [property: JsonInclude, JsonPropertyName("allReady"), JsonRequired]
     bool AllReady,
-    [property: JsonInclude]
-    [property: JsonPropertyName("players")]
+    [property: JsonInclude, JsonPropertyName("players"), JsonRequired]
     IEnumerable<Player> Players
 );
 
 public readonly record struct MovePlayerData(
-    [property: JsonInclude]
-    [property: JsonPropertyName("players")]
+    [property: JsonInclude, JsonPropertyName("players"), JsonRequired]
     List<Player> Players,
-    [property: JsonInclude]
-    [property: JsonPropertyName("ghosts")]
+    [property: JsonInclude, JsonPropertyName("ghosts"), JsonRequired]
     List<Character> Ghosts,
-    [property: JsonInclude]
-    [property: JsonPropertyName("dice")]
+    [property: JsonInclude, JsonPropertyName("dice"), JsonRequired]
     List<int> Dice,
-    [property: JsonInclude]
-    [property: JsonPropertyName("eatenPellets")]
+    [property: JsonInclude, JsonPropertyName("eatenPellets"), JsonRequired]
     List<Position> EatenPellets
 );

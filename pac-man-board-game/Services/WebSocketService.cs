@@ -13,7 +13,7 @@ public interface IWebSocketService
 /// <summary>
 ///     WebSocketService class provides methods to send, receive and close a WebSocket connection.
 /// </summary>
-public class WebSocketService(ILogger logger) : IWebSocketService
+public class WebSocketService(ILogger<WebSocketService> logger) : IWebSocketService
 {
     /// <summary>
     ///     Sends the specified byte array as a text message through the WebSocket connection.

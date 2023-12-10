@@ -10,8 +10,7 @@ using pacMan.Services;
 
 namespace BackendTests.Services;
 
-[TestFixture]
-[TestOf(nameof(ActionService))]
+[TestFixture, TestOf(nameof(ActionService))]
 public class ActionServiceTests
 {
     [SetUp]
@@ -157,7 +156,7 @@ public class ActionServiceTests
     public void FindNextPlayer_NoPlayers()
     {
         _service.Game = new pacMan.Services.Game(new Queue<DirectionalPosition>());
-        Assert.Throws<InvalidOperationException>(() => _service.FindNextPlayer());
+        Assert.Throws<PlayerNotFoundException>(() => _service.FindNextPlayer());
     }
 
     [Test]

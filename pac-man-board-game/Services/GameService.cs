@@ -17,7 +17,7 @@ public interface IGameService : IWebSocketService
 ///     The GameService class provides functionality for managing games in a WebSocket environment. It inherits from the
 ///     WebSocketService class.
 /// </summary>
-public class GameService(ILogger logger) : WebSocketService(logger), IGameService
+public class GameService(ILogger<WebSocketService> logger) : WebSocketService(logger), IGameService
 {
     /// <summary>
     ///     A thread-safe collection (SynchronizedCollection) of "Game" objects. Utilized for managing multiple game instances
