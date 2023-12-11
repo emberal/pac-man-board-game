@@ -15,7 +15,7 @@
     "web-vitals": "^3.5.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.33",
+    "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.14",
     "@vitejs/plugin-react": "^4.1.0",
     "@vitest/coverage-c8": "^0.33.0",
