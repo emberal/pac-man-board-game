@@ -2,6 +2,7 @@
   "name": "pac_man_board_game",
   "version": "0.1.1",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@headlessui/react": "^1.7.17",
@@ -15,6 +16,7 @@
     "web-vitals": "^3.5.0"
   },
   "devDependencies": {
+    "@types/node": "^20.10.7",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "@vitejs/plugin-react": "^4.2.1",
