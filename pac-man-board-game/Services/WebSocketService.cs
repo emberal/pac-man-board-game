@@ -1,20 +1,33 @@
 using System.Net.WebSockets;
-using pacMan.Interfaces;
 using pacMan.Utils;
 
 namespace pacMan.Services;
 
-
-public class WebSocketService : IWebSocketService
+public interface IWebSocketService
 {
-    protected readonly ILogger<WebSocketService> Logger;
+    Task Send(WebSocket webSocket, ArraySegment<byte> segment);
+    Task<WebSocketReceiveResult> Receive(WebSocket webSocket, byte[] buffer);
+    Task Close(WebSocket webSocket, WebSocketCloseStatus closeStatus, string? closeStatusDescription);
+}
 
-    public WebSocketService(ILogger<WebSocketService> logger)
-    {
-        Logger = logger;
-        logger.Log(LogLevel.Debug, "WebSocket Service created");
-    }
-
+/// <summary>
+///     WebSocketService class provides methods to send, receive and close a WebSocket connection.
+/// </summary>
+public class WebSocketService(ILogger<WebSocketService> logger) : IWebSocketService
+{
+    /// <summary>
+    ///     Sends the specified byte array as a text message through the WebSocket connection.
+    /// </summary>
+    /// <param name="webSocket">The WebSocket connection.</param>
+    /// <param name="segment">The byte array to send.</param>
+    /// <returns>
+    ///     A task representing the asynchronous operation of sending the message.
+    /// </returns>
+    /// <remarks>
+    ///     This method sends the specified byte array as a text message through the WebSocket connection.
+    ///     It uses the WebSocket.SendAsync method to send the message asynchronously.
+    ///     After sending the message, it logs a debug message using the logger provided.
+    /// </remarks>
     public async Task Send(WebSocket webSocket, ArraySegment<byte> segment)
     {
         await webSocket.SendAsync(
@@ -23,18 +36,34 @@ public class WebSocketService : IWebSocketService
             true,
             CancellationToken.None);
 
-        Logger.Log(LogLevel.Debug, "Message sent to WebSocket");
+        logger.LogDebug("Message sent through WebSocket");
     }
 
+    /// <summary>
+    ///     Receives data from a websocket and logs a debug message.
+    /// </summary>
+    /// <param name="webSocket">The websocket to receive data from.</param>
+    /// <param name="buffer">The buffer to store the received data.</param>
+    /// <returns>
+    ///     A task representing the asynchronous operation. The result contains the <see cref="WebSocketReceiveResult" />
+    ///     which contains information about the received data.
+    /// </returns>
     public async Task<WebSocketReceiveResult> Receive(WebSocket webSocket, byte[] buffer)
     {
         var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-        Logger.Log(LogLevel.Debug,
+        logger.LogDebug(
             "Message \"{}\" received from WebSocket",
             buffer.GetString(result.Count));
         return result;
     }
 
+    /// <summary>
+    ///     Closes the WebSocket connection with the specified close status and description.
+    /// </summary>
+    /// <param name="webSocket">The WebSocket connection to close.</param>
+    /// <param name="closeStatus">The status code indicating the reason for the close.</param>
+    /// <param name="closeStatusDescription">The optional description explaining the reason for the close.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task Close(WebSocket webSocket, WebSocketCloseStatus closeStatus, string? closeStatusDescription)
     {
         await webSocket.CloseAsync(
@@ -42,6 +71,6 @@ public class WebSocketService : IWebSocketService
             closeStatusDescription,
             CancellationToken.None);
 
-        Logger.Log(LogLevel.Information, "WebSocket connection closed");
+        logger.LogInformation("WebSocket connection closed");
     }
 }

@@ -3,19 +3,14 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using pacMan.Exceptions;
 using pacMan.GameStuff;
-using pacMan.GameStuff.Items;
 using pacMan.Services;
 
 namespace BackendTests.Services;
 
+[TestFixture]
+[TestOf(nameof(GameService))]
 public class GameServiceTests
 {
-    private readonly DirectionalPosition _spawn3By3Up = new()
-        { At = new Position { X = 3, Y = 3 }, Direction = Direction.Up };
-
-    private GameService _service = null!;
-    private Queue<DirectionalPosition> _spawns = null!;
-
     [SetUp]
     public void SetUp()
     {
@@ -29,7 +24,11 @@ public class GameServiceTests
         });
     }
 
-    #region CreateAndJoin(IPlayer player, Queue<DirectionalPosition> spawns)
+    private readonly DirectionalPosition _spawn3By3Up = new()
+        { At = new Position { X = 3, Y = 3 }, Direction = Direction.Up };
+
+    private GameService _service = null!;
+    private Queue<DirectionalPosition> _spawns = null!;
 
     [Test]
     public void CreateAndJoin_WhenEmpty()
@@ -53,15 +52,11 @@ public class GameServiceTests
         Assert.Throws<ArgumentException>(() => _service.CreateAndJoin(player, _spawns));
     }
 
-    #endregion
-
-    #region JoinbyId(Guid id)
-
     [Test]
     public void JoinById_WhenIdNotExists()
     {
         var player = Players.Create("white");
-        _service.Games.Add(new pacMan.Services.Game(_spawns) { Players = new List<Player> { player } });
+        _service.Games.Add(new pacMan.Services.Game(_spawns) { Players = [player] });
 
         Assert.Throws<GameNotFoundException>(() => _service.JoinById(Guid.NewGuid(), player));
     }
@@ -70,7 +65,7 @@ public class GameServiceTests
     public void JoinById_WhenIdExists()
     {
         var player = Players.Create("white");
-        var game = new pacMan.Services.Game(_spawns) { Players = new List<Player> { player } };
+        var game = new pacMan.Services.Game(_spawns) { Players = [player] };
         _service.Games.Add(game);
 
 
@@ -84,6 +79,4 @@ public class GameServiceTests
             Assert.That(_service.Games, Has.Count.EqualTo(1));
         });
     }
-
-    #endregion
 }

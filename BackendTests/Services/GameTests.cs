@@ -6,8 +6,23 @@ using pacMan.Utils;
 
 namespace BackendTests.Services;
 
+[TestFixture, TestOf(nameof(pacMan.Services.Game))]
 public class GameTests
 {
+    [SetUp]
+    public void Setup()
+    {
+        _spawns = new Queue<DirectionalPosition>(
+            new[] { _spawn3By3Up, _spawn7By7Left, _spawn7By7Down, _spawn7By7Right });
+
+        _game = new pacMan.Services.Game(_spawns);
+        _redPlayer = Players.Create("red");
+        _bluePlayer = Players.Create("blue");
+        _yellowPlayer = Players.Create("yellow");
+        _greenPlayer = Players.Create("green");
+        _purplePlayer = Players.Create("purple");
+    }
+
     private readonly DirectionalPosition _spawn3By3Up = new()
         { At = new Position { X = 3, Y = 3 }, Direction = Direction.Up };
 
@@ -29,20 +44,6 @@ public class GameTests
     private Queue<DirectionalPosition> _spawns = null!;
     private Player _yellowPlayer = null!;
 
-    [SetUp]
-    public void Setup()
-    {
-        _spawns = new Queue<DirectionalPosition>(
-            new[] { _spawn3By3Up, _spawn7By7Left, _spawn7By7Down, _spawn7By7Right });
-
-        _game = new pacMan.Services.Game(_spawns);
-        _redPlayer = Players.Create("red");
-        _bluePlayer = Players.Create("blue");
-        _yellowPlayer = Players.Create("yellow");
-        _greenPlayer = Players.Create("green");
-        _purplePlayer = Players.Create("purple");
-    }
-
     private void AddFullParty()
     {
         _game.AddPlayer(_bluePlayer);
@@ -51,17 +52,11 @@ public class GameTests
         _game.AddPlayer(_greenPlayer);
     }
 
-    #region NextPlayer()
-
     [Test]
     public void NextPlayer_WhenEmpty()
     {
-        Assert.Throws<InvalidOperationException>(() => _game.NextPlayer());
+        Assert.Throws<PlayerNotFoundException>(() => _game.NextPlayer());
     }
-
-    #endregion
-
-    #region IsGameStarted
 
     [Test]
     public void IsGameStarted_WhenEmpty()
@@ -100,10 +95,6 @@ public class GameTests
             player.State = _game.Players.IndexOf(player) % 2 == 0 ? State.InGame : State.Disconnected);
         Assert.That(_game.IsGameStarted, Is.True);
     }
-
-    #endregion
-
-    #region AddPlayer(Player player)
 
     [Test]
     public void AddPlayer_WhenEmpty()
@@ -157,10 +148,6 @@ public class GameTests
         Assert.Throws<GameNotPlayableException>(() => _game.AddPlayer(_greenPlayer));
     }
 
-    #endregion
-
-    #region Sendtoall(ArraySegment<byte> segment)
-
     [Test]
     public void SendToAll_WhenConnectionsIsNull()
     {
@@ -171,7 +158,6 @@ public class GameTests
     public void SendToAll_WhenConnectionsIsNotNull()
     {
         var counter = 0;
-        async Task Send(ArraySegment<byte> segment) => await Task.Run(() => counter++);
 
         _game.Connections += Send;
         _game.Connections += Send;
@@ -182,11 +168,10 @@ public class GameTests
         while (counter < 2) { }
 
         Assert.That(counter, Is.EqualTo(2));
+        return;
+
+        async Task Send(ArraySegment<byte> segment) => await Task.Run(() => counter++);
     }
-
-    #endregion
-
-    #region SetReady(Player player)
 
     [Test]
     public void SetReady_ReturnsAllPlayers()
@@ -222,10 +207,6 @@ public class GameTests
         Assert.Throws<PlayerNotFoundException>(() => _game.SetReady(_redPlayer.Username));
     }
 
-    #endregion
-
-    #region SetAllIngame()
-
     [Test]
     public void SetAllInGame_SetsStateToInGame()
     {
@@ -257,10 +238,6 @@ public class GameTests
         Assert.That(_game.Players, Is.Empty);
     }
 
-    #endregion
-
-    #region IsGameStarted()
-
     [Test]
     public void IsGameStarted_AllWaiting()
     {
@@ -275,6 +252,4 @@ public class GameTests
         _game.Players.ForEach(player => player.State = State.InGame);
         Assert.That(_game.IsGameStarted, Is.True);
     }
-
-    #endregion
 }

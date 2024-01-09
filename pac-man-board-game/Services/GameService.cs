@@ -4,14 +4,21 @@ using pacMan.GameStuff.Items;
 
 namespace pacMan.Services;
 
+public interface IGameService : IWebSocketService
+{
+    SynchronizedCollection<Game> Games { get; }
+    Game JoinById(Guid id, Player player);
+    Game CreateAndJoin(Player player, Queue<DirectionalPosition> spawns);
+    Game? FindGameById(Guid id);
+    Game? FindGameByUsername(string username);
+}
+
 /// <summary>
 ///     The GameService class provides functionality for managing games in a WebSocket environment. It inherits from the
 ///     WebSocketService class.
 /// </summary>
-public class GameService : WebSocketService
+public class GameService(ILogger<WebSocketService> logger) : WebSocketService(logger), IGameService
 {
-    public GameService(ILogger<GameService> logger) : base(logger) { }
-
     /// <summary>
     ///     A thread-safe collection (SynchronizedCollection) of "Game" objects. Utilized for managing multiple game instances
     ///     simultaneously.
@@ -57,8 +64,20 @@ public class GameService : WebSocketService
         return game;
     }
 
-    public Game? FindGameByUsername(string username)
-    {
-        return Games.FirstOrDefault(game => game.Players.Exists(player => player.Username == username));
-    }
+    /// <summary>
+    ///     Finds a game by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the game.</param>
+    /// <returns>The game with the specified ID, or null if no game was found.</returns>
+    public Game? FindGameById(Guid id) => Games.FirstOrDefault(game => game.Id == id);
+
+    /// <summary>
+    ///     Finds a game by the given username.
+    /// </summary>
+    /// <param name="username">The username to search for.</param>
+    /// <returns>
+    ///     The found game, if any. Returns null if no game is found.
+    /// </returns>
+    public Game? FindGameByUsername(string username) =>
+        Games.FirstOrDefault(game => game.Players.Exists(player => player.Username == username));
 }

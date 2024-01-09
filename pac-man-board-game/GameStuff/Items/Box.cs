@@ -4,10 +4,17 @@ namespace pacMan.GameStuff.Items;
 
 public class Box : IEquatable<Box>
 {
-    [JsonPropertyName("pellets")] public int Pellets { get; init; }
-    [JsonPropertyName("powerPellets")] public int PowerPellet { get; init; }
+    [JsonInclude]
+    [JsonPropertyName("pellets")]
+    public int Pellets { get; init; }
 
-    [JsonPropertyName("colour")] public required string Colour { get; init; }
+    [JsonInclude]
+    [JsonPropertyName("powerPellets")]
+    public int PowerPellet { get; init; }
+
+    [JsonInclude]
+    [JsonPropertyName("colour")]
+    public required string Colour { get; init; }
 
     public bool Equals(Box? other)
     {

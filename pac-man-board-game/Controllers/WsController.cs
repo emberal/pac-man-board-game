@@ -6,12 +6,11 @@ namespace pacMan.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class WsController : GenericController
+public class WsController(ILogger<WsController> logger, IWebSocketService gameService) :
+    GenericController(logger, gameService)
 {
-    public WsController(ILogger<WsController> logger, GameService gameService) : base(logger, gameService) { }
-
     [HttpGet]
-    public override async Task Accept() => await base.Accept();
+    public override async Task Connect() => await base.Connect();
 
     protected override ArraySegment<byte> Run(WebSocketReceiveResult result, byte[] data)
     {

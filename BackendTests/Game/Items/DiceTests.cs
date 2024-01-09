@@ -2,6 +2,8 @@ using pacMan.GameStuff.Items;
 
 namespace BackendTests.Game.Items;
 
+[TestFixture]
+[TestOf(nameof(Dice))]
 public class DiceTests
 {
     [Test]

@@ -2,6 +2,7 @@ using System.Text.Json;
 using BackendTests.TestUtils;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using pacMan.DTOs;
 using pacMan.Exceptions;
 using pacMan.GameStuff;
 using pacMan.GameStuff.Items;
@@ -9,21 +10,9 @@ using pacMan.Services;
 
 namespace BackendTests.Services;
 
+[TestFixture, TestOf(nameof(ActionService))]
 public class ActionServiceTests
 {
-    private readonly Player _blackPlayer = Players.Create("black");
-    private readonly Player _redPlayer = Players.Create("red");
-    private readonly Player _whitePlayer = Players.Create("white");
-    private ActionMessage _blackMessage = null!;
-    private pacMan.Services.Game _game = null!;
-    private GameService _gameService = null!;
-    private ActionMessage _redMessage = null!;
-    private IActionService _service = null!;
-
-    private Queue<DirectionalPosition> _spawns = null!;
-    private ActionMessage _whiteMessage = null!;
-
-
     [SetUp]
     public void Setup()
     {
@@ -35,6 +24,18 @@ public class ActionServiceTests
         _gameService = Substitute.For<GameService>(Substitute.For<ILogger<GameService>>());
         _service = new ActionService(Substitute.For<ILogger<ActionService>>(), _gameService);
     }
+
+    private readonly Player _blackPlayer = Players.Create("black");
+    private readonly Player _redPlayer = Players.Create("red");
+    private readonly Player _whitePlayer = Players.Create("white");
+    private ActionMessage _blackMessage = null!;
+    private pacMan.Services.Game _game = null!;
+    private GameService _gameService = null!;
+    private ActionMessage _redMessage = null!;
+    private IActionService _service = null!;
+
+    private Queue<DirectionalPosition> _spawns = null!;
+    private ActionMessage _whiteMessage = null!;
 
     private JsonElement SerializeData(string username) =>
         JsonDocument.Parse(JsonSerializer.Serialize(
@@ -50,8 +51,6 @@ public class ActionServiceTests
             new() { At = new Position { X = 9, Y = 9 }, Direction = Direction.Right }
         });
 
-    #region RollDice()
-
     [Test]
     public void RollDice_ReturnsListOfIntegers()
     {
@@ -63,10 +62,6 @@ public class ActionServiceTests
             Assert.That(dices, Has.All.InRange(1, 6));
         });
     }
-
-    #endregion
-
-    #region PlayerInfo(ActionMessage message)
 
     [Test]
     public void PlayerInfo_DataIsNull()
@@ -96,32 +91,6 @@ public class ActionServiceTests
         Assert.That(players, Is.InstanceOf<IEnumerable<Player>>());
         Assert.That(new List<Player> { _whitePlayer }, Is.EqualTo(players));
     }
-
-    #endregion
-
-    #region DoAction(ActionMessage message)
-
-    [Test]
-    public void DoAction_NegativeAction()
-    {
-        const string data = "Nothing happens";
-        var message = new ActionMessage { Action = (GameAction)(-1), Data = data };
-        _service.DoAction(message);
-        Assert.That(message.Data, Is.EqualTo(data));
-    }
-
-    [Test]
-    public void DoAction_OutOfBoundsAction()
-    {
-        const string data = "Nothing happens";
-        var message = new ActionMessage { Action = (GameAction)100, Data = data };
-        _service.DoAction(message);
-        Assert.That(message.Data, Is.EqualTo(data));
-    }
-
-    #endregion
-
-    #region Ready()
 
     [Test]
     public void Ready_PlayerIsNull()
@@ -183,15 +152,11 @@ public class ActionServiceTests
             Is.EqualTo(_blackPlayer.Username).Or.EqualTo(_whitePlayer.Username));
     }
 
-    #endregion
-
-    #region FindNextPlayer()
-
     [Test]
     public void FindNextPlayer_NoPlayers()
     {
         _service.Game = new pacMan.Services.Game(new Queue<DirectionalPosition>());
-        Assert.Throws<InvalidOperationException>(() => _service.FindNextPlayer());
+        Assert.Throws<PlayerNotFoundException>(() => _service.FindNextPlayer());
     }
 
     [Test]
@@ -221,6 +186,4 @@ public class ActionServiceTests
         var second = _service.FindNextPlayer();
         Assert.That(second, Is.EqualTo(_whitePlayer.Username));
     }
-
-    #endregion
 }

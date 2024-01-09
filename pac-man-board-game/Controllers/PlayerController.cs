@@ -6,21 +6,22 @@ using pacMan.GameStuff.Items;
 namespace pacMan.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class PlayerController : ControllerBase
+[Route("api/[controller]/[action]")]
+public class PlayerController(UserService userService) : ControllerBase
 {
-    private readonly UserService _userService;
-
-    public PlayerController(UserService userService) => _userService = userService;
-
-    [HttpPost("login")]
+    /// <summary>
+    ///     Logs in a user.
+    /// </summary>
+    /// <param name="user">The user object containing the username and password.</param>
+    /// <returns>Returns an IActionResult indicating the login result.</returns>
+    [HttpPost]
     public async Task<IActionResult> Login([FromBody] User user)
     {
-        var result = await _userService.Login(user.Username, user.Password);
+        var result = await userService.Login(user.Username, user.Password);
         if (result is null) return Unauthorized("Invalid username or password");
         return Ok((Player)result);
     }
 
-    [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] User user) => throw new NotSupportedException();
+    [HttpPost]
+    public Task<IActionResult> Register([FromBody] User user) => throw new NotSupportedException();
 }
