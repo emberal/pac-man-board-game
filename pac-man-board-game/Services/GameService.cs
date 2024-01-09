@@ -24,7 +24,7 @@ public class GameService(ILogger<WebSocketService> logger) : WebSocketService(lo
     ///     simultaneously.
     ///     It represents all the current games being managed by GameService.
     /// </summary>
-    public SynchronizedCollection<Game> Games { get; } = new();
+    public SynchronizedCollection<Game> Games { get; } = [];
 
     /// <summary>
     ///     This method tries to find a game with the specified id, add a player to it and return the updated game.
