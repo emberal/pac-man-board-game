@@ -1,3 +1,10 @@
+
+> [!IMPORTANT]
+> Project moved to https://git.martials.no/martials/pac-man-board-game
+
+
+
+
 # Pac-Man The Board Game
 
 Work in progress.
